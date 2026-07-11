@@ -6,3 +6,4 @@ from .models import CustomUser
 admin.site.register(CustomUser, UserAdmin)
 
 #siddharaj thayu k nai 
+#ha done
