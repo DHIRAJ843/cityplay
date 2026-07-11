@@ -1,0 +1,10 @@
+# Environments
+venv/
+__pycache__/
+
+# Database
+*.sqlite3
+
+# Environment Variables (NEVER SHARE THIS)
+.env
+ABCD
