@@ -4,3 +4,5 @@ from .models import CustomUser
 
 # Register your custom user model with Django's built-in UserAdmin interface
 admin.site.register(CustomUser, UserAdmin)
+
+#siddharaj thayu k nai 
