@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from events import views as event_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # This empty string '' represents your root homepage
+    path('', event_views.homepage, name='home'), 
 ]
