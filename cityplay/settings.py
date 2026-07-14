@@ -89,7 +89,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-        'CONN_MAX_AGE': 0, 
+        'CONN_MAX_AGE': 0,
         'OPTIONS': {
             'pool': True,
         },
@@ -135,9 +135,6 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-#TODO CHECK THE CHANGES fuck you 
-#TODO HEY MAN
-#TODO hyyyyyyyyyyyyyy
-#qwe
-#123
-#shivu
+STATICFILES_DIRS = [BASE_DIR / 'static']
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
