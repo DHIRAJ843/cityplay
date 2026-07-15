@@ -1,3 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@source "../../templates";
+
+/* 1. Define your custom brand colors */
+@theme {
+  --color-ink: #14231f;
+  --color-teal: #1f6f5c;
+  --color-teal-dark: #175646;
+  --color-teal-light: #e7f1ee;
+  --color-coral: #f2643b;
+  --color-cream: #f7f6f1;
+}
+
+/* 2. Define your custom components */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-lg bg-teal px-5 py-2.5 font-medium text-white transition-colors hover:bg-teal-dark;
+  }
+  .btn-coral {
+    @apply inline-flex items-center gap-2 rounded-lg bg-coral px-5 py-2.5 font-medium text-white transition-colors hover:opacity-90;
+  }
+  .card {
+    @apply rounded-2xl border border-black/5 bg-white shadow-sm;
+  }
+}
