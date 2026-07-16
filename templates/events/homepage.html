@@ -61,7 +61,34 @@
   </form>
 </div>
 
-<section id="happening-soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4">
+<section id="browse-activity" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4">
+  <h2 class="font-extrabold text-2xl mb-6">Browse by Activity</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+    {% for activity in activities %}
+      <a href="?activity={{ activity.id }}#happening-soon"
+         class="group relative aspect-square overflow-hidden rounded-2xl transition-shadow hover:shadow-md {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' %}">
+        {% if activity.icon_image %}
+          <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}"
+               class="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+        {% else %}
+          <div class="absolute inset-0 flex items-center justify-center opacity-15">
+            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11 2 3 12h6l-1 6 9-11h-6l1-5z"/></svg>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+        {% endif %}
+        <div class="absolute inset-x-0 bottom-0 p-3">
+          <p class="text-white text-sm font-semibold leading-tight">{{ activity.name }}</p>
+          <p class="text-white/70 text-xs">{{ activity.event_count }} event{{ activity.event_count|pluralize }}</p>
+        </div>
+      </a>
+    {% empty %}
+      <p class="text-ink/50 col-span-full">No activities added yet — add some from the admin panel.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="happening-soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
   <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
     <div>
       <h2 class="font-extrabold text-2xl">Happening Soon</h2>
@@ -102,7 +129,7 @@
             {{ event.venue.name }}
           </p>
           <div class="w-full h-1.5 bg-black/5 rounded-full overflow-hidden mb-3">
-            <div class="h-full bg-coral rounded-full" style="width:{{ event.spots_left_percent }}%"></div>
+            <div class="h-full bg-coral rounded-full" data-progress="{{ event.spots_left_percent }}"></div>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-xs text-ink/50">{{ event.spots_left }} spots left</span>
@@ -115,26 +142,6 @@
         <p class="text-ink/60">No events match these filters right now.</p>
         <a href="{% url 'home' %}#happening-soon" class="text-teal font-medium text-sm mt-2 inline-block">Clear filters</a>
       </div>
-    {% endfor %}
-  </div>
-</section>
-
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-  <h2 class="font-extrabold text-2xl mb-6">Browse by Activity</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-    {% for activity in activities %}
-      <a href="?activity={{ activity.id }}#happening-soon" class="group relative rounded-2xl overflow-hidden h-28 flex items-end p-3 {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' %}">
-        {% if activity.icon_image %}
-          <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform">
-          <div class="absolute inset-0 bg-black/35"></div>
-        {% endif %}
-        <div class="relative">
-          <p class="text-white text-sm font-semibold leading-tight">{{ activity.name }}</p>
-          <p class="text-white/70 text-xs">{{ activity.event_count }} event{{ activity.event_count|pluralize }}</p>
-        </div>
-      </a>
-    {% empty %}
-      <p class="text-ink/50 col-span-full">No activities added yet — add some from the admin panel.</p>
     {% endfor %}
   </div>
 </section>
@@ -237,7 +244,7 @@
     </div>
     <h3 class="font-extrabold text-xl mb-2">Never miss an event</h3>
     <p class="text-sm text-ink/50 mb-6 max-w-xs">Join our WhatsApp channel for instant game alerts, open slot pings &amp; exclusive early-bird bookings.</p>
-    <a href="#" class="inline-flex items-center gap-2 bg-teal text-white font-medium px-5 py-2.5 rounded-lg hover:bg-teal-dark transition-colors"><a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-teal text-white font-medium px-5 py-2.5 rounded-lg hover:bg-teal-dark transition-colors">
+    <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-teal text-white font-medium px-5 py-2.5 rounded-lg hover:bg-teal-dark transition-colors">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".35"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
       Join WhatsApp Channel
     </a>
@@ -245,4 +252,3 @@
 </section>
 
 {% endblock %}
-
