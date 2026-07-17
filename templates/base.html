@@ -16,5 +16,10 @@
 {% include 'partials/navbar.html' %}
 {% block content %}{% endblock %}
 {% include 'partials/footer.html' %}
+<script>
+  document.querySelectorAll('[data-progress]').forEach(function (bar) {
+    bar.style.width = (bar.dataset.progress || 0) + '%';
+  });
+</script>
 </body>
 </html>
