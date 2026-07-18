@@ -82,16 +82,16 @@ WSGI_APPLICATION = 'cityplay.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# Use dj_database_url to parse the Neon URL, and enable Django 6 native connection pooling.
+# dj_database_url reads DATABASE_URL from .env and builds the full config,
+# including sslmode and any options= params already in the URL.
+# Do NOT manually overwrite DATABASES['default']['OPTIONS'] anywhere below this —
+# that was the exact line that was silently deleting your sslmode/endpoint settings.
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
-        conn_max_age=0,
+        conn_max_age=600,
+        conn_health_checks=True,
     )
-}
-# Explicitly add the native pool option for PostgreSQL
-DATABASES['default']['OPTIONS'] = {
-    'pool': True,
 }
 
 
