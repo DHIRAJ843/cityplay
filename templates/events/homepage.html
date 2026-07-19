@@ -103,7 +103,8 @@
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
     {% for event in events %}
-      <div class="card overflow-hidden hover:shadow-md transition-shadow">
+      <!-- FIX: Changed this from a <div> to an <a> tag to enable clicking and routing to the event details page -->
+      <a href="{% url 'events:event_detail' event.id %}" class="card overflow-hidden hover:shadow-md transition-shadow block cursor-pointer">
         <div class="relative h-36 {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' as card_bg %} flex items-center justify-center">
           {% if event.image %}
             <img src="{{ event.image.url }}" alt="{{ event.title }}" class="absolute inset-0 w-full h-full object-cover">
@@ -129,14 +130,15 @@
             {{ event.venue.name }}
           </p>
           <div class="w-full h-1.5 bg-black/5 rounded-full overflow-hidden mb-3">
-            <div class="h-full bg-coral rounded-full" data-progress="{{ event.spots_left_percent }}"></div>
+            <!-- FIX: Changed data-progress to an inline style so the width dynamically fills based on Django data -->
+            <div class="h-full bg-coral rounded-full" style="width: {{ event.spots_left_percent }}%;"></div>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-xs text-ink/50">{{ event.spots_left }} spots left</span>
             <span class="font-bold">₹{{ event.price_per_slot|floatformat:0 }}</span>
           </div>
         </div>
-      </div>
+      </a>
     {% empty %}
       <div class="col-span-full text-center py-16 card">
         <p class="text-ink/60">No events match these filters right now.</p>

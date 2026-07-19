@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16 text-center">
+  <div class="text-5xl mb-4">✅</div>
+  <h1 class="text-xl font-bold">Booking Confirmed!</h1>
+  <p class="text-gray-600 mt-2">{{ booking.event.title }} — {{ booking.event.date }}</p>
+  <p class="text-2xl font-bold mt-4">₹{{ booking.total_amount }}</p>
+  <p class="text-xs text-gray-400 mt-1">Payment status: {{ booking.payment_status }}</p>
+</div>
+{% endblock %}

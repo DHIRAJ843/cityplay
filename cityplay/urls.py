@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # FIX: Added 'include' here
 from django.conf import settings
 from django.conf.urls.static import static
 from events import views as event_views
@@ -23,4 +23,8 @@ from events import views as event_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', event_views.homepage, name='home'),
+    
+    # FIX: Added the bookings routing. Yeh line Django ko bookings app se jodegi.
+    path('bookings/', include('bookings.urls')), 
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
