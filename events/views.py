@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.db.models import Count, Q
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Event, Activity
 from venues.models import Venue
 
@@ -49,3 +49,14 @@ def homepage(request):
         'when': when,
     }
     return render(request, 'events/homepage.html', context)
+
+# --- ADDED: The missing event_detail view ---
+def event_detail(request, pk):
+    # This fetches the exact event using its ID (pk) or shows a 404 error if not found
+    event = get_object_or_404(Event, pk=pk)
+    
+    # Passes the specific event data to the template
+    context = {
+        'event': event
+    }
+    return render(request, 'events/event_detail.html', context)

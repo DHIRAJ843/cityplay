@@ -24,6 +24,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', event_views.homepage, name='home'),
     
+    # FIX: Added the events routing. This registers the 'events' namespace!
+    path('events/', include('events.urls')),
+    
     # FIX: Added the bookings routing. Yeh line Django ko bookings app se jodegi.
     path('bookings/', include('bookings.urls')), 
     
