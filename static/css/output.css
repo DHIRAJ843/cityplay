@@ -7,11 +7,19 @@
     'Noto Color Emoji';
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
+    --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-teal-50: oklch(98.4% 0.014 180.72);
+    --color-teal-600: oklch(60% 0.118 184.704);
+    --color-teal-700: oklch(51.1% 0.096 186.391);
+    --color-teal-800: oklch(43.7% 0.078 188.216);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
+    --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
     --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-900: oklch(21% 0.034 264.665);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -253,6 +261,9 @@
   .bottom-0 {
     bottom: 0;
   }
+  .bottom-3 {
+    bottom: calc(var(--spacing) * 3);
+  }
   .left-0 {
     left: 0;
   }
@@ -352,6 +363,9 @@
   .h-1\.5 {
     height: calc(var(--spacing) * 1.5);
   }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
   .h-3 {
     height: calc(var(--spacing) * 3);
   }
@@ -393,6 +407,9 @@
   }
   .h-36 {
     height: calc(var(--spacing) * 36);
+  }
+  .h-64 {
+    height: calc(var(--spacing) * 64);
   }
   .h-full {
     height: 100%;
@@ -667,11 +684,26 @@
   .bg-gray-50 {
     background-color: var(--color-gray-50);
   }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
+  }
+  .bg-gray-300 {
+    background-color: var(--color-gray-300);
+  }
   .bg-ink {
     background-color: var(--color-ink);
   }
+  .bg-red-500 {
+    background-color: var(--color-red-500);
+  }
   .bg-teal {
     background-color: var(--color-teal);
+  }
+  .bg-teal-50 {
+    background-color: var(--color-teal-50);
+  }
+  .bg-teal-700 {
+    background-color: var(--color-teal-700);
   }
   .bg-teal-dark {
     background-color: var(--color-teal-dark);
@@ -832,6 +864,9 @@
   .py-6 {
     padding-block: calc(var(--spacing) * 6);
   }
+  .py-8 {
+    padding-block: calc(var(--spacing) * 8);
+  }
   .py-14 {
     padding-block: calc(var(--spacing) * 14);
   }
@@ -939,8 +974,14 @@
   .text-gray-400 {
     color: var(--color-gray-400);
   }
+  .text-gray-500 {
+    color: var(--color-gray-500);
+  }
   .text-gray-600 {
     color: var(--color-gray-600);
+  }
+  .text-gray-900 {
+    color: var(--color-gray-900);
   }
   .text-ink {
     color: var(--color-ink);
@@ -963,8 +1004,14 @@
       color: color-mix(in oklab, var(--color-ink) 70%, transparent);
     }
   }
+  .text-red-500 {
+    color: var(--color-red-500);
+  }
   .text-teal {
     color: var(--color-teal);
+  }
+  .text-teal-600 {
+    color: var(--color-teal-600);
   }
   .text-teal\/60 {
     color: color-mix(in srgb, #1f6f5c 60%, transparent);
@@ -1084,6 +1131,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-100);
+      }
+    }
+  }
+  .hover\:bg-teal-800 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-teal-800);
       }
     }
   }
