@@ -83,16 +83,19 @@
             <!-- Add Ons -->
             <div>
                 <p class="text-xs font-bold text-ink/50 uppercase tracking-wider mb-3">Add-ons (Optional)</p>
-                <label class="flex items-center justify-between p-3 border-2 border-teal bg-teal/5 rounded-xl cursor-pointer">
-                    <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded bg-teal flex items-center justify-center">
-                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                <div class="space-y-2">
+                    {% for addon in addons %}
+                    <label class="flex items-center justify-between p-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-teal hover:bg-teal/5 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" name="addons" value="{{ addon.id }}" class="w-4 h-4 accent-teal">
+                            <span class="text-sm font-semibold text-ink">{{ addon.name }}</span>
                         </div>
-                        <span class="text-sm font-semibold text-ink">Sports Bib</span>
-                        <input type="checkbox" name="addon_bib" class="hidden" checked>
-                    </div>
-                    <span class="text-sm font-bold text-teal">+₹20</span>
-                </label>
+                        <span class="text-sm font-bold text-teal">+₹{{ addon.price|floatformat:0 }}</span>
+                    </label>
+                    {% empty %}
+                    <p class="text-xs text-ink/50 py-2">No add-ons available for this event.</p>
+                    {% endfor %}
+                </div>
             </div>
 
             <!-- Price Summary -->
@@ -104,17 +107,13 @@
                         <span class="font-medium">₹{{ event.price_per_slot|floatformat:0 }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-ink/70">Sports Bib add-on</span>
-                        <span class="font-medium">₹20</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
                         <span class="text-ink/70">Platform fee</span>
                         <span class="font-medium">₹{{ platform_fee|floatformat:0 }}</span>
                     </div>
                 </div>
                 <div class="flex justify-between text-lg border-t border-gray-100 pt-3">
                     <span class="font-extrabold text-ink">Total</span>
-                    <span class="font-extrabold text-coral">₹{{ initial_total|add:20|floatformat:0 }}</span>
+                    <span class="font-extrabold text-coral">₹{{ initial_total|floatformat:0 }}</span>
                 </div>
             </div>
 
@@ -122,7 +121,7 @@
             <div class="fixed sm:relative bottom-0 left-0 right-0 p-4 sm:p-0 bg-white sm:bg-transparent border-t sm:border-0 border-gray-200 z-50">
                 <button type="submit" class="w-full bg-teal hover:bg-teal-dark text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg sm:shadow-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Proceed to Pay · ₹{{ initial_total|add:20|floatformat:0 }}
+                    Proceed to Pay · ₹{{ initial_total|floatformat:0 }}
                 </button>
                 <p class="text-center text-[10px] text-ink/50 mt-2 font-medium">Secured by Razorpay</p>
             </div>

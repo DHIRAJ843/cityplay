@@ -48,15 +48,5 @@
   {% else %}
     <div class="mt-4 bg-gray-300 text-gray-600 text-center font-semibold py-3 rounded-xl">Sold Out</div>
   {% endif %}
-
-  {% if event.spots_left > 0 %}
-    <!-- URL name 'solo_booking' set kiya hai jo urls.py se match karta hai -->
-    <a href="{% url 'bookings:solo_booking' event.id %}"
-       class="block mt-4 bg-teal-700 text-white text-center font-semibold py-3 rounded-xl hover:bg-teal-800">
-      Book Solo · ₹{{ event.price_per_slot }}
-    </a>
-  {% else %}
-    <div class="mt-4 bg-gray-300 text-gray-600 text-center font-semibold py-3 rounded-xl">Sold Out</div>
-  {% endif %}
 </div>
 {% endblock %}

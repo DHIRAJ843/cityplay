@@ -58,7 +58,10 @@ def solo_booking_confirm(request, event_id):
         return redirect('bookings:booking_success', booking_id=booking.id)
 
     return render(request, 'bookings/solo_confirm.html', {
-        'event': event, 'addons': addons, 'platform_fee': PLATFORM_FEE,
+        'event': event, 
+        'addons': addons, 
+        'platform_fee': PLATFORM_FEE,
+        'initial_total': event.price_per_slot + PLATFORM_FEE,
     })
 
 

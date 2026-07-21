@@ -19,8 +19,6 @@ class AddOn(models.Model):
 
 
 class Booking(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='bookings')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     BOOKING_TYPE_CHOICES = [
         ('solo', 'Solo'),
         ('group', 'Group'),

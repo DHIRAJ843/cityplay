@@ -1068,6 +1068,9 @@
   .uppercase {
     text-transform: uppercase;
   }
+  .accent-teal {
+    accent-color: var(--color-teal);
+  }
   .opacity-15 {
     opacity: 15%;
   }
@@ -1131,6 +1134,13 @@
       }
     }
   }
+  .hover\:border-teal {
+    &:hover {
+      @media (hover: hover) {
+        border-color: var(--color-teal);
+      }
+    }
+  }
   .hover\:bg-gray-50 {
     &:hover {
       @media (hover: hover) {
@@ -1156,6 +1166,16 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-teal-dark);
+      }
+    }
+  }
+  .hover\:bg-teal\/5 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, #1f6f5c 5%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-teal) 5%, transparent);
+        }
       }
     }
   }
