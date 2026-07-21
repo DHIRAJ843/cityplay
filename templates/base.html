@@ -4,22 +4,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}FieldDay Gandhinagar — Play. Book. Meet your people.{% endblock %}</title>
-<meta name="description" content="{% block meta_description %}Turf games, pickleball meetups & group funblasts — all in Gandhinagar.{% endblock %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<title>{% block title %}FieldDay{% endblock %}</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+<style>
+/* ===== LOADER FULL SCREEN ===== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+/* hidden state */
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ===== PREMIUM CONTENT ===== */
+.loader-box {
+  text-align: center;
+}
+
+/* Logo */
+.loader-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a3631;
+  margin-bottom: 25px;
+  letter-spacing: 2px;
+}
+
+/* Animated dots (Instagram style) */
+.loader-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loader-dots span {
+  width: 10px;
+  height: 10px;
+  background: #f46d41;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out;
+}
+
+.loader-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loader-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* bounce animation */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== PAGE FADE ===== */
+#main-content {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#main-content.show {
+  opacity: 1;
+}
+</style>
+
 {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-cream text-ink antialiased">
-{% include 'partials/navbar.html' %}
-{% block content %}{% endblock %}
-{% include 'partials/footer.html' %}
+
+<body class="bg-cream text-ink">
+
+<!-- ===== LOADER ===== -->
+<div id="loader">
+  <div class="loader-box">
+    <div class="loader-logo">City Play</div>
+
+    <div class="loader-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN SITE ===== -->
+<div id="main-content">
+  {% include 'partials/navbar.html' %}
+  {% block content %}{% endblock %}
+  {% include 'partials/footer.html' %}
+</div>
+
+<!-- ===== SCRIPT ===== -->
 <script>
-  document.querySelectorAll('[data-progress]').forEach(function (bar) {
-    bar.style.width = (bar.dataset.progress || 0) + '%';
+const loader = document.getElementById("loader");
+const content = document.getElementById("main-content");
+
+// SAFETY: always hide loader after max time
+setTimeout(() => {
+  loader.classList.add("hide");
+  content.classList.add("show");
+}, 2000);
+
+// When DOM ready
+document.addEventListener("DOMContentLoaded", () => {
+  content.classList.add("show");
+});
+
+// When fully loaded
+window.addEventListener("load", () => {
+  loader.classList.add("hide");
+  content.classList.add("show");
+});
+
+// SHOW loader on navigation
+document.addEventListener("click", function(e) {
+  let link = e.target.closest("a");
+
+  if (link && link.href && !link.target && !link.href.includes("#")) {
+    loader.classList.remove("hide");
+  }
+});
+
+// Button clicks
+document.querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    loader.classList.remove("hide");
   });
+});
+
+// Form submit
+document.addEventListener("submit", () => {
+  loader.classList.remove("hide");
+});
 </script>
+
 </body>
 </html>
