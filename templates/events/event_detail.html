@@ -1,150 +1,171 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ event.title|title }} | City Play{% endblock %}
+{% block title %}{{ event.title|title }} // DROP{% endblock %}
 
 {% block content %}
-<!-- ==========================================
-     1. HIGH-FIDELITY HERO BANNER
-=========================================== -->
-<!-- We give the image a hard edge and pull the main content over it, abandoning the messy gradient fade -->
-<div class="w-full h-[40vh] min-h-[300px] relative bg-ink">
-    {% if event.image %}
-        <img src="{{ event.image.url }}" alt="{{ event.title }}" class="w-full h-full object-cover opacity-80">
-    {% else %}
-        <!-- Crisp pattern fallback if no image exists -->
-        <div class="absolute inset-0 opacity-[0.05]" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
-    {% endif %}
-    <!-- Deep bottom shadow to make the overlapping white container pop -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-</div>
+<div class="relative w-full overflow-x-clip bg-ink text-cream antialiased">
 
-<!-- ==========================================
-     2. UNIFIED APP LAYOUT
-=========================================== -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-10 pb-24">
-    
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        <!-- LEFT COLUMN: The Master Data Container (8 Cols) -->
-        <div class="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-black/5 overflow-hidden">
-            
-            <!-- Header Block -->
-            <div class="p-8 md:p-10 border-b border-gray-100">
-                <div class="flex flex-wrap items-center gap-3 mb-5">
-                    <span class="bg-teal/10 text-teal text-[11px] font-extrabold px-3 py-1.5 rounded-md uppercase tracking-widest">
-                        {{ event.activity.name }}
-                    </span>
-                    <span class="bg-coral/10 text-coral text-[11px] font-extrabold px-3 py-1.5 rounded-md uppercase tracking-widest flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-coral animate-pulse"></span>
-                        {{ event.urgency_label|default:"Filling Fast" }}
-                    </span>
-                </div>
-                
-                <h1 class="text-3xl md:text-5xl font-extrabold text-ink tracking-tight capitalize leading-tight mb-8">
-                    {{ event.title }}
-                </h1>
-                
-                <!-- Consolidated Quick Stats -->
-                <div class="flex flex-wrap gap-8 text-sm md:text-base text-ink/80">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-teal shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        </div>
-                        <span class="font-semibold">{{ event.date|date:"l, F j" }}</span>
-                    </div>
-                    
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-teal shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        </div>
-                        <span class="font-semibold">{{ event.start_time|time:"g:i A" }} - {{ event.end_time|time:"g:i A" }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Venue Details Block -->
-            <div class="p-8 md:p-10 border-b border-gray-100 bg-gray-50/50">
-                <h2 class="text-xs font-bold text-ink/40 uppercase tracking-widest mb-4">Location</h2>
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-ink shrink-0 mt-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-ink text-lg capitalize">{{ event.venue }}</h3>
-                            <p class="text-ink/60 text-sm mt-1 max-w-sm leading-relaxed">Check map for exact turf location and entry gate requirements.</p>
-                        </div>
-                    </div>
-                    <a href="{{ event.venue.google_maps_url|default:'#' }}" target="_blank" class="text-teal font-semibold text-sm bg-white border border-gray-200 px-5 py-2.5 rounded-lg hover:border-teal transition-colors flex items-center justify-center gap-2 shrink-0">
-                        View on Map
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- About Block -->
-            <div class="p-8 md:p-10">
-                <h2 class="text-xs font-bold text-ink/40 uppercase tracking-widest mb-4">About This Game</h2>
-                <div class="prose prose-sm md:prose-base text-ink/70 leading-relaxed max-w-none whitespace-pre-line">
-                    {{ event.description|default:"Bring your own hydration. Teams will be divided on the spot to ensure balanced gameplay. Studs are usually allowed on artificial turf, but check venue rules upon arrival." }}
-                </div>
-            </div>
-            
-        </div>
-
-        <!-- RIGHT COLUMN: Production Checkout Console (4 Cols) -->
-        <div class="lg:col-span-4">
-            <!-- Sticky positioning ensures it tracks with the user's viewport -->
-            <div class="bg-white rounded-3xl p-8 sticky top-24 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5">
-                
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-ink/50 text-[11px] font-bold uppercase tracking-widest">Price per slot</p>
-                    <span class="flex items-center gap-1 text-[10px] text-teal font-bold bg-teal/5 px-2 py-1 rounded">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Confirmed
-                    </span>
-                </div>
-                
-                <div class="flex items-baseline gap-1 mb-8 border-b border-gray-100 pb-8">
-                    <span class="text-5xl font-black text-ink tracking-tight">₹{{ event.price_per_slot|floatformat:0 }}</span>
-                </div>
-
-                <!-- High-Fidelity Progress UI -->
-                <div class="mb-8">
-                    <div class="flex justify-between text-sm mb-3">
-                        <span class="font-extrabold text-ink">{{ event.spots_left }} spots left</span>
-                        <span class="text-ink/40 font-medium text-xs">{{ event.total_spots }} total capacity</span>
-                    </div>
-                    <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden p-0.5">
-                        <!-- Dynamic pill styling inside the track -->
-                        <div class="h-full rounded-full transition-all duration-1000 ease-out {% if event.spots_left_percent < 30 %}bg-coral{% else %}bg-teal{% endif %}" 
-                             style="width: {{ event.spots_left_percent|default:50 }}%;">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Call to Action -->
-                <form action="{% url 'bookings:solo_booking' event.id %}" method="GET">
-                    {% if event.spots_left > 0 %}
-                        <button type="submit" class="w-full bg-ink hover:bg-black text-white font-bold text-lg py-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-3 group">
-                            Book Solo Spot
-                            <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-colors group-hover:translate-x-1 duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </button>
-                    {% else %}
-                        <button type="button" disabled class="w-full bg-gray-100 text-gray-400 font-bold text-lg py-4 rounded-xl cursor-not-allowed">
-                            Sold Out
-                        </button>
-                    {% endif %}
-                </form>
-
-                <!-- Microcopy -->
-                <div class="mt-6 pt-6 border-t border-gray-100 flex items-center justify-center gap-2 text-[11px] text-ink/40 font-semibold uppercase tracking-wide">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Secure Checkout
-                </div>
-            </div>
-        </div>
-
+  {# ---------- TOP TICKER BAR ---------- #}
+  <div class="sticky top-16 z-40 flex items-center justify-between border-b border-white/10 bg-ink/90 px-4 py-3 backdrop-blur md:px-8">
+    <a href="{% url 'home' %}" class="text-xs font-medium uppercase tracking-widest text-cream/70 hover:text-coral transition-colors">
+      &larr; Back to Events
+    </a>
+    <div class="hidden text-xs font-medium uppercase tracking-widest text-cream/50 md:block">
+      {{ event.date|date:"Y.m.d" }}
     </div>
+    <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-coral">
+      <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-coral"></span>
+      {{ event.spots_left }} Spots Left
+    </div>
+  </div>
+
+  {# ---------- HERO ---------- #}
+  <section class="relative w-full border-b border-white/10">
+    <div class="absolute inset-0 -z-10">
+      {% if event.image %}
+        <img src="{{ event.image.url }}" alt="{{ event.title }}"
+             class="h-full w-full object-cover opacity-40">
+      {% endif %}
+      <div class="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/40 to-ink"></div>
+      <div class="absolute inset-0 opacity-15"
+           style="background-image: radial-gradient(circle at 1px 1px, #f7f6f1 1px, transparent 0); background-size: 22px 22px;"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 pt-14 md:pb-24 md:pt-20">
+
+      {# meta strip #}
+      <div class="mb-8 flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-widest">
+        <span class="bg-coral px-3 py-1 text-ink font-bold">
+          &#9679; {{ event.urgency_label }}
+        </span>
+        <span class="border border-white/30 px-3 py-1 text-cream/70">{{ event.activity.name }}</span>
+        <span class="border border-white/30 px-3 py-1 text-cream/70">{{ event.date|date:"D, M j" }}</span>
+        <span class="border border-white/30 px-3 py-1 text-cream/70">{{ event.start_time|time:"g:i A" }}</span>
+      </div>
+
+      {# monster title #}
+      <h1 class="font-extrabold uppercase leading-none tracking-tighter text-cream"
+          style="font-size: clamp(3rem, 13vw, 12rem); line-height: 0.85;">
+        <span class="block">{{ event.title }}</span>
+        <span class="block text-coral">// {{ event.venue.name }}</span>
+      </h1>
+
+      {# hero footer row #}
+      <div class="mt-10 grid grid-cols-2 gap-6 border-t border-white/10 pt-8 md:grid-cols-4">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Date</p>
+          <p class="mt-2 text-lg font-bold text-cream">{{ event.date|date:"l, F j" }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Kick-Off</p>
+          <p class="mt-2 text-lg font-bold text-cream">{{ event.start_time|time:"g:i A" }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Venue</p>
+          <p class="mt-2 text-lg font-bold text-cream capitalize">{{ event.venue.name }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Price / Slot</p>
+          <p class="mt-2 text-lg font-bold text-coral">&#8377;{{ event.price_per_slot|floatformat:0 }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ---------- BODY: BRIEF + CHECKOUT ---------- #}
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-12">
+
+      {# LEFT: brief #}
+      <div class="lg:col-span-7">
+        <div class="mb-6 flex items-center gap-3 text-xs font-medium uppercase tracking-widest text-cream/40">
+          <span class="h-px w-8 bg-coral inline-block"></span> The Brief
+        </div>
+        <p class="text-xl font-medium leading-snug text-cream md:text-2xl">
+          {{ event.description|default:"Bring your own hydration. Teams divided on the spot for balanced play." }}
+        </p>
+
+        <div class="mt-12 grid grid-cols-2 gap-px bg-white/10 md:grid-cols-4">
+          <div class="bg-ink p-5">
+            <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Format</p>
+            <p class="mt-2 text-base font-bold text-cream">{{ event.activity.name }}</p>
+          </div>
+          <div class="bg-ink p-5">
+            <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Capacity</p>
+            <p class="mt-2 text-base font-bold text-cream">{{ event.total_slots }}</p>
+          </div>
+          <div class="bg-ink p-5">
+            <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Remaining</p>
+            <p class="mt-2 text-base font-bold text-coral">{{ event.spots_left }}</p>
+          </div>
+          <div class="bg-ink p-5">
+            <p class="text-xs font-medium uppercase tracking-widest text-cream/40">Status</p>
+            <p class="mt-2 text-base font-bold text-teal">{{ event.get_status_display }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# RIGHT: checkout console #}
+      <aside class="lg:col-span-5">
+        <div class="sticky top-28 border border-white/15 bg-cream text-ink">
+          <div class="flex items-center justify-between border-b border-ink/10 px-6 py-4 text-xs font-medium uppercase tracking-widest text-ink/60">
+            <span>Console // Booking</span>
+            <span class="flex items-center gap-1.5 text-teal">
+              <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-teal inline-block"></span> Secure
+            </span>
+          </div>
+
+          <div class="px-6 py-8">
+            <p class="text-xs font-medium uppercase tracking-widest text-ink/50">Price per slot</p>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-5xl font-extrabold tracking-tighter">&#8377;{{ event.price_per_slot|floatformat:0 }}</span>
+              <span class="text-xs font-medium uppercase tracking-widest text-ink/50">INR</span>
+            </div>
+
+            <div class="mt-8">
+              <div class="flex justify-between text-xs font-medium uppercase tracking-widest text-ink/60">
+                <span>{{ event.spots_left }} / {{ event.total_slots }} left</span>
+                <span>{{ event.spots_left_percent }}%</span>
+              </div>
+              <div class="mt-2 h-2 w-full bg-ink/10">
+                <div class="h-full transition-all duration-700 {% if event.spots_left_percent < 30 %}bg-coral{% else %}bg-teal{% endif %}"
+                     style="width: {{ event.spots_left_percent }}%;"></div>
+              </div>
+            </div>
+
+            <div class="mt-8">
+              {% if event.spots_left > 0 %}
+                <a href="{% url 'bookings:solo_booking' event.id %}"
+                   class="group flex w-full items-center justify-between bg-ink px-6 py-5 text-left transition-colors hover:bg-coral">
+                  <span class="text-lg font-extrabold uppercase tracking-tight text-cream">Secure Slot</span>
+                  <span class="flex h-10 w-10 items-center justify-center border border-cream/30 text-cream transition-transform group-hover:translate-x-1 text-lg">
+                    &rarr;
+                  </span>
+                </a>
+              {% else %}
+                <div class="flex w-full items-center justify-between bg-ink/20 px-6 py-5">
+                  <span class="text-lg font-extrabold uppercase tracking-tight text-ink/40">Sold Out</span>
+                </div>
+              {% endif %}
+            </div>
+
+            <p class="mt-6 text-xs font-medium uppercase tracking-widest text-ink/40">
+              &#9679; Non-refundable &nbsp;// &nbsp;Show ID at gate
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {# ---------- FOOTER MARQUEE ---------- #}
+  <div class="overflow-hidden border-t border-white/10 py-6">
+    <p class="whitespace-nowrap font-extrabold uppercase tracking-tighter text-cream/10 select-none"
+       style="font-size: clamp(3rem, 10vw, 8rem); line-height: 1;">
+      {{ event.title }} &nbsp;/&nbsp; {{ event.venue.name }} &nbsp;/&nbsp; {{ event.date|date:"Y.m.d" }} &nbsp;/&nbsp; Book Now &nbsp;/&nbsp;
+    </p>
+  </div>
+
 </div>
 {% endblock %}
