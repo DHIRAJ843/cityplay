@@ -1,24 +1,54 @@
-<header class="sticky top-0 z-40 bg-white border-b border-black/5">
+{% load static %}
+
+<header class="sticky top-0 z-40 bg-white border-b border-black/5"> 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    
+    <!-- ✅ LOGO + BRAND (MERGED, NOTHING REMOVED) -->
     <a href="{% url 'home' %}" class="flex items-center gap-2 shrink-0">
-      <span class="w-8 h-8 rounded-lg bg-teal flex items-center justify-center">
-        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11 2 3 12h6l-1 6 9-11h-6l1-5z"/></svg>
-      </span>
+
+      <!-- ✅ NEW LOGO IMAGE -->
+      <img src="{% static 'images/logo.png' %}" 
+           alt="CityPlay Logo"
+           class="w-12 h-15 object-contain rounded-lg transition-transform duration-300 hover:scale-110">
+
+      <!-- EXISTING TEXT (UNCHANGED) -->
       <span class="font-extrabold text-lg tracking-tight">cityplay</span>
-      <span class="hidden sm:inline-block text-xs font-medium bg-teal-light text-teal px-2 py-0.5 rounded-full">Gandhinagar</span>
+
+      <!-- EXISTING TAG -->
+      <span class="hidden sm:inline-block text-xs font-medium bg-teal-light text-teal px-2 py-0.5 rounded-full">
+        Gandhinagar
+      </span>
     </a>
+
+
+    <!-- NAV LINKS (UNCHANGED) -->
     <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-ink/70">
       <a href="{% url 'home' %}" class="text-ink">Home</a>
       <a href="{% url 'home' %}#happening-soon" class="hover:text-ink transition-colors">Browse Events</a>
       <a href="#" class="hover:text-ink transition-colors">Host with Us</a>
-      <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-teal hover:text-teal-dark transition-colors">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".18"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
+
+      <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="flex items-center gap-1.5 text-teal hover:text-teal-dark transition-colors">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".18"/>
+          <path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/>
+        </svg>
         WhatsApp Channel
       </a>
     </nav>
+
+
+    <!-- RIGHT SIDE BUTTONS (UNCHANGED) -->
     <div class="flex items-center gap-3 shrink-0">
-      <a href="#" class="text-sm font-medium text-ink/70 hover:text-ink transition-colors">Log In</a>
-      <a href="#" class="btn-coral text-sm !px-4 !py-2">Sign Up Free</a>
+      <a href="#" class="text-sm font-medium text-ink/70 hover:text-ink transition-colors">
+        Log In
+      </a>
+      <a href="#" class="btn-coral text-sm !px-4 !py-2">
+        Sign Up Free
+      </a>
     </div>
+
   </div>
 </header>
