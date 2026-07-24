@@ -6,9 +6,22 @@
 <!-- ==========================================
      1. HERO SECTION (Fixed Background)
 =========================================== -->
-<section class="relative overflow-hidden bg-ink">
+<section class="relative overflow-hidden">
+
+  <!-- ✅ HERO IMAGE BACKGROUND -->
+  <div class="absolute inset-0">
+    <img src="{% static 'images/hero1.png' %}" 
+         alt="Hero Image"
+         class="w-full h-full object-cover">
+  </div>
+
+  <!-- ✅ DARK OVERLAY (for readability) -->
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <!-- ✅ YOUR ORIGINAL CONTENT (UNCHANGED) -->
+      
   <!-- Fallback gradient so it never goes pitch black -->
-  <div class="absolute inset-0 bg-gradient-to-br from-ink via-[#1a302a] to-teal-dark opacity-90"></div>
+ 
   
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
     <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full mb-6 border border-white/10">
