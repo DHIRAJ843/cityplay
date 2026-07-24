@@ -4,22 +4,260 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}FieldDay Gandhinagar — Play. Book. Meet your people.{% endblock %}</title>
-<meta name="description" content="{% block meta_description %}Turf games, pickleball meetups & group funblasts — all in Gandhinagar.{% endblock %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<title>{% block title %}FieldDay{% endblock %}</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+<style>
+/* ===== LOADER FULL SCREEN ===== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* hidden state */
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ===== PREMIUM CONTENT ===== */
+.loader-box {
+  text-align: center;
+}
+
+/* Logo */
+.loader-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a3631;
+  margin-bottom: 25px;
+  letter-spacing: 2px;
+  animation: logo-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes logo-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ===== INSTAGRAM-STYLE PREMIUM LOADER ===== */
+.ig-loader-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Outer rotating gradient ring */
+.ig-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    #f46d41,
+    #f09433,
+    #dc2743,
+    #1a3631,
+    #f46d41
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  animation: ig-spin 1.1s linear infinite;
+}
+
+/* Inner pulsing + opacity core, using the brand orange */
+.ig-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: linear-gradient(45deg, #f46d41, #f09433, #dc2743);
+  animation: ig-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ig-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ig-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-ring, .ig-core, .loader-logo {
+    animation: none;
+  }
+}
+
+/* ===== PAGE FADE ===== */
+#main-content {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#main-content.show {
+  opacity: 1;
+}
+</style>
+
 {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-cream text-ink antialiased">
-{% include 'partials/navbar.html' %}
-{% block content %}{% endblock %}
-{% include 'partials/footer.html' %}
+
+<body class="bg-cream text-ink">
+
+<!-- ===== LOADER ===== -->
+<div id="loader">
+  <div class="loader-box">
+    <div class="loader-logo">City Play</div>
+
+    <div class="ig-loader-wrap">
+      <div class="ig-ring"></div>
+      <div class="ig-core"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN SITE ===== -->
+<div id="main-content">
+  {% include 'partials/navbar.html' %}
+  {% block content %}{% endblock %}
+  {% include 'partials/footer.html' %}
+</div>
+
+<!-- ===== SCRIPT ===== -->
 <script>
-  document.querySelectorAll('[data-progress]').forEach(function (bar) {
-    bar.style.width = (bar.dataset.progress || 0) + '%';
-  });
+(function () {
+    "use strict";
+
+    var loader = document.getElementById("loader");
+    var content = document.getElementById("main-content");
+    if (!loader || !content) return;
+
+    var FALLBACK_MS = 6000;   // safety net so loader can never stay stuck
+    var fallbackTimer = null;
+    var isShown = true;        // loader is visible by default in the markup
+
+    function clearFallback() {
+        if (fallbackTimer !== null) {
+            clearTimeout(fallbackTimer);
+            fallbackTimer = null;
+        }
+    }
+
+    function hideLoader() {
+        clearFallback();
+        isShown = false;
+        loader.classList.add("hide");
+        content.classList.add("show");
+    }
+
+    function showLoader() {
+        if (isShown) return;
+        isShown = true;
+        loader.classList.remove("hide");
+        // Fallback: if navigation stalls/fails, force-hide so the UI
+        // never gets permanently stuck behind the loader.
+        clearFallback();
+        fallbackTimer = setTimeout(hideLoader, FALLBACK_MS);
+    }
+
+    /* ---------------------------------------------------------
+       HIDE the loader once the page has actually finished loading.
+       Only ONE listener drives the hide-on-load path (window 'load').
+       DOMContentLoaded is intentionally NOT used to hide/show the
+       loader — using both was causing the double-trigger conflict.
+       --------------------------------------------------------- */
+    window.addEventListener("load", hideLoader, { once: true });
+
+    /* ---------------------------------------------------------
+       THE BFCACHE / BACK-BUTTON FIX
+       'pageshow' fires every time the page becomes visible,
+       including when it's restored from the back/forward cache —
+       a case where 'load' does NOT fire again, which is exactly
+       why the loader used to get stuck after pressing Back.
+       We unconditionally hide the loader here.
+       --------------------------------------------------------- */
+    window.addEventListener("pageshow", function () {
+        hideLoader();
+    });
+
+    /* Reset timers when the page is being cached/hidden, so a future
+       pageshow starts clean. */
+    window.addEventListener("pagehide", function () {
+        clearFallback();
+    });
+
+    /* ---------------------------------------------------------
+       SHOW the loader instantly on outgoing navigation.
+       Event delegation on document — one listener each for clicks
+       and submits — instead of binding to every button individually
+       (the old querySelectorAll("button") approach missed buttons
+       added later and left listeners with no cleanup path).
+       --------------------------------------------------------- */
+
+    // Links
+    document.addEventListener("click", function (e) {
+        var link = e.target.closest("a[href]");
+        if (!link) return;
+
+        var href = link.getAttribute("href");
+
+        var isHash = href.charAt(0) === "#";
+        var isNewTab = link.target === "_blank";
+        var isDownload = link.hasAttribute("download");
+        var isSpecialProtocol = /^(mailto:|tel:|javascript:)/i.test(href);
+        var isModifiedClick = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0;
+
+        if (isHash || isNewTab || isDownload || isSpecialProtocol || isModifiedClick) {
+            return;
+        }
+
+        showLoader();
+    });
+
+    // Buttons (delegated — covers buttons added dynamically too)
+    document.addEventListener("click", function (e) {
+        var btn = e.target.closest("button");
+        if (btn) showLoader();
+    });
+
+    // Forms
+    document.addEventListener("submit", function () {
+        showLoader();
+    });
+
+    // Manual API for any page/script that needs to trigger the loader
+    // itself (e.g. before a JS-driven redirect or AJAX call).
+    window.pageLoader = {
+        show: showLoader,
+        hide: hideLoader
+    };
+})();
 </script>
+
 </body>
 </html>
