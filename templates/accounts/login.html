@@ -1,0 +1,248 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | CityPlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    overflow:hidden;
+    background:
+      radial-gradient(1000px 700px at 12% 15%, rgba(20,90,80,0.35), transparent 60%),
+      radial-gradient(900px 650px at 90% 88%, rgba(180,80,25,0.32), transparent 60%),
+      #14161a;
+  }
+  .dots{
+    position:absolute; width:200px; height:200px;
+    background-image: radial-gradient(rgba(255,255,255,0.12) 1.5px, transparent 1.5px);
+    background-size:18px 18px;
+  }
+  .dots.tr{ top:20px; right:20px; }
+  .dots.bl{ bottom:20px; left:20px; opacity:0.5; }
+
+  .arc{ position:absolute; opacity:0.4; }
+  .arc path{ stroke-dasharray:6 8; animation:dash 3.5s linear infinite; }
+  @keyframes dash{ to{ stroke-dashoffset:-140; } }
+  .arc.a1{ top:70px; left:120px; width:180px; }
+  .arc.a2{ top:90px; right:100px; width:150px; }
+
+  .icon{
+    position:absolute;
+    width:110px;
+    opacity:0.22;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+  }
+  .i1{ top:8%;  left:6%;  width:120px; animation-delay:0s; }
+  .i2{ top:14%; right:7%; width:90px;  animation-delay:.5s; }
+  .i3{ bottom:10%; right:5%; width:80px; animation-delay:1s; }
+  .i4{ bottom:6%;  left:5%;  width:100px; animation-delay:.3s; }
+  .i5{ top:42%; right:2%; width:60px; animation-delay:.8s; }
+  @media (max-width: 900px){ .icon{ display:none; } }
+
+  .card{
+    position:relative;
+    width:100%;
+    max-width:400px;
+    background:#faf8f5;
+    border-radius:24px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+    padding:40px 36px;
+    animation:cardIn .5s cubic-bezier(.16,1,.3,1) both;
+    z-index:2;
+  }
+  @keyframes cardIn{ from{ opacity:0; transform:translateY(16px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
+
+  .brand{ text-align:center; margin-bottom:22px; }
+  .brand img{ height:52px; width:auto; display:block; margin:0 auto 8px; animation:pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:.75;} }
+  .brand p{ margin:0; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#9a9a9a; }
+
+  h1{ font-size:20px; font-weight:700; color:#161616; text-align:center; margin:0 0 4px; }
+  .sub{ font-size:13px; color:#8a8a8a; text-align:center; margin:0 0 26px; }
+
+  .msg{ font-size:13px; border-radius:10px; padding:10px 14px; margin-bottom:16px; }
+  .msg.error{ background:#fdecea; color:#c0392b; }
+  .msg.ok{ background:#e3f6f1; color:#0f6e5a; }
+
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:13px; font-weight:600; color:#3a3a3a; margin-bottom:6px; }
+  .input-wrap{ position:relative; }
+  .input-wrap svg{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; color:#a3a3a3; pointer-events:none;
+  }
+  .input-wrap input{
+    width:100%;
+    padding:12px 14px 12px 42px;
+    border:1.5px solid #e4e2dc;
+    border-radius:10px;
+    font-size:14px;
+    color:#1a1a1a;
+    outline:none;
+    background:#fff;
+  }
+  .input-wrap input:focus{ border-color:#0fb8a1; box-shadow:0 0 0 3px rgba(15,184,161,0.15); }
+  .input-wrap .toggle-eye{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    background:none; border:none; padding:4px; cursor:pointer; color:#a3a3a3;
+  }
+  .err{ font-size:12px; color:#c0392b; margin:4px 0 0; }
+
+  .forgot{ text-align:right; margin:-8px 0 18px; }
+  .forgot a{ font-size:13px; color:#0f9d8c; text-decoration:none; font-weight:500; }
+
+  .submit{
+    width:100%;
+    background:#ff6a52;
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 10px 24px -6px rgba(255,90,60,0.45);
+    transition:transform .15s ease, box-shadow .2s ease;
+  }
+  .submit:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -6px rgba(255,90,60,0.55); }
+  .submit:active{ transform:translateY(0); }
+
+  .divider{ display:flex; align-items:center; gap:10px; margin:24px 0; }
+  .divider .line{ flex:1; height:1px; background:#e6e4de; }
+  .divider span{ font-size:12px; color:#a3a3a3; }
+
+  .socials{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .socials button{
+    border:1.5px solid #e6e4de; background:#fff; border-radius:10px;
+    padding:11px; font-size:14px; font-weight:600; color:#3a3a3a; cursor:pointer;
+  }
+  .socials button:hover{ background:#f7f6f3; }
+
+  .foot{ text-align:center; font-size:13px; color:#8a8a8a; margin-top:22px; }
+  .foot a{ color:#0f9d8c; font-weight:700; text-decoration:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .brand img, .card, .arc path, .icon{ animation:none !important; }
+    .submit{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="dots tr"></div>
+  <div class="dots bl"></div>
+  <svg class="arc a1" viewBox="0 0 180 60" fill="none" stroke="#7fd8c9"><path d="M4 50 Q90 5 176 25" stroke-width="2"/></svg>
+  <svg class="arc a2" viewBox="0 0 150 60" fill="none" stroke="#ff9a72"><path d="M4 10 Q75 55 146 35" stroke-width="2"/></svg>
+
+  <svg class="icon i1" viewBox="0 0 100 100" fill="none" stroke="#7fd8c9" stroke-width="1.6">
+    <circle cx="50" cy="50" r="38"/>
+    <polygon points="50,28 68,41 61,62 39,62 32,41"/>
+    <line x1="50" y1="28" x2="50" y2="12"/>
+    <line x1="68" y1="41" x2="82" y2="32"/>
+    <line x1="61" y1="62" x2="70" y2="80"/>
+    <line x1="39" y1="62" x2="30" y2="80"/>
+    <line x1="32" y1="41" x2="18" y2="32"/>
+  </svg>
+
+  <svg class="icon i2" viewBox="0 0 100 140" fill="none" stroke="#ff9a72" stroke-width="1.6" stroke-linecap="round">
+    <ellipse cx="50" cy="42" rx="30" ry="36"/>
+    <line x1="50" y1="8" x2="50" y2="76"/>
+    <line x1="24" y1="20" x2="24" y2="64"/>
+    <line x1="76" y1="20" x2="76" y2="64"/>
+    <line x1="21" y1="30" x2="79" y2="30"/>
+    <line x1="21" y1="42" x2="79" y2="42"/>
+    <line x1="21" y1="54" x2="79" y2="54"/>
+    <path d="M40 76 L45 100 M60 76 L55 100"/>
+    <rect x="44" y="100" width="12" height="34" rx="5"/>
+  </svg>
+
+  <svg class="icon i3" viewBox="0 0 100 140" fill="none" stroke="#7fd8c9" stroke-width="1.6" stroke-linecap="round">
+    <rect x="42" y="10" width="16" height="70" rx="6"/>
+    <rect x="46" y="80" width="8" height="30" rx="4"/>
+    <circle cx="70" cy="115" r="12"/>
+  </svg>
+
+  <svg class="icon i4" viewBox="0 0 100 140" fill="none" stroke="#ff9a72" stroke-width="1.6" stroke-linecap="round">
+    <path d="M50 138 C50 100 46 70 52 45"/>
+    <path d="M52 45 C40 38 25 40 14 30"/>
+    <path d="M52 45 C42 30 40 15 34 4"/>
+    <path d="M52 45 C52 28 58 14 58 2"/>
+    <path d="M52 45 C62 32 66 18 78 10"/>
+    <path d="M52 45 C64 42 78 46 88 38"/>
+  </svg>
+
+  <svg class="icon i5" viewBox="0 0 100 140" fill="none" stroke="#c9c6bd" stroke-width="1.6" stroke-linecap="round">
+    <circle cx="50" cy="20" r="14"/>
+    <path d="M38 30 L20 90 M50 34 L50 95 M62 30 L80 90"/>
+    <path d="M20 90 L80 90"/>
+  </svg>
+
+  <div class="card">
+    <div class="brand">
+      <img src="{% static 'images/logo.png' %}" alt="CityPlay">
+      <p>Play. Book. Meet.</p>
+    </div>
+
+    <h1>Welcome back!</h1>
+    <p class="sub">Login to continue your play journey</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="msg {% if message.tags == 'error' %}error{% else %}ok{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div class="field">
+        <label>Name</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"/></svg>
+          {{ form.username }}
+        </div>
+        {% if form.username.errors %}<p class="err">{{ form.username.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 0h10.5A1.5 1.5 0 0118.75 12v7.5a1.5 1.5 0 01-1.5 1.5H6.75a1.5 1.5 0 01-1.5-1.5V12a1.5 1.5 0 011.5-1.5z"/></svg>
+          {{ form.password }}
+          <button type="button" class="toggle-eye" onclick="const p=this.previousElementSibling; p.type = p.type==='password' ? 'text' : 'password';">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="forgot"><a href="#">Forgot password?</a></div>
+
+      <button type="submit" class="submit">Log In</button>
+    </form>
+
+    <div class="divider"><div class="line"></div><span>or continue with</span><div class="line"></div></div>
+
+    <div class="socials">
+      <button type="button">Google</button>
+      <button type="button">Apple</button>
+    </div>
+
+    <p class="foot">New here? <a href="{% url 'register' %}">Sign up</a></p>
+  </div>
+</body>
+</html>

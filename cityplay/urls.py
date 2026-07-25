@@ -29,5 +29,11 @@ urlpatterns = [
     
     # FIX: Added the bookings routing. Yeh line Django ko bookings app se jodegi.
     path('bookings/', include('bookings.urls')), 
+
+    # ... tumhari existing lines yahan as-it-is rehne do ...
+        path("accounts/", include("accounts.urls")),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+    

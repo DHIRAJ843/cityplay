@@ -40,14 +40,21 @@
     </nav>
 
 
-    <!-- RIGHT SIDE BUTTONS (UNCHANGED) -->
+    <!-- RIGHT SIDE BUTTONS -->
     <div class="flex items-center gap-3 shrink-0">
-      <a href="#" class="text-sm font-medium text-ink/70 hover:text-ink transition-colors">
-        Log In
-      </a>
-      <a href="#" class="btn-coral text-sm !px-4 !py-2">
-        Sign Up Free
-      </a>
+      {% if user.is_authenticated %}
+        <span class="text-sm font-medium text-ink/70">Hi, {{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn-coral text-sm !px-4 !py-2">
+          Log Out
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}" class="text-sm font-medium text-ink/70 hover:text-ink transition-colors">
+          Log In
+        </a>
+        <a href="{% url 'register' %}" class="btn-coral text-sm !px-4 !py-2">
+          Sign Up Free
+        </a>
+      {% endif %}
     </div>
 
   </div>
