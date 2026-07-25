@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ activity.name }} Events — FieldDay Gandhinagar{% endblock %}
+
+{% block content %}
+<div class="bg-cream min-h-screen">
+
+  {# HERO STRIP #}
+  <div class="relative overflow-hidden bg-ink">
+    {% if activity.icon_image %}
+      <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}"
+           class="absolute inset-0 w-full h-full object-cover opacity-20">
+    {% endif %}
+    <div class="absolute inset-0 bg-gradient-to-b from-ink/80 to-ink"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-cream/50 hover:text-coral transition-colors mb-8">
+        &larr; All Activities
+      </a>
+      <h1 class="text-cream font-extrabold uppercase tracking-tighter"
+          style="font-size: clamp(3rem, 10vw, 8rem); line-height: 0.9;">
+        {{ activity.name }}
+      </h1>
+      {% if activity.description %}
+        <p class="mt-4 text-cream/60 max-w-xl text-lg">{{ activity.description }}</p>
+      {% endif %}
+      <p class="mt-6 text-coral font-medium text-sm uppercase tracking-widest">
+        {{ total }} upcoming event{{ total|pluralize }}
+      </p>
+    </div>
+  </div>
+
+  {# FILTER TABS #}
+  <div class="sticky top-16 z-30 bg-white border-b border-black/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm overflow-x-auto">
+      <a href="?when=all"
+         class="px-4 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors
+                {% if when == 'all' or not when %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10 hover:border-teal hover:text-teal{% endif %}">
+        All Dates
+      </a>
+      <a href="?when=today"
+         class="px-4 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors
+                {% if when == 'today' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10 hover:border-teal hover:text-teal{% endif %}">
+        Today
+      </a>
+      <a href="?when=tomorrow"
+         class="px-4 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors
+                {% if when == 'tomorrow' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10 hover:border-teal hover:text-teal{% endif %}">
+        Tomorrow
+      </a>
+      <a href="?when=weekend"
+         class="px-4 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors
+                {% if when == 'weekend' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10 hover:border-teal hover:text-teal{% endif %}">
+        This Weekend
+      </a>
+    </div>
+  </div>
+
+  {# EVENT GRID #}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {% if events %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for event in events %}
+          <a href="{% url 'events:event_detail' event.id %}"
+             class="card overflow-hidden hover:shadow-md transition-shadow block group">
+            <div class="relative h-48 bg-teal flex items-center justify-center overflow-hidden">
+              {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.title }}"
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              {% else %}
+                <span class="text-white/20 text-7xl font-extrabold select-none">
+                  {{ event.activity.name|slice:":1" }}
+                </span>
+              {% endif %}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <span class="absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full
+                {% if event.urgency_label == 'Sold Out' %}bg-ink text-white
+                {% elif event.urgency_label == 'Filling fast' %}bg-coral text-white
+                {% else %}bg-white/90 text-ink{% endif %}">
+                {{ event.urgency_label }}
+              </span>
+              <div class="absolute bottom-3 left-3 right-3">
+                <p class="text-white font-bold text-lg leading-tight">{{ event.title }}</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <p class="flex items-center gap-1.5 text-xs text-ink/50 mb-1">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+                </svg>
+                {{ event.date|date:"D, M j" }} · {{ event.start_time|time:"g:i A" }}
+              </p>
+              <p class="flex items-center gap-1.5 text-xs text-ink/50 mb-4">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/>
+                  <circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                {{ event.venue.name }}
+              </p>
+              <div class="w-full h-1.5 bg-black/5 rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-coral rounded-full" style="width: {{ event.spots_left_percent }}%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-ink/50">{{ event.spots_left }} spots left</span>
+                <span class="font-bold text-ink">₹{{ event.price_per_slot|floatformat:0 }}</span>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <div class="text-center py-24">
+        <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-lg text-ink">No {{ activity.name }} events right now</h3>
+        <p class="text-ink/50 text-sm mt-2 mb-6">Check back soon — new drops added weekly.</p>
+        <a href="{% url 'home' %}" class="btn-primary">Browse All Events</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

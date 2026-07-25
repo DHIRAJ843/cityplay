@@ -66,3 +66,31 @@ def event_detail(request, pk):
         'event': event
     }
     return render(request, 'events/event_detail.html', context)
+
+def activity_detail(request, slug):
+    activity = get_object_or_404(Activity, slug=slug, is_active=True)
+    
+    when = request.GET.get('when', 'all')
+    today = date.today()
+    
+    events_qs = Event.objects.filter(
+        activity=activity,
+        status='upcoming',
+        date__gte=today
+    ).select_related('venue').order_by('date', 'start_time')
+    
+    if when == 'today':
+        events_qs = events_qs.filter(date=today)
+    elif when == 'tomorrow':
+        events_qs = events_qs.filter(date=today + timedelta(days=1))
+    elif when == 'weekend':
+        saturday = today + timedelta(days=(5 - today.weekday()) % 7)
+        events_qs = events_qs.filter(date__in=[saturday, saturday + timedelta(days=1)])
+
+    context = {
+        'activity': activity,
+        'events': events_qs,
+        'when': when,
+        'total': events_qs.count(),
+    }
+    return render(request, 'events/activity_detail.html', context)

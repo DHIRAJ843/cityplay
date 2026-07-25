@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
 
-app_name = 'events'   # namespace — isse {% url 'events:event_detail' %} likhna padega, clash nahi hoga dusre app ke urls se
+app_name = 'events'
 
 urlpatterns = [
     path('<int:pk>/', views.event_detail, name='event_detail'),
+    path('activity/<slug:slug>/', views.activity_detail, name='activity_detail'),
 ]

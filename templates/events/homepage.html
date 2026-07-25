@@ -4,24 +4,15 @@
 {% block content %}
 
 <!-- ==========================================
-     1. HERO SECTION (Fixed Background)
+     1. HERO SECTION
 =========================================== -->
 <section class="relative overflow-hidden">
-
-  <!-- ✅ HERO IMAGE BACKGROUND -->
   <div class="absolute inset-0">
     <img src="{% static 'images/hero1.png' %}" 
          alt="Hero Image"
          class="w-full h-full object-cover">
   </div>
-
-  <!-- ✅ DARK OVERLAY (for readability) -->
   <div class="absolute inset-0 bg-black/60"></div>
-
-  <!-- ✅ YOUR ORIGINAL CONTENT (UNCHANGED) -->
-      
-  <!-- Fallback gradient so it never goes pitch black -->
- 
   
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
     <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full mb-6 border border-white/10">
@@ -29,7 +20,7 @@
       Live events in Gandhinagar today
     </span>
     <h1 class="text-white font-extrabold text-4xl sm:text-5xl leading-tight max-w-2xl">Play. Book.<br><span class="text-teal-light">Meet your people.</span></h1>
-    <p class="text-white/70 mt-4 max-w-lg">Turf games, pickleball meetups & group funblasts — all in Gandhinagar.</p>
+    <p class="text-white/70 mt-4 max-w-lg">Turf games, pickleball meetups &amp; group funblasts — all in Gandhinagar.</p>
     
     <div class="flex flex-wrap gap-3 mt-8">
       <a href="#happening-soon" class="btn-coral">
@@ -91,7 +82,8 @@
   <h2 class="font-extrabold text-2xl mb-6 text-ink">Browse by Activity</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
     {% for activity in activities %}
-      <a href="?activity={{ activity.id }}#happening-soon"
+      {# THIS IS THE FIX — links to dedicated activity page, not homepage filter #}
+      <a href="{% url 'events:activity_detail' activity.slug %}"
          class="group relative aspect-square overflow-hidden rounded-2xl transition-shadow hover:shadow-md {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' %}">
         {% if activity.icon_image %}
           <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}"
@@ -115,7 +107,7 @@
 </section>
 
 <!-- ==========================================
-     4. HAPPENING SOON (Fixed Cards)
+     4. HAPPENING SOON
 =========================================== -->
 <section id="happening-soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
   <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -124,10 +116,10 @@
       <p class="text-ink/50 text-sm mt-1">Book now before these fill up</p>
     </div>
     <div class="flex items-center gap-2 text-sm">
-      <a href="?when=all" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'all' or not when %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">All</a>
-      <a href="?when=today" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'today' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Today</a>
-      <a href="?when=tomorrow" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'tomorrow' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Tomorrow</a>
-      <a href="?when=weekend" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'weekend' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">This Weekend</a>
+      <a href="/" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'all' or not when %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">All</a>
+      <a href="/?when=today#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'today' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Today</a>
+      <a href="/?when=tomorrow#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'tomorrow' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Tomorrow</a>
+      <a href="/?when=weekend#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'weekend' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">This Weekend</a>
     </div>
   </div>
   
@@ -162,8 +154,7 @@
           </p>
           
           <div class="w-full h-1.5 bg-black/5 rounded-full overflow-hidden mb-3">
-            <!-- Inline style for dynamic width -->
-            <div class="h-full rounded-full transition-all duration-500 {% if event.spots_left_percent < 30 %}bg-coral{% else %}bg-teal{% endif %}" style="width: {{ event.spots_left_percent|default:50 }}%;"></div>
+            <div class="h-full rounded-full transition-all duration-500 {% if event.spots_left_percent < 30 %}bg-coral{% else %}bg-teal{% endif %}" style="width: {{ event.spots_left_percent }}%;"></div>
           </div>
           
           <div class="flex items-center justify-between border-t border-black/5 pt-3 mt-1">
@@ -174,8 +165,12 @@
       </a>
     {% empty %}
       <div class="col-span-full text-center py-16 card">
-        <p class="text-ink/60 font-medium">No events match these filters right now.</p>
-        <a href="{% url 'home' %}#happening-soon" class="text-teal font-bold text-sm mt-2 inline-block">Clear filters</a>
+        <div class="w-14 h-14 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <p class="text-ink font-bold">No events right now</p>
+        <p class="text-ink/50 text-sm mt-1 mb-4">New drops added weekly — check back soon.</p>
+        <a href="/" class="btn-primary">Clear filters</a>
       </div>
     {% endfor %}
   </div>
@@ -203,7 +198,7 @@
         </div>
         <p class="text-center sm:text-left text-xs font-bold text-teal mb-1">02</p>
         <h3 class="text-center sm:text-left font-semibold text-ink mb-1.5">Book solo, group, or join</h3>
-        <p class="text-center sm:text-left text-sm text-ink/50">Pay instantly via UPI or card. Get confirmation & a WhatsApp reminder automatically.</p>
+        <p class="text-center sm:text-left text-sm text-ink/50">Pay instantly via UPI or card. Get confirmation &amp; a WhatsApp reminder automatically.</p>
       </div>
       <div>
         <div class="w-11 h-11 rounded-xl bg-teal flex items-center justify-center mb-4 mx-auto sm:mx-0">
@@ -291,7 +286,7 @@
       <svg class="w-6 h-6 text-teal" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".18"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
     </div>
     <h3 class="font-extrabold text-ink text-xl mb-2">Never miss an event</h3>
-    <p class="text-sm text-ink/50 mb-6 max-w-xs leading-relaxed">Join our WhatsApp channel for instant game alerts, open slot pings & exclusive early-bird bookings.</p>
+    <p class="text-sm text-ink/50 mb-6 max-w-xs leading-relaxed">Join our WhatsApp channel for instant game alerts, open slot pings &amp; exclusive early-bird bookings.</p>
     <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-teal text-white font-bold px-5 py-2.5 rounded-lg hover:bg-teal-dark transition-colors shadow-md">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".35"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
       Join WhatsApp Channel
