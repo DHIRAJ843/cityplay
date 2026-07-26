@@ -111,3 +111,11 @@ def activity_detail(request, slug):
         'total': events_qs.count(),
     }
     return render(request, 'events/activity_detail.html', context)
+
+def about_us(request):
+    context = {
+        'total_events': Event.objects.filter(status='upcoming', date__gte=timezone.localdate()).count(),
+        'total_venues': Venue.objects.filter(is_active=True).count(),
+        'total_players': User.objects.count(),
+    }
+    return render(request, 'pages/about.html', context)
