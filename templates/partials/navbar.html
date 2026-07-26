@@ -12,7 +12,7 @@
            class="w-12 h-15 object-contain rounded-lg transition-transform duration-300 hover:scale-110">
 
       <!-- EXISTING TEXT (UNCHANGED) -->
-      <span class="font-extrabold text-lg tracking-tight"></span>
+      <span class="font-extrabold text-lg tracking-tight">cityplay</span>
 
       <!-- EXISTING TAG -->
       <span class="hidden sm:inline-block text-xs font-medium bg-teal-light text-teal px-2 py-0.5 rounded-full">
@@ -39,7 +39,30 @@
       </a>
 
       {% if user.is_authenticated %}
-        <a href="{% url 'bookings:my_bookings' %}" class="hover:text-ink transition-colors">My Bookings</a>
+        <a href="{% url 'bookings:my_bookings' %}" style="position:relative; display:inline-flex; align-items:center;" class="hover:text-ink transition-colors">
+          My Bookings
+          {% if navbar_upcoming_count > 0 %}
+            <span style="
+              position:absolute;
+              top:-9px;
+              right:-14px;
+              background:#ff6a3d;
+              color:#fff;
+              font-size:10px;
+              font-weight:700;
+              line-height:1;
+              min-width:17px;
+              height:17px;
+              border-radius:9999px;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              padding:0 4px;
+              border:2px solid #fff;
+              box-shadow:0 1px 3px rgba(0,0,0,0.25);
+            ">{{ navbar_upcoming_count }}</span>
+          {% endif %}
+        </a>
       {% endif %}
     </nav>
 
