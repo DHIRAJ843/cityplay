@@ -37,6 +37,10 @@
         </svg>
         WhatsApp Channel
       </a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'bookings:my_bookings' %}" class="hover:text-ink transition-colors">My Bookings</a>
+      {% endif %}
     </nav>
 
 

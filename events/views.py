@@ -42,6 +42,19 @@ def homepage(request):
     )
     sectors = Venue.objects.filter(is_active=True).values_list('sector', flat=True).distinct()
 
+    # --- NEW: logged-in user's upcoming booking count for the homepage banner ---
+    my_upcoming_count = 0
+    my_next_booking = None
+    if request.user.is_authenticated:
+        from bookings.models import Booking
+        my_bookings = Booking.objects.filter(
+            user=request.user,
+            booking_status='confirmed',
+            event__date__gte=timezone.localdate()
+        ).select_related('event').order_by('event__date', 'event__start_time')
+        my_upcoming_count = my_bookings.count()
+        my_next_booking = my_bookings.first()
+
     context = {
         'events': events_qs.order_by('date', 'start_time')[:8],
         'activities': activities,
@@ -53,8 +66,11 @@ def homepage(request):
         'selected_date': date_filter,
         'selected_sector': sector,
         'when': when,
+        'my_upcoming_count': my_upcoming_count,
+        'my_next_booking': my_next_booking,
     }
     return render(request, 'events/homepage.html', context)
+
 
 # --- ADDED: The missing event_detail view ---
 def event_detail(request, pk):
@@ -66,6 +82,7 @@ def event_detail(request, pk):
         'event': event
     }
     return render(request, 'events/event_detail.html', context)
+
 
 def activity_detail(request, slug):
     activity = get_object_or_404(Activity, slug=slug, is_active=True)

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Bookings | CityPlay{% endblock %}
+
+{% block content %}
+<style>
+  .cp-hero{ background:#132920; position:relative; overflow:hidden; }
+  .cp-stat-num{ font-family:'Inter',sans-serif; font-weight:800; }
+  .tab-btn{ transition: background .15s ease, color .15s ease; }
+  .tab-btn.active{ background:#132920; color:#fff; }
+  .booking-row{ display:none; }
+  .booking-row.active{ display:flex; }
+  .status-pill{ font-size:11px; font-weight:700; letter-spacing:.04em; padding:6px 12px; border-radius:999px; text-transform:uppercase; }
+  .status-confirmed{ background:#ff6a3d; color:#fff; }
+  .status-completed{ background:#e4e2dc; color:#4a4a4a; }
+  .status-cancelled{ background:#f3e3e0; color:#a03a2b; text-decoration:line-through; }
+  .ticket-strip::before{
+    content:""; position:absolute; left:-9px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; background:#faf8f5; border-radius:999px;
+  }
+</style>
+
+<section class="cp-hero text-white py-16 px-4">
+  <div class="max-w-7xl mx-auto relative">
+    <div class="flex items-center gap-2 text-orange-400 text-xs font-bold tracking-widest mb-4">
+      <span>01</span><span class="w-6 h-px bg-orange-400"></span><span>YOUR PLAYS</span>
+    </div>
+    <h1 class="font-black uppercase leading-[0.85] mb-8" style="font-size:clamp(48px,9vw,110px); font-family:'Inter',sans-serif;">
+      My Bookings
+    </h1>
+    <div class="flex flex-wrap gap-10">
+      <div>
+        <div class="cp-stat-num text-orange-400 text-5xl">{{ upcoming_count|stringformat:"02d" }}</div>
+        <div class="text-xs tracking-widest uppercase text-white/60 mt-1">Upcoming</div>
+      </div>
+      <div class="border-l border-white/15 pl-10">
+        <div class="cp-stat-num text-orange-400 text-5xl">{{ played_count|stringformat:"02d" }}</div>
+        <div class="text-xs tracking-widest uppercase text-white/60 mt-1">Played</div>
+      </div>
+      <div class="border-l border-white/15 pl-10">
+        <div class="cp-stat-num text-orange-400 text-5xl">₹{{ total_spent }}</div>
+        <div class="text-xs tracking-widest uppercase text-white/60 mt-1">Spent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 py-10">
+  <div class="flex gap-3 mb-8">
+    <button class="tab-btn active px-5 py-2.5 rounded-full font-semibold text-sm border border-black/10" data-target="upcoming" onclick="cpSwitchTab('upcoming')">Upcoming</button>
+    <button class="tab-btn px-5 py-2.5 rounded-full font-semibold text-sm border border-black/10" data-target="past" onclick="cpSwitchTab('past')">Past</button>
+    <button class="tab-btn px-5 py-2.5 rounded-full font-semibold text-sm border border-black/10" data-target="cancelled" onclick="cpSwitchTab('cancelled')">Cancelled</button>
+  </div>
+
+  <div class="space-y-6">
+
+    {% for b in upcoming %}
+      <div class="booking-row active" data-tab="upcoming">
+        <div class="flex w-full rounded-2xl overflow-hidden border border-black/5 shadow-sm bg-white">
+          <div class="w-40 shrink-0 relative flex items-end p-4 text-white" style="background:{{ b.theme_color }};">
+            {% if b.event.image %}
+              <img src="{{ b.event.image.url }}" class="absolute inset-0 w-full h-full object-cover opacity-60">
+            {% endif %}
+            <div class="relative z-10">
+              <div class="font-bold uppercase text-sm">{{ b.event.activity.name }}</div>
+            </div>
+          </div>
+
+          <div class="flex-1 p-6">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="font-black uppercase text-2xl">{{ b.event.title }}</h3>
+              <span class="status-pill status-confirmed">Confirmed</span>
+            </div>
+            <div class="grid grid-cols-4 gap-4 text-sm mb-4">
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Date</div>{{ b.event.date|date:"d M Y" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Time</div>{{ b.event.start_time|time:"h:i A" }} – {{ b.event.end_time|time:"h:i A" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Venue</div>{{ b.event.venue.name }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Slot</div>₹{{ b.entry_fee }}</div>
+            </div>
+            <div class="flex items-center justify-between border-t pt-4">
+              <div>
+                <div class="text-xs text-gray-400 uppercase">Booking ID</div>
+                <div class="font-mono text-sm">{{ b.ticket_code }}</div>
+              </div>
+              <div class="flex gap-3">
+                <a href="{% url 'bookings:booking_success' b.id %}" class="border rounded-lg px-4 py-2 text-sm font-semibold">View Ticket</a>
+                <form method="post" action="{% url 'bookings:cancel_booking' b.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="border rounded-lg px-4 py-2 text-sm font-semibold text-red-500">Cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative w-52 shrink-0 border-l border-dashed border-black/10 bg-[#faf8f5] p-5 text-center ticket-strip">
+            <div class="text-xs tracking-widest uppercase text-gray-400">Ticket</div>
+            <div class="text-xs text-gray-400 mb-3">Scan at Venue</div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data={{ b.ticket_code }}" class="mx-auto mb-2">
+            <div class="font-mono text-xs">{{ b.ticket_code }}</div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="booking-row active text-gray-400 text-sm" data-tab="upcoming">No upcoming bookings yet.</div>
+    {% endfor %}
+
+    {% for b in past %}
+      <div class="booking-row" data-tab="past">
+        <div class="flex w-full rounded-2xl overflow-hidden border border-black/5 shadow-sm bg-white">
+          <div class="w-40 shrink-0 flex items-end p-4 text-white" style="background:{{ b.theme_color }};">
+            <div class="font-bold uppercase text-sm">{{ b.event.activity.name }}</div>
+          </div>
+          <div class="flex-1 p-6">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="font-black uppercase text-2xl">{{ b.event.title }}</h3>
+              <span class="status-pill status-completed">Completed</span>
+            </div>
+            <div class="grid grid-cols-4 gap-4 text-sm mb-4">
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Date</div>{{ b.event.date|date:"d M Y" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Time</div>{{ b.event.start_time|time:"h:i A" }} – {{ b.event.end_time|time:"h:i A" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Venue</div>{{ b.event.venue.name }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Slot</div>₹{{ b.entry_fee }}</div>
+            </div>
+            <div class="flex items-center justify-between border-t pt-4">
+              <div>
+                <div class="text-xs text-gray-400 uppercase">Booking ID</div>
+                <div class="font-mono text-sm">{{ b.ticket_code }}</div>
+              </div>
+              <a href="{% url 'bookings:booking_success' b.id %}" class="border rounded-lg px-4 py-2 text-sm font-semibold">View Ticket</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="booking-row text-gray-400 text-sm" data-tab="past">No past bookings.</div>
+    {% endfor %}
+
+    {% for b in cancelled %}
+      <div class="booking-row" data-tab="cancelled">
+        <div class="flex w-full rounded-2xl overflow-hidden border border-black/5 shadow-sm bg-white opacity-70">
+          <div class="w-40 shrink-0 flex items-end p-4 text-white" style="background:{{ b.theme_color }};">
+            <div class="font-bold uppercase text-sm">{{ b.event.activity.name }}</div>
+          </div>
+          <div class="flex-1 p-6">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="font-black uppercase text-2xl">{{ b.event.title }}</h3>
+              <span class="status-pill status-cancelled">Cancelled</span>
+            </div>
+            <div class="grid grid-cols-4 gap-4 text-sm mb-4">
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Date</div>{{ b.event.date|date:"d M Y" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Time</div>{{ b.event.start_time|time:"h:i A" }} – {{ b.event.end_time|time:"h:i A" }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Venue</div>{{ b.event.venue.name }}</div>
+              <div><div class="text-xs text-gray-400 uppercase mb-1">Slot</div>₹{{ b.entry_fee }}</div>
+            </div>
+            <div class="text-xs text-gray-400 uppercase">Booking ID <span class="font-mono">{{ b.ticket_code }}</span></div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="booking-row text-gray-400 text-sm" data-tab="cancelled">No cancelled bookings.</div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<script>
+  function cpSwitchTab(tab){
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.target === tab);
+    });
+    document.querySelectorAll('.booking-row').forEach(row=>{
+      row.classList.toggle('active', row.dataset.tab === tab);
+    });
+  }
+</script>
+{% endblock %}

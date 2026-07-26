@@ -84,6 +84,40 @@
 </div>
 
 <!-- ==========================================
+     2.5 MY BOOKINGS QUICK ACCESS (logged-in only)
+=========================================== -->
+{% if user.is_authenticated %}
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+  <div class="rounded-2xl bg-ink text-white px-6 py-5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+    <div class="flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 text-teal-light" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/>
+        </svg>
+      </div>
+      <div>
+        {% if my_upcoming_count > 0 %}
+          <p class="font-bold text-sm">
+            You have {{ my_upcoming_count }} upcoming booking{{ my_upcoming_count|pluralize }}
+          </p>
+          <p class="text-white/50 text-xs mt-0.5">
+            Next up: {{ my_next_booking.event.title }} · {{ my_next_booking.event.date|date:"D, M j" }}
+          </p>
+        {% else %}
+          <p class="font-bold text-sm">No upcoming bookings yet</p>
+          <p class="text-white/50 text-xs mt-0.5">Browse events below and lock in your next game.</p>
+        {% endif %}
+      </div>
+    </div>
+    <a href="{% url 'bookings:my_bookings' %}" class="btn-coral shrink-0 text-sm">
+      View My Bookings
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ==========================================
      3. BROWSE BY ACTIVITY
 =========================================== -->
 <section id="browse-activity" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4">
