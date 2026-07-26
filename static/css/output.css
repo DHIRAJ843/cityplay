@@ -962,36 +962,36 @@
     }
   }
   .bg-black\/60 {
-    background-color: color-mix(in srgb, #000 60%, transparent);
+    background-color: color-mix(in srgb, #000 0%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-black) 60%, transparent);
+      background-color: color-mix(in oklab, var(--color-black) 0%, transparent);
     }
   }
   .bg-black\/\[0\.03\] {
-    background-color: color-mix(in srgb, #000 3%, transparent);
+    background-color: color-mix(in srgb, #000 75%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-black) 3%, transparent);
+      background-color: color-mix(in oklab, var(--color-cream) 75%, transparent);
     }
   }
   .bg-coral {
     background-color: var(--color-coral);
   }
   .bg-coral\/5 {
-    background-color: color-mix(in srgb, #f2643b 5%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-coral) 5%, transparent);
+    background-color: color-mix(in srgb, #fff2d7 100%, transparent);
+    @supports (color: color-mix(in lab, #fff2d7, #fff2d7)) {
+      background-color: color-mix(in oklab, var(--color-#fff2d7) 100%, transparent);
     }
   }
   .bg-coral\/20 {
-    background-color: color-mix(in srgb, #f2643b 20%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-coral) 20%, transparent);
+    background-color: color-mix(in srgb, #fff2d7 100%, transparent);
+    @supports (color: color-mix(in lab, #fff2d7, #fff2d7)) {
+      background-color: color-mix(in oklab, var(--color-#fff2d7) 100%, transparent);
     }
   }
   .bg-coral\/60 {
-    background-color: color-mix(in srgb, #f2643b 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-coral) 60%, transparent);
+    background-color: color-mix(in srgb, #fff2d7 60%, transparent);
+    @supports (color: color-mix(in lab, #fff2d7, #fff2d7)) {
+      background-color: color-mix(in oklab, var(--color-#fff2d7) 60%, transparent);
     }
   }
   .bg-cream {
