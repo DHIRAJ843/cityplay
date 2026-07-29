@@ -57,6 +57,16 @@
   @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
   .hero-shadow { box-shadow: 0 30px 80px -30px rgba(0,0,0,0.6); }
   .card-shadow-hover:hover { box-shadow: 0 25px 60px -30px rgba(28,61,51,0.4); }
+
+  /* Hero heading — clamp() keeps it from ever overflowing its box,
+     instead of the old uncapped vw values (22vw/16vw + 12rem/14rem)
+     that blew past the viewport height on most screens. */
+  .hero-title-main {
+    font-size: clamp(2.75rem, 9vw, 7.5rem);
+  }
+  .hero-title-sub {
+    font-size: clamp(1.5rem, 4.4vw, 3.75rem);
+  }
 </style>
 
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
@@ -64,7 +74,10 @@
 <div class="min-h-screen bg-cream text-ink">
 
   <!-- ============ HERO ============ -->
-  <section class="relative h-[100svh] min-h-[640px] w-full overflow-hidden text-cream">
+  <!-- Changed h-[100svh] (fixed height, forces content to be clipped/overlapped)
+       to min-h-[100svh] (a floor, not a ceiling) so the section grows to fit
+       its content on smaller screens instead of crushing everything together. -->
+  <section class="relative min-h-[100svh] w-full overflow-hidden text-cream flex flex-col">
     {% if hero_image %}
       <img src="{{ hero_image }}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
     {% else %}
@@ -74,23 +87,27 @@
     <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent"></div>
     <div class="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-coral/30 blur-3xl mix-blend-screen"></div>
 
-    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 pt-24 md:pt-28 flex items-center justify-between text-cream/80">
+    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 pt-24 md:pt-28 flex items-center justify-between text-cream/80">
       <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur border border-white/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
         <span class="h-2 w-2 rounded-full bg-coral pulse-dot"></span>
         Live · {{ total_events|default:"24" }} games · Gandhinagar
       </div>
       <div class="hidden md:flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-semibold">
         <span>Tonight · Clear skies</span>
-        <span class="text-coral-soft">{% now "D d M"|upper %}</span>
+        {# FIX: {% now "D d M"|upper %} is invalid — the "|upper" gets read as
+           part of the now-tag's format string instead of a filter, producing
+           garbled output. Store the value with `as`, then filter the variable. #}
+        {% now "D d M" as today_str %}
+        <span class="text-coral-soft">{{ today_str|upper }}</span>
       </div>
     </div>
 
-    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 mt-8 md:mt-16 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-end lg:items-center">
+    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 mt-8 md:mt-14 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-center flex-1">
       <div>
-        <h1 class="font-display leading-[0.82] tracking-tight text-[22vw] sm:text-[16vw] lg:text-[12rem] xl:text-[14rem]">
-          <span class="block">PLAY</span>
-          <span class="block text-coral">TONIGHT<span class="text-cream">.</span></span>
-          <span class="block text-cream/60 text-[16vw] sm:text-[11vw] lg:text-[8rem] xl:text-[9rem]">MEET YOUR PEOPLE.</span>
+        <h1 class="font-display leading-[0.9] tracking-tight">
+          <span class="hero-title-main block">PLAY</span>
+          <span class="hero-title-main block text-coral">TONIGHT<span class="text-cream">.</span></span>
+          <span class="hero-title-sub block text-cream/60 mt-1">MEET YOUR PEOPLE.</span>
         </h1>
         <p class="mt-6 max-w-lg text-base md:text-lg text-cream/85">
           Pickup cricket, 5-a-side football, pickleball and casual mixers — booked in 30 seconds. No group chats. No flakes. Just show up and play.
@@ -139,8 +156,8 @@
       {% endwith %}
     </div>
 
-    {# Search bar #}
-    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 mt-10 md:mt-14 pb-8">
+    {# Search bar — pb-20 added so it clears the marquee bar below on shorter screens #}
+    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 mt-10 md:mt-14 pb-20">
       <form method="get" action="{% url 'home' %}#events" class="rounded-2xl bg-white/95 backdrop-blur hero-shadow border border-white/40 p-2 grid grid-cols-2 sm:grid-cols-[1.1fr_1fr_1fr_auto] gap-1">
         <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
           <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">Activity</div>
@@ -176,8 +193,10 @@
       </div>
     </div>
 
-    {# Marquee #}
-    <div class="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
+    {# Marquee — no longer absolute; it now sits in normal flow at the true
+       bottom of the (variable-height) hero section, so it can never overlap
+       the heading, card, or search bar above it. #}
+    <div class="relative z-10 mt-auto border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
       <div class="marquee-track whitespace-nowrap py-2.5 flex gap-10 font-display text-sm md:text-base tracking-widest text-cream">
         {% for i in "12" %}
           <div class="flex gap-10 shrink-0">
@@ -205,7 +224,6 @@
 
     <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
       {% for activity in activities %}
-        {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' as tileclass silent %}
         <a href="{% url 'events:activity_detail' activity.slug %}"
            class="group relative overflow-hidden rounded-3xl {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' %} p-6 aspect-[3/4] flex flex-col justify-between transition-transform hover:-translate-y-1">
           <div class="flex items-start justify-between">
