@@ -2,338 +2,362 @@
 {% load static %}
 
 {% block content %}
-
 <style>
-  body {
-    background:
-      linear-gradient(rgba(247, 246, 241, 0.70), rgba(247, 246, 241, 0.70)),
-      url("{% static 'images/background.png' %}") center top / cover fixed no-repeat;
+  /* Custom design tokens for the Hype Drop homepage */
+  :root {
+    --ink: #14231f;
+    --teal: #1f6f5c;
+    --coral: #f2643b;
+    --cream: #f7f6f1;
+    --sage: #cfe3d3;
+    --sage-deep: #4a8f6e;
+    --amber: #f2c94c;
+    --mist: #eef1ea;
+    --coral-soft: #ffb59a;
   }
+  .font-display { font-family: 'Archivo Black', 'Bebas Neue', 'Impact', system-ui, sans-serif; letter-spacing: -0.01em; }
+
+  /* Colors */
+  .bg-ink { background-color: var(--ink); } .text-ink { color: var(--ink); } .border-ink { border-color: var(--ink); }
+  .bg-cream { background-color: var(--cream); } .text-cream { color: var(--cream); } .border-cream { border-color: var(--cream); }
+  .bg-coral { background-color: var(--coral); } .text-coral { color: var(--coral); } .border-coral { border-color: var(--coral); }
+  .bg-teal { background-color: var(--teal); } .text-teal { color: var(--teal); }
+  .bg-sage { background-color: var(--sage); } .bg-sage-deep { background-color: var(--sage-deep); }
+  .bg-amber { background-color: var(--amber); }
+  .bg-mist { background-color: var(--mist); } .bg-mist\/60 { background-color: rgba(238,241,234,0.6); }
+  .text-coral-soft { color: var(--coral-soft); }
+
+  /* Opacity variants used in the design */
+  .bg-ink\/70 { background-color: rgba(20,35,31,.7); }
+  .bg-ink\/30 { background-color: rgba(20,35,31,.3); }
+  .bg-ink\/80 { background-color: rgba(20,35,31,.8); }
+  .bg-ink\/95 { background-color: rgba(20,35,31,.95); }
+  .bg-ink\/10 { background-color: rgba(20,35,31,.10); }
+  .border-ink\/10 { border-color: rgba(20,35,31,.10); }
+  .border-ink\/20 { border-color: rgba(20,35,31,.20); }
+  .border-ink\/8 { border-color: rgba(20,35,31,.08); }
+  .text-ink\/50 { color: rgba(20,35,31,.5); }
+  .text-ink\/55 { color: rgba(20,35,31,.55); }
+  .text-ink\/60 { color: rgba(20,35,31,.6); }
+  .text-ink\/65 { color: rgba(20,35,31,.65); }
+  .text-ink\/40 { color: rgba(20,35,31,.4); }
+  .text-ink\/20 { color: rgba(20,35,31,.2); }
+  .text-cream\/60 { color: rgba(247,246,241,.6); }
+  .text-cream\/70 { color: rgba(247,246,241,.7); }
+  .text-cream\/80 { color: rgba(247,246,241,.8); }
+  .text-cream\/85 { color: rgba(247,246,241,.85); }
+  .bg-cream\/60 { background-color: rgba(247,246,241,.6); }
+  .bg-coral\/30 { background-color: rgba(242,100,59,.3); }
+  .hover\:bg-cream:hover { background-color: var(--cream); }
+
+  /* Effects */
+  .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.8);} }
+  .marquee-track { animation: marquee 30s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
+  .hero-shadow { box-shadow: 0 30px 80px -30px rgba(0,0,0,0.6); }
+  .card-shadow-hover:hover { box-shadow: 0 25px 60px -30px rgba(28,61,51,0.4); }
 </style>
 
-<!-- ==========================================
-     1. HERO SECTION
-=========================================== -->
-<section class="relative overflow-hidden">
-  <div class="absolute inset-0">
-    <img src="{% static 'images/hero1.png' %}" 
-         alt="Hero Image"
-         class="w-full h-full object-cover">
-  </div>
-  <div class="absolute inset-0 bg-black/60"></div>
-  
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20">
-    <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full mb-6 border border-white/10">
-      <span class="w-1.5 h-1.5 rounded-full bg-coral animate-pulse"></span>
-      Live events in Gandhinagar today
-    </span>
-    <h1 class="text-white font-extrabold text-4xl sm:text-5xl leading-tight max-w-2xl">Play. Book.<br><span class="text-teal-light">Meet your people.</span></h1>
-    <p class="text-white/70 mt-4 max-w-lg">Turf games, pickleball meetups &amp; group funblasts — all in Gandhinagar.</p>
-    
-    <div class="flex flex-wrap gap-3 mt-8">
-      <a href="#happening-soon" class="btn-coral">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        Browse Events
-      </a>
-      <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/10 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-white/20 transition-colors border border-white/15">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".35"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
-        Join WhatsApp Channel
-      </a>
-    </div>
-    
-    <div class="flex gap-10 mt-12 border-t border-white/10 pt-8">
-      <div><p class="text-white font-extrabold text-2xl">{{ total_events }}+</p><p class="text-white/50 text-xs mt-0.5">Events</p></div>
-      <div><p class="text-white font-extrabold text-2xl">{{ total_players }}+</p><p class="text-white/50 text-xs mt-0.5">Players</p></div>
-      <div><p class="text-white font-extrabold text-2xl">{{ total_venues }}</p><p class="text-white/50 text-xs mt-0.5">Venues</p></div>
-    </div>
-  </div>
-</section>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
 
-<!-- ==========================================
-     2. SEARCH FILTER BAR
-=========================================== -->
-<div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14">
-  <form method="get" action="{% url 'home' %}#happening-soon" class="card shadow-xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-4 gap-4 items-end bg-white">
-    <div>
-      <label class="block text-xs font-semibold text-ink/50 uppercase tracking-wide mb-1.5">Activity</label>
-      <select name="activity" class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal/40">
-        <option value="">All activities</option>
-        {% for activity in activities %}
-          <option value="{{ activity.id }}" {% if selected_activity == activity.id|stringformat:"s" %}selected{% endif %}>{{ activity.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div>
-      <label class="block text-xs font-semibold text-ink/50 uppercase tracking-wide mb-1.5">Date</label>
-      <input type="date" name="date" value="{{ selected_date|default:'' }}" class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal/40">
-    </div>
-    <div>
-      <label class="block text-xs font-semibold text-ink/50 uppercase tracking-wide mb-1.5">Sector / Area</label>
-      <select name="sector" class="w-full border border-black/10 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal/40">
-        <option value="">All sectors</option>
-        {% for sector in sectors %}
-          <option value="{{ sector }}" {% if selected_sector == sector %}selected{% endif %}>{{ sector }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <button type="submit" class="btn-coral w-full sm:w-auto justify-center">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      Search
-    </button>
-  </form>
-</div>
+<div class="min-h-screen bg-cream text-ink">
 
-<!-- ==========================================
-     2.5 MY BOOKINGS QUICK ACCESS (logged-in only)
-=========================================== -->
-{% if user.is_authenticated %}
-<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-  <div class="rounded-2xl bg-ink text-white px-6 py-5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
-    <div class="flex items-center gap-4">
-      <div class="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-        <svg class="w-5 h-5 text-teal-light" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/>
-        </svg>
+  <!-- ============ HERO ============ -->
+  <section class="relative h-[100svh] min-h-[640px] w-full overflow-hidden text-cream">
+    {% if hero_image %}
+      <img src="{{ hero_image }}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
+    {% else %}
+      <img src="{% static 'images/hero1.png' %}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
+    {% endif %}
+    <div class="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink/95"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent"></div>
+    <div class="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-coral/30 blur-3xl mix-blend-screen"></div>
+
+    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 pt-24 md:pt-28 flex items-center justify-between text-cream/80">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur border border-white/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
+        <span class="h-2 w-2 rounded-full bg-coral pulse-dot"></span>
+        Live · {{ total_events|default:"24" }} games · Gandhinagar
       </div>
+      <div class="hidden md:flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-semibold">
+        <span>Tonight · Clear skies</span>
+        <span class="text-coral-soft">{% now "D d M"|upper %}</span>
+      </div>
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 mt-8 md:mt-16 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-end lg:items-center">
       <div>
-        {% if my_upcoming_count > 0 %}
-          <p class="font-bold text-sm">
-            You have {{ my_upcoming_count }} upcoming booking{{ my_upcoming_count|pluralize }}
-          </p>
-          <p class="text-white/50 text-xs mt-0.5">
-            Next up: {{ my_next_booking.event.title }} · {{ my_next_booking.event.date|date:"D, M j" }}
-          </p>
-        {% else %}
-          <p class="font-bold text-sm">No upcoming bookings yet</p>
-          <p class="text-white/50 text-xs mt-0.5">Browse events below and lock in your next game.</p>
-        {% endif %}
-      </div>
-    </div>
-    <a href="{% url 'bookings:my_bookings' %}" class="btn-coral shrink-0 text-sm">
-      View My Bookings
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-  </div>
-</section>
-{% endif %}
-
-<!-- ==========================================
-     3. BROWSE BY ACTIVITY
-=========================================== -->
-<section id="browse-activity" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4">
-  <h2 class="font-extrabold text-2xl mb-6 text-ink">Browse by Activity</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-    {% for activity in activities %}
-      {# THIS IS THE FIX — links to dedicated activity page, not homepage filter #}
-      <a href="{% url 'events:activity_detail' activity.slug %}"
-         class="group relative aspect-square overflow-hidden rounded-2xl transition-shadow hover:shadow-md {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' %}">
-        {% if activity.icon_image %}
-          <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}"
-               class="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-        {% else %}
-          <div class="absolute inset-0 flex items-center justify-center opacity-15">
-            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11 2 3 12h6l-1 6 9-11h-6l1-5z"/></svg>
-          </div>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-        {% endif %}
-        <div class="absolute inset-x-0 bottom-0 p-3">
-          <p class="text-white text-sm font-semibold leading-tight">{{ activity.name }}</p>
-          <p class="text-white/70 text-xs">{{ activity.event_count }} event{{ activity.event_count|pluralize }}</p>
+        <h1 class="font-display leading-[0.82] tracking-tight text-[22vw] sm:text-[16vw] lg:text-[12rem] xl:text-[14rem]">
+          <span class="block">PLAY</span>
+          <span class="block text-coral">TONIGHT<span class="text-cream">.</span></span>
+          <span class="block text-cream/60 text-[16vw] sm:text-[11vw] lg:text-[8rem] xl:text-[9rem]">MEET YOUR PEOPLE.</span>
+        </h1>
+        <p class="mt-6 max-w-lg text-base md:text-lg text-cream/85">
+          Pickup cricket, 5-a-side football, pickleball and casual mixers — booked in 30 seconds. No group chats. No flakes. Just show up and play.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="#events" class="inline-flex items-center gap-2 rounded-full bg-coral text-white px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">Play tonight →</a>
+          <a href="#how" class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">How it works</a>
         </div>
-      </a>
-    {% empty %}
-      <p class="text-ink/50 col-span-full">No activities added yet — add some from the admin panel.</p>
-    {% endfor %}
-  </div>
-</section>
+      </div>
 
-<!-- ==========================================
-     4. HAPPENING SOON
-=========================================== -->
-<section id="happening-soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-    <div>
-      <h2 class="font-extrabold text-2xl text-ink">Happening Soon</h2>
-      <p class="text-ink/50 text-sm mt-1">Book now before these fill up</p>
-    </div>
-    <div class="flex items-center gap-2 text-sm">
-      <a href="/" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'all' or not when %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">All</a>
-      <a href="/?when=today#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'today' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Today</a>
-      <a href="/?when=tomorrow#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'tomorrow' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">Tomorrow</a>
-      <a href="/?when=weekend#happening-soon" class="px-3.5 py-1.5 rounded-full font-medium {% if when == 'weekend' %}bg-teal text-white{% else %}bg-white text-ink/60 border border-black/10{% endif %}">This Weekend</a>
-    </div>
-  </div>
-  
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-    {% for event in events %}
-      <a href="{% url 'events:event_detail' event.id %}" class="card overflow-hidden hover:shadow-md transition-shadow block cursor-pointer group">
-        <div class="relative h-40 {% cycle 'bg-teal' 'bg-coral' 'bg-ink' 'bg-teal-dark' %} flex items-center justify-center overflow-hidden">
-          {% if event.image %}
-            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      {# Next drop card #}
+      {% with next=events.0 %}
+      <div class="hidden lg:flex flex-col gap-4 items-end">
+        <div class="w-full max-w-sm rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-5">
+          <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.22em] font-bold text-cream/70">
+            <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-coral pulse-dot"></span> Next drop</span>
+            <span>{% if next %}{{ next.start_time|time:"g:i A" }}{% else %}8:00 PM{% endif %}</span>
+          </div>
+          <div class="mt-3 font-display text-3xl leading-tight uppercase">{% if next %}{{ next.title }}{% else %}Wednesday Night Cricket{% endif %}</div>
+          <div class="mt-1 text-sm text-cream/70">{% if next %}{{ next.venue.name }}{% else %}GIFT City Turf · Sector 11{% endif %}</div>
+          <div class="mt-4 h-1.5 rounded-full bg-white/15 overflow-hidden">
+            <div class="h-full bg-coral" style="width: {% if next %}{{ next.spots_left_percent }}{% else %}81{% endif %}%;"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-cream/80">
+            <span>{% if next %}{{ next.spots_left }} of {{ next.total_slots }} spots{% else %}3 of 16 spots{% endif %}</span>
+            <span class="text-coral-soft">{% if next %}{{ next.urgency_label }}{% else %}Filling fast{% endif %}</span>
+          </div>
+          {% if next %}
+            <a href="{% url 'events:event_detail' next.id %}" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
           {% else %}
-            <span class="text-white/20 text-5xl font-extrabold select-none">{{ event.activity.name|slice:":1" }}</span>
+            <a href="#events" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
           {% endif %}
-          <span class="absolute top-3 left-3 bg-white/95 text-ink text-xs font-bold px-2.5 py-1 rounded-full">{{ event.activity.name }}</span>
-          <span class="absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm
-            {% if event.urgency_label == 'Sold Out' %}bg-ink text-white
-            {% elif event.urgency_label == 'Filling fast' %}bg-coral text-white
-            {% else %}bg-white text-ink{% endif %}">
-            {{ event.urgency_label }}
-          </span>
         </div>
-        
-        <div class="p-4">
-          <h3 class="font-bold text-ink leading-snug mb-2 group-hover:text-teal transition-colors">{{ event.title }}</h3>
-          <p class="flex items-center gap-1.5 text-xs text-ink/60 mb-1">
-            <svg class="w-3.5 h-3.5 shrink-0 text-teal" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-            {{ event.date|date:"D, M j" }} · {{ event.start_time|time:"g:i A" }}
-          </p>
-          <p class="flex items-center gap-1.5 text-xs text-ink/60 mb-3">
-            <svg class="w-3.5 h-3.5 shrink-0 text-teal" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-            {{ event.venue.name }}
-          </p>
-          
-          <div class="w-full h-1.5 bg-black/5 rounded-full overflow-hidden mb-3">
-            <div class="h-full rounded-full transition-all duration-500 {% if event.spots_left_percent < 30 %}bg-coral{% else %}bg-teal{% endif %}" style="width: {{ event.spots_left_percent }}%;"></div>
+        <div class="flex items-center gap-3 rounded-full bg-white/10 backdrop-blur border border-white/20 pl-1 pr-4 py-1">
+          <div class="flex -space-x-2">
+            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">A</span>
+            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">R</span>
+            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">K</span>
+            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
           </div>
-          
-          <div class="flex items-center justify-between border-t border-black/5 pt-3 mt-1">
-            <span class="text-xs font-semibold text-ink/50">{{ event.spots_left }} spots left</span>
-            <span class="font-extrabold text-ink">₹{{ event.price_per_slot|floatformat:0 }}</span>
+          <div class="text-[11px] uppercase tracking-[0.2em] font-bold">
+            <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream/60">this month</span>
           </div>
         </div>
-      </a>
-    {% empty %}
-      <div class="col-span-full text-center py-16 card">
-        <div class="w-14 h-14 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
-          <svg class="w-7 h-7 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        </div>
-        <p class="text-ink font-bold">No events right now</p>
-        <p class="text-ink/50 text-sm mt-1 mb-4">New drops added weekly — check back soon.</p>
-        <a href="/" class="btn-primary">Clear filters</a>
       </div>
-    {% endfor %}
-  </div>
-</section>
+      {% endwith %}
+    </div>
 
-<!-- ==========================================
-     5. HOW IT WORKS
-=========================================== -->
-<section class="bg-black/[0.03] py-16">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="font-extrabold text-2xl text-ink">How it Works</h2>
-    <p class="text-ink/50 text-sm mt-2 mb-10">From browsing to the final whistle — in three steps</p>
-    <div class="grid sm:grid-cols-3 gap-8 text-left">
-      <div>
-        <div class="w-11 h-11 rounded-xl bg-teal flex items-center justify-center mb-4 mx-auto sm:mx-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    {# Search bar #}
+    <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8 mt-10 md:mt-14 pb-8">
+      <form method="get" action="{% url 'home' %}#events" class="rounded-2xl bg-white/95 backdrop-blur hero-shadow border border-white/40 p-2 grid grid-cols-2 sm:grid-cols-[1.1fr_1fr_1fr_auto] gap-1">
+        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
+          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">Activity</div>
+          <select name="activity" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
+            <option value="">Any sport</option>
+            {% for a in activities %}
+              <option value="{{ a.id }}" {% if selected_activity == a.id|stringformat:"s" %}selected{% endif %}>{{ a.name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
+          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">When</div>
+          <select name="when" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
+            <option value="">Anytime</option>
+            <option value="today" {% if when == 'today' %}selected{% endif %}>Tonight</option>
+            <option value="tomorrow" {% if when == 'tomorrow' %}selected{% endif %}>Tomorrow</option>
+            <option value="weekend" {% if when == 'weekend' %}selected{% endif %}>This weekend</option>
+          </select>
+        </label>
+        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
+          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">Sector</div>
+          <select name="sector" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
+            <option value="">All sectors</option>
+            {% for s in sectors %}<option value="{{ s }}" {% if selected_sector == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+          </select>
+        </label>
+        <button type="submit" class="col-span-2 sm:col-span-1 rounded-xl bg-ink text-cream font-semibold px-5 py-3.5 hover:bg-coral transition-colors">Find games →</button>
+      </form>
+      <div class="mt-3 hidden md:flex items-center justify-between text-[11px] uppercase tracking-[0.22em] font-semibold text-cream/70">
+        <div class="flex items-center gap-5">
+          <span>✓ Verified turfs</span><span>✓ Refund if cancelled</span><span>✓ Skill-matched</span>
         </div>
-        <p class="text-center sm:text-left text-xs font-bold text-teal mb-1">01</p>
-        <h3 class="text-center sm:text-left font-semibold text-ink mb-1.5">Browse events near you</h3>
-        <p class="text-center sm:text-left text-sm text-ink/50">Filter by sport, date, or your sector in Gandhinagar. See real-time spot availability.</p>
-      </div>
-      <div>
-        <div class="w-11 h-11 rounded-xl bg-teal flex items-center justify-center mb-4 mx-auto sm:mx-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h10"/></svg>
-        </div>
-        <p class="text-center sm:text-left text-xs font-bold text-teal mb-1">02</p>
-        <h3 class="text-center sm:text-left font-semibold text-ink mb-1.5">Book solo, group, or join</h3>
-        <p class="text-center sm:text-left text-sm text-ink/50">Pay instantly via UPI or card. Get confirmation &amp; a WhatsApp reminder automatically.</p>
-      </div>
-      <div>
-        <div class="w-11 h-11 rounded-xl bg-teal flex items-center justify-center mb-4 mx-auto sm:mx-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
-        </div>
-        <p class="text-center sm:text-left text-xs font-bold text-teal mb-1">03</p>
-        <h3 class="text-center sm:text-left font-semibold text-ink mb-1.5">Show up and play</h3>
-        <p class="text-center sm:text-left text-sm text-ink/50">Just turn up — balls, bibs, venue sorted. Make friends, build your crew, come back.</p>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ==========================================
-     6. THREE WAYS TO PLAY
-=========================================== -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-  <h2 class="font-extrabold text-2xl text-ink">Three ways to play</h2>
-  <p class="text-ink/50 text-sm mt-2 mb-10">Whether you're rolling solo or coming as a squad, we've got a slot for you.</p>
-  <div class="grid sm:grid-cols-3 gap-6 text-left">
-    <div class="card p-6">
-      <div class="w-10 h-10 rounded-full bg-teal-light flex items-center justify-center mb-4">
-        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
-      </div>
-      <h3 class="font-semibold text-ink mb-1.5">Book Solo</h3>
-      <p class="text-sm text-ink/50 mb-4">Pay your own spot and show up. Meet other players at the venue — solo doesn't mean alone.</p>
-      <a href="#happening-soon" class="text-teal font-bold text-sm">Browse solo events →</a>
-    </div>
-    <div class="card p-6 border-coral/30 bg-coral/5">
-      <div class="w-10 h-10 rounded-full bg-coral/20 flex items-center justify-center mb-4">
-        <svg class="w-5 h-5 text-coral" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M2.5 20c0-3.6 3-5.8 6.5-5.8s6.5 2.2 6.5 5.8M15 14.5c2.7.2 5 2.1 5 5.5"/></svg>
-      </div>
-      <h3 class="font-semibold text-ink mb-1.5">Book as Group</h3>
-      <p class="text-sm text-ink/50 mb-4">Organize your squad, split the cost, and get exclusive group rates for 5+ players.</p>
-      <a href="#happening-soon" class="text-teal font-bold text-sm">Book for your group →</a>
-    </div>
-    <div class="card p-6">
-      <div class="w-10 h-10 rounded-full bg-teal-light flex items-center justify-center mb-4">
-        <svg class="w-5 h-5 text-teal" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18"/></svg>
-      </div>
-      <h3 class="font-semibold text-ink mb-1.5">Join Open Slot</h3>
-      <p class="text-sm text-ink/50 mb-4">Jump into an existing game that needs players. Instant confirmation, no fuss.</p>
-      <a href="#happening-soon" class="text-teal font-bold text-sm">See open slots →</a>
-    </div>
-  </div>
-</section>
-
-<!-- ==========================================
-     7. SOCIAL PROOF BANNER
-=========================================== -->
-<section class="bg-teal-light">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
-      <div class="flex -space-x-2">
-        {% for i in "12345" %}
-          <span class="w-9 h-9 rounded-full bg-white border-2 border-teal-light flex items-center justify-center shadow-sm">
-            <svg class="w-4 h-4 text-teal/60" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7Z"/></svg>
-          </span>
+    {# Marquee #}
+    <div class="absolute bottom-0 left-0 right-0 z-10 border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
+      <div class="marquee-track whitespace-nowrap py-2.5 flex gap-10 font-display text-sm md:text-base tracking-widest text-cream">
+        {% for i in "12" %}
+          <div class="flex gap-10 shrink-0">
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Mixed Doubles Pickleball · Sat 5pm</span>
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Sunday 5-a-side · 8 spots</span>
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>₹149 · Friday Funblast</span>
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Verified · GIFT City Turf</span>
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>3 spots left · Wed Cricket</span>
+            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>New venue · Play Circle Kudasan</span>
+          </div>
         {% endfor %}
       </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 BROWSE BY ACTIVITY ============ -->
+  <section id="activities" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
+    <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
       <div>
-        <p class="font-bold text-ink text-sm">Join {{ total_players }}+ players in Gandhinagar</p>
-        <p class="text-ink/50 text-xs font-medium mt-0.5">Your next favourite game is already being organized.</p>
+        <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">01 — Browse by activity</div>
+        <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">PICK YOUR GAME.</h2>
+      </div>
+      <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Every sport running in the city. One tap to find tonight's game.</p>
+    </div>
+
+    <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {% for activity in activities %}
+        {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' as tileclass silent %}
+        <a href="{% url 'events:activity_detail' activity.slug %}"
+           class="group relative overflow-hidden rounded-3xl {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' %} p-6 aspect-[3/4] flex flex-col justify-between transition-transform hover:-translate-y-1">
+          <div class="flex items-start justify-between">
+            <span class="text-[10px] uppercase tracking-[0.22em] font-bold opacity-70">{{ activity.tagline|default:"This week" }}</span>
+            <span class="h-8 w-8 rounded-full bg-white/15 grid place-items-center text-sm">→</span>
+          </div>
+          <div class="font-display text-[6.5rem] leading-none opacity-15 absolute -bottom-4 -right-2 select-none">{{ forloop.counter|stringformat:"02d" }}</div>
+          <div class="relative">
+            <div class="font-display text-4xl md:text-5xl tracking-wide uppercase">{{ activity.name }}</div>
+            <div class="mt-2 text-sm font-semibold opacity-80">{{ activity.event_count|default:0 }} game{{ activity.event_count|pluralize }} this week</div>
+          </div>
+        </a>
+      {% empty %}
+        <p class="text-ink/50 col-span-full">No activities yet — add them from the admin.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ============ 02 HAPPENING SOON ============ -->
+  <section id="events" class="bg-mist/60 border-y border-ink/10">
+    <div class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
+      <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">02 — This week</div>
+          <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">HAPPENING SOON.</h2>
+        </div>
+        <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Live drops close as they fill. Grab a slot before the coral bar hits zero.</p>
+      </div>
+
+      <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {% for event in events %}
+          <article class="group relative rounded-2xl bg-white border border-ink/10 overflow-hidden hover:-translate-y-1 card-shadow-hover transition-all">
+            <div class="p-4 flex items-start justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] px-2 py-1 rounded-md bg-ink text-cream">{{ event.activity.name }}</span>
+              {% if event.urgency_label and event.urgency_label != "Open" %}
+                <span class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] px-2 py-1 rounded-md bg-coral text-white">
+                  <span class="h-1.5 w-1.5 rounded-full bg-white pulse-dot"></span>{{ event.urgency_label }}
+                </span>
+              {% endif %}
+            </div>
+            <div class="px-5 pb-4 flex items-end justify-between border-b border-ink/8">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.2em] font-bold text-ink/50">{{ event.date|date:"D, M j"|upper }}</div>
+                <div class="font-display text-4xl leading-none mt-1 text-ink">{{ event.start_time|time:"g:i A" }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-[10px] uppercase tracking-[0.2em] font-bold text-ink/50">Slot</div>
+                <div class="font-display text-3xl leading-none mt-1 text-coral">₹{{ event.price_per_slot|floatformat:0 }}</div>
+              </div>
+            </div>
+            <div class="p-5 space-y-4">
+              <div>
+                <h3 class="font-semibold text-ink text-lg leading-tight">{{ event.title }}</h3>
+                <p class="text-sm text-ink/60 mt-0.5">{{ event.venue.name }}</p>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] font-semibold uppercase tracking-wider text-ink/60 mb-1.5">
+                  <span>{{ event.spots_left }} of {{ event.total_slots }} spots left</span>
+                  <span class="{% if event.spots_left_percent >= 70 %}text-coral{% endif %}">{{ event.spots_left_percent }}% filled</span>
+                </div>
+                <div class="h-1.5 rounded-full bg-ink/10 overflow-hidden">
+                  <div class="h-full {% if event.spots_left_percent >= 70 %}bg-coral{% else %}bg-sage-deep{% endif %}" style="width: {{ event.spots_left_percent }}%;"></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex -space-x-2">
+                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">A</span>
+                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">R</span>
+                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">K</span>
+                  <span class="h-7 w-7 rounded-full bg-ink text-cream border-2 border-white grid place-items-center text-[10px] font-bold">+{{ event.total_slots|add:"-3" }}</span>
+                </div>
+                <a href="{% url 'events:event_detail' event.id %}" class="text-sm font-bold uppercase tracking-wider text-ink group-hover:text-coral transition-colors">Book →</a>
+              </div>
+            </div>
+          </article>
+        {% empty %}
+          <div class="col-span-full text-center py-16 rounded-2xl bg-white border border-ink/10">
+            <p class="font-display text-3xl text-ink">NO GAMES YET.</p>
+            <p class="text-ink/60 text-sm mt-2">New drops added weekly.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-10 text-center">
+        <a href="#" class="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-white px-6 py-3 text-sm font-semibold hover:bg-ink hover:text-cream transition-colors">See all games →</a>
       </div>
     </div>
-    <a href="#happening-soon" class="btn-primary shadow-md">Browse Events Now</a>
-  </div>
-</section>
+  </section>
 
-<!-- ==========================================
-     8. VENUE OWNER & WHATSAPP
-=========================================== -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid md:grid-cols-2 gap-6">
-  <div class="rounded-2xl bg-gradient-to-br from-teal to-teal-dark p-8 text-white flex flex-col justify-between shadow-lg">
-    <div>
-      <p class="text-white/60 text-xs font-bold uppercase tracking-wide mb-2">For Venue Owners</p>
-      <h3 class="text-2xl font-extrabold mb-3">Got a turf or arena?<br>List with us.</h3>
-      <p class="text-white/70 text-sm leading-relaxed">Reach thousands of players in Gandhinagar. Easy booking management, real-time calendar, instant payouts.</p>
+  <!-- ============ 03 HOW IT WORKS ============ -->
+  <section id="how" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
+    <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
+      <div>
+        <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">03 — The flow</div>
+        <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">HOW IT WORKS.</h2>
+      </div>
+      <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Three steps. Zero group chats. One good game.</p>
     </div>
-    <a href="#" class="mt-6 inline-flex items-center gap-2 bg-white text-teal font-bold px-5 py-2.5 rounded-lg w-fit hover:bg-white/90 transition-colors shadow-md">List Your Venue</a>
-  </div>
-  
-  <div class="card p-8 text-center flex flex-col items-center justify-center">
-    <div class="w-14 h-14 rounded-2xl bg-teal-light flex items-center justify-center mb-4">
-      <svg class="w-6 h-6 text-teal" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".18"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
+    <div class="mt-12 grid md:grid-cols-3 gap-6">
+      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
+        <div class="font-display text-6xl text-coral leading-none">01</div>
+        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">PICK A GAME</h3>
+        <p class="text-ink/65 mt-3 text-[15px]">Filter by sport, sector or time. See who's already in.</p>
+        <div class="hidden md:block absolute top-12 -right-3 text-ink/20 text-2xl">→</div>
+      </div>
+      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
+        <div class="font-display text-6xl text-coral leading-none">02</div>
+        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">BOOK A SLOT</h3>
+        <p class="text-ink/65 mt-3 text-[15px]">Pay for one spot, not the whole turf. Refund if it doesn't fill.</p>
+        <div class="hidden md:block absolute top-12 -right-3 text-ink/20 text-2xl">→</div>
+      </div>
+      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
+        <div class="font-display text-6xl text-coral leading-none">03</div>
+        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">SHOW UP &amp; PLAY</h3>
+        <p class="text-ink/65 mt-3 text-[15px]">Get the venue on WhatsApp. Meet 9 new players. Repeat next week.</p>
+      </div>
     </div>
-    <h3 class="font-extrabold text-ink text-xl mb-2">Never miss an event</h3>
-    <p class="text-sm text-ink/50 mb-6 max-w-xs leading-relaxed">Join our WhatsApp channel for instant game alerts, open slot pings &amp; exclusive early-bird bookings.</p>
-    <a href="https://whatsapp.com/channel/0029VbCbUEq4IBh67ozKBy1z" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-teal text-white font-bold px-5 py-2.5 rounded-lg hover:bg-teal-dark transition-colors shadow-md">
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2 22l5.07-1.33A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Z" opacity=".35"/><path d="M12 4a8 8 0 0 0-6.9 12.02L4.5 19.5l3.6-.94A8 8 0 1 0 12 4Z"/></svg>
-      Join WhatsApp Channel
-    </a>
-  </div>
-</section>
+  </section>
 
+  <!-- ============ HOST BAND ============ -->
+  <section id="host" class="relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
+      <div class="relative rounded-[32px] bg-coral text-white p-8 md:p-14 overflow-hidden">
+        <div class="absolute right-0 bottom-0 font-display text-[22rem] leading-none text-white/10 select-none pointer-events-none translate-y-12 translate-x-6">HOST</div>
+        <div class="relative grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/80">For turfs &amp; organisers</div>
+            <h2 class="mt-4 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight">RUN A GROUND?<br>FILL IT UP<span class="text-ink">.</span></h2>
+            <p class="mt-5 max-w-md text-white/90 text-[15px]">List your turf, court or league on FieldDay. We bring the players, handle the payments, and cover no-shows. Zero setup fee.</p>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a href="#" class="inline-flex items-center gap-2 rounded-full bg-ink text-cream px-6 py-3 text-sm font-semibold hover:bg-cream hover:text-ink transition-colors">Become a host →</a>
+              <a href="#" class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/25">See host pricing</a>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
+              <div class="font-display text-4xl md:text-5xl leading-none">₹0</div>
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Setup fee</div>
+            </div>
+            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
+              <div class="font-display text-4xl md:text-5xl leading-none">48h</div>
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Go live</div>
+            </div>
+            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
+              <div class="font-display text-4xl md:text-5xl leading-none">{{ total_venues|default:"12" }}+</div>
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Venues onboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
 {% endblock %}
