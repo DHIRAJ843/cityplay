@@ -74,9 +74,7 @@
 <div class="min-h-screen bg-cream text-ink">
 
   <!-- ============ HERO ============ -->
-  <!-- Changed h-[100svh] (fixed height, forces content to be clipped/overlapped)
-       to min-h-[100svh] (a floor, not a ceiling) so the section grows to fit
-       its content on smaller screens instead of crushing everything together. -->
+
   <section class="relative min-h-[100svh] w-full overflow-hidden text-cream flex flex-col">
     {% if hero_image %}
       <img src="{{ hero_image }}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
@@ -94,9 +92,7 @@
       </div>
       <div class="hidden md:flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-semibold">
         <span>Tonight · Clear skies</span>
-        {# FIX: {% now "D d M"|upper %} is invalid — the "|upper" gets read as
-           part of the now-tag's format string instead of a filter, producing
-           garbled output. Store the value with `as`, then filter the variable. #}
+        {#  {% now "D d M"|upper %} #}
         {% now "D d M" as today_str %}
         <span class="text-coral-soft">{{ today_str|upper }}</span>
       </div>
