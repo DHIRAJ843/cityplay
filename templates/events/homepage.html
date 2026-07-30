@@ -3,7 +3,6 @@
 
 {% block content %}
 <style>
-  /* Custom design tokens for the Hype Drop homepage */
   :root {
     --ink: #14231f;
     --teal: #1f6f5c;
@@ -14,10 +13,10 @@
     --amber: #f2c94c;
     --mist: #eef1ea;
     --coral-soft: #ffb59a;
+    --navbar-h: 64px; /* ← match your actual navbar height */
   }
   .font-display { font-family: 'Archivo Black', 'Bebas Neue', 'Impact', system-ui, sans-serif; letter-spacing: -0.01em; }
 
-  /* Colors */
   .bg-ink { background-color: var(--ink); } .text-ink { color: var(--ink); } .border-ink { border-color: var(--ink); }
   .bg-cream { background-color: var(--cream); } .text-cream { color: var(--cream); } .border-cream { border-color: var(--cream); }
   .bg-coral { background-color: var(--coral); } .text-coral { color: var(--coral); } .border-coral { border-color: var(--coral); }
@@ -27,7 +26,6 @@
   .bg-mist { background-color: var(--mist); } .bg-mist\/60 { background-color: rgba(238,241,234,0.6); }
   .text-coral-soft { color: var(--coral-soft); }
 
-  /* Opacity variants used in the design */
   .bg-ink\/70 { background-color: rgba(20,35,31,.7); }
   .bg-ink\/30 { background-color: rgba(20,35,31,.3); }
   .bg-ink\/80 { background-color: rgba(20,35,31,.8); }
@@ -50,22 +48,51 @@
   .bg-coral\/30 { background-color: rgba(242,100,59,.3); }
   .hover\:bg-cream:hover { background-color: var(--cream); }
 
-  /* Effects */
+  /* ── Animations ─────────────────────────────────────────────────── */
   .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
   @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.8);} }
+
+  /* Marquee */
   .marquee-track { animation: marquee 30s linear infinite; }
   @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
+
   .hero-shadow { box-shadow: 0 30px 80px -30px rgba(0,0,0,0.6); }
   .card-shadow-hover:hover { box-shadow: 0 25px 60px -30px rgba(28,61,51,0.4); }
 
-  /* Hero heading — clamp() keeps it from ever overflowing its box,
-     instead of the old uncapped vw values (22vw/16vw + 12rem/14rem)
-     that blew past the viewport height on most screens. */
+  /* ── Hero: exactly fills the viewport below the navbar ──────────── */
+  /* dvh = dynamic viewport height (handles mobile browser chrome)    */
+  /* Falls back to vh on older browsers                               */
+  .hero-outer {
+    height: calc(100vh - var(--navbar-h));
+    height: calc(100dvh - var(--navbar-h));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* clips bg image to the section boundary */
+    position: relative;
+  }
+
+  /* ── Hero heading sizes ──────────────────────────────────────────── */
+  /* Slightly tighter on smaller viewports so everything fits at once  */
   .hero-title-main {
-    font-size: clamp(2.75rem, 9vw, 7.5rem);
+    font-size: clamp(1.6rem, 3.8vw, 3.75rem);
+    line-height: 0.92;
   }
   .hero-title-sub {
-    font-size: clamp(1.5rem, 4.4vw, 3.75rem);
+    font-size: clamp(0.85rem, 1.9vw, 1.75rem);
+    line-height: 1.0;
+  }
+
+  /* ── Content area: grows to fill space between status bar & marquee */
+  .hero-body {
+    flex: 1;
+    display: flex;
+    align-items: center; /* vertical center the grid */
+    min-height: 0;       /* allow shrinking so marquee is never pushed out */
+  }
+
+  /* ── Marquee strip: always at bottom, never pushed off-screen ────── */
+  .hero-marquee {
+    flex-shrink: 0;
   }
 </style>
 
@@ -74,125 +101,103 @@
 <div class="min-h-screen bg-cream text-ink">
 
   <!-- ============ HERO ============ -->
+  <section class="hero-outer bg-ink">
 
-  <section class="relative min-h-[100svh] w-full overflow-hidden text-cream flex flex-col">
+    <!-- Background image -->
     {% if hero_image %}
       <img src="{{ hero_image }}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
     {% else %}
       <img src="{% static 'images/hero1.png' %}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
     {% endif %}
+
+    <!-- Overlays -->
     <div class="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink/95"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent"></div>
     <div class="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-coral/30 blur-3xl mix-blend-screen"></div>
 
-    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 pt-24 md:pt-28 flex items-center justify-between text-cream/80">
+    <!-- Status bar -->
+    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 pt-6 md:pt-8 flex items-center justify-between text-cream/80 flex-shrink-0">
       <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur border border-white/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
         <span class="h-2 w-2 rounded-full bg-coral pulse-dot"></span>
         Live · {{ total_events|default:"24" }} games · Gandhinagar
       </div>
       <div class="hidden md:flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-semibold">
         <span>Tonight · Clear skies</span>
-        {#  {% now "D d M"|upper %} #}
         {% now "D d M" as today_str %}
         <span class="text-coral-soft">{{ today_str|upper }}</span>
       </div>
     </div>
 
-    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 mt-8 md:mt-14 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-center flex-1">
-      <div>
-        <h1 class="font-display leading-[0.9] tracking-tight">
-          <span class="hero-title-main block">PLAY</span>
-          <span class="hero-title-main block text-coral">TONIGHT<span class="text-cream">.</span></span>
-          <span class="hero-title-sub block text-cream/60 mt-1">MEET YOUR PEOPLE.</span>
-        </h1>
-        <p class="mt-6 max-w-lg text-base md:text-lg text-cream/85">
-          Pickup cricket, 5-a-side football, pickleball and casual mixers — booked in 30 seconds. No group chats. No flakes. Just show up and play.
-        </p>
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#events" class="inline-flex items-center gap-2 rounded-full bg-coral text-white px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">Play tonight →</a>
-          <a href="#how" class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">How it works</a>
-        </div>
-      </div>
+    <!-- Main content grid — flex:1 + align-items:center keeps it vertically centred -->
+    <div class="hero-body relative z-10">
+      <div class="mx-auto max-w-7xl w-full px-5 md:px-8 grid lg:grid-cols-[1.4fr_1fr] gap-8 md:gap-10 items-center">
 
-      {# Next drop card #}
-      {% with next=events.0 %}
-      <div class="hidden lg:flex flex-col gap-4 items-end">
-        <div class="w-full max-w-sm rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-5">
-          <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.22em] font-bold text-cream/70">
-            <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-coral pulse-dot"></span> Next drop</span>
-            <span>{% if next %}{{ next.start_time|time:"g:i A" }}{% else %}8:00 PM{% endif %}</span>
-          </div>
-          <div class="mt-3 font-display text-3xl leading-tight uppercase">{% if next %}{{ next.title }}{% else %}Wednesday Night Cricket{% endif %}</div>
-          <div class="mt-1 text-sm text-cream/70">{% if next %}{{ next.venue.name }}{% else %}GIFT City Turf · Sector 11{% endif %}</div>
-          <div class="mt-4 h-1.5 rounded-full bg-white/15 overflow-hidden">
-            <div class="h-full bg-coral" style="width: {% if next %}{{ next.spots_left_percent }}{% else %}81{% endif %}%;"></div>
-          </div>
-          <div class="mt-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-cream/80">
-            <span>{% if next %}{{ next.spots_left }} of {{ next.total_slots }} spots{% else %}3 of 16 spots{% endif %}</span>
-            <span class="text-coral-soft">{% if next %}{{ next.urgency_label }}{% else %}Filling fast{% endif %}</span>
-          </div>
-          {% if next %}
-            <a href="{% url 'events:event_detail' next.id %}" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
-          {% else %}
-            <a href="#events" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
-          {% endif %}
-        </div>
-        <div class="flex items-center gap-3 rounded-full bg-white/10 backdrop-blur border border-white/20 pl-1 pr-4 py-1">
-          <div class="flex -space-x-2">
-            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">A</span>
-            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">R</span>
-            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">K</span>
-            <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
-          </div>
-          <div class="text-[11px] uppercase tracking-[0.2em] font-bold">
-            <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream/60">this month</span>
+        <!-- Left: heading + description + CTAs -->
+        <div>
+          <h1 class="font-display leading-[0.9] tracking-tight">
+            <span class="hero-title-main block text-cream">PLAY</span>
+            <span class="hero-title-main block text-coral">TONIGHT<span class="text-cream">.</span></span>
+            <span class="hero-title-sub block text-cream/60 mt-1">MEET YOUR PEOPLE.</span>
+          </h1>
+          <p class="mt-4 max-w-lg text-base md:text-lg text-cream/85">
+            Pickup cricket, 5-a-side football, pickleball and casual mixers — booked in 30 seconds. No group chats. No flakes. Just show up and play.
+          </p>
+          <div class="mt-5 flex flex-wrap items-center gap-3">
+            <a href="#events" class="inline-flex items-center gap-2 rounded-full bg-coral text-white px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">Play tonight →</a>
+            <a href="#how" class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">How it works</a>
           </div>
         </div>
-      </div>
-      {% endwith %}
-    </div>
 
-    {# Search bar — pb-20 added so it clears the marquee bar below on shorter screens #}
-    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 mt-10 md:mt-14 pb-20">
-      <form method="get" action="{% url 'home' %}#events" class="rounded-2xl bg-white/95 backdrop-blur hero-shadow border border-white/40 p-2 grid grid-cols-2 sm:grid-cols-[1.1fr_1fr_1fr_auto] gap-1">
-        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
-          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">Activity</div>
-          <select name="activity" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
-            <option value="">Any sport</option>
-            {% for a in activities %}
-              <option value="{{ a.id }}" {% if selected_activity == a.id|stringformat:"s" %}selected{% endif %}>{{ a.name }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
-          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">When</div>
-          <select name="when" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
-            <option value="">Anytime</option>
-            <option value="today" {% if when == 'today' %}selected{% endif %}>Tonight</option>
-            <option value="tomorrow" {% if when == 'tomorrow' %}selected{% endif %}>Tomorrow</option>
-            <option value="weekend" {% if when == 'weekend' %}selected{% endif %}>This weekend</option>
-          </select>
-        </label>
-        <label class="rounded-xl bg-cream/60 hover:bg-cream px-4 py-3 cursor-pointer transition-colors">
-          <div class="text-[10px] uppercase tracking-[0.22em] font-bold text-ink/55">Sector</div>
-          <select name="sector" class="mt-0.5 w-full bg-transparent font-semibold text-ink outline-none">
-            <option value="">All sectors</option>
-            {% for s in sectors %}<option value="{{ s }}" {% if selected_sector == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
-          </select>
-        </label>
-        <button type="submit" class="col-span-2 sm:col-span-1 rounded-xl bg-ink text-cream font-semibold px-5 py-3.5 hover:bg-coral transition-colors">Find games →</button>
-      </form>
-      <div class="mt-3 hidden md:flex items-center justify-between text-[11px] uppercase tracking-[0.22em] font-semibold text-cream/70">
-        <div class="flex items-center gap-5">
-          <span>✓ Verified turfs</span><span>✓ Refund if cancelled</span><span>✓ Skill-matched</span>
+        <!-- Right: Next drop card -->
+        {% with next=events.0 %}
+        <div class="hidden lg:flex flex-col gap-4 items-end">
+          <div class="w-full max-w-sm rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-5">
+            <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.22em] font-bold text-cream/70">
+              <span class="inline-flex items-center gap-1.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-coral pulse-dot"></span> Next drop
+              </span>
+              <span>{% if next %}{{ next.start_time|time:"g:i A" }}{% else %}8:00 PM{% endif %}</span>
+            </div>
+            <div class="mt-3 font-display text-3xl leading-tight uppercase text-cream">
+              {% if next %}{{ next.title }}{% else %}Wednesday Night Cricket{% endif %}
+            </div>
+            <div class="mt-1 text-sm text-cream/70">
+              {% if next %}{{ next.venue.name }}{% else %}GIFT City Turf · Sector 11{% endif %}
+            </div>
+            <div class="mt-4 h-1.5 rounded-full bg-white/15 overflow-hidden">
+              <div class="h-full bg-coral" style="width: {% if next %}{{ next.spots_left_percent }}{% else %}81{% endif %}%;"></div>
+            </div>
+            <div class="mt-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-cream/80">
+              <span>{% if next %}{{ next.spots_left }} of {{ next.total_slots }} spots{% else %}3 of 16 spots{% endif %}</span>
+              <span class="text-coral-soft">{% if next %}{{ next.urgency_label }}{% else %}Filling fast{% endif %}</span>
+            </div>
+            {% if next %}
+              <a href="{% url 'events:event_detail' next.id %}" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
+            {% else %}
+              <a href="#events" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
+            {% endif %}
+          </div>
+
+          <!-- Social proof pill -->
+          <div class="flex items-center gap-3 rounded-full bg-white/10 backdrop-blur border border-white/20 pl-1 pr-4 py-1">
+            <div class="flex -space-x-2">
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">A</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">R</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">K</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
+            </div>
+            <div class="text-[11px] uppercase tracking-[0.2em] font-bold">
+              <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream/60">this month</span>
+            </div>
+          </div>
         </div>
+        {% endwith %}
+
       </div>
     </div>
 
-    {# Marquee — no longer absolute; it now sits in normal flow at the true
-       bottom of the (variable-height) hero section, so it can never overlap
-       the heading, card, or search bar above it. #}
-    <div class="relative z-10 mt-auto border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
+    <!-- Marquee strip — flex-shrink:0 means it NEVER gets pushed out of view -->
+    <div class="hero-marquee relative z-10 border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
       <div class="marquee-track whitespace-nowrap py-2.5 flex gap-10 font-display text-sm md:text-base tracking-widest text-cream">
         {% for i in "12" %}
           <div class="flex gap-10 shrink-0">
@@ -206,7 +211,10 @@
         {% endfor %}
       </div>
     </div>
+
   </section>
+  <!-- ============ END HERO ============ -->
+
 
   <!-- ============ 01 BROWSE BY ACTIVITY ============ -->
   <section id="activities" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
@@ -237,6 +245,7 @@
       {% endfor %}
     </div>
   </section>
+
 
   <!-- ============ 02 HAPPENING SOON ============ -->
   <section id="events" class="bg-mist/60 border-y border-ink/10">
@@ -309,6 +318,7 @@
     </div>
   </section>
 
+
   <!-- ============ 03 HOW IT WORKS ============ -->
   <section id="how" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
     <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
@@ -338,6 +348,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- ============ HOST BAND ============ -->
   <section id="host" class="relative overflow-hidden">
