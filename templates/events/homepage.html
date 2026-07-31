@@ -63,8 +63,8 @@
   /* dvh = dynamic viewport height (handles mobile browser chrome)    */
   /* Falls back to vh on older browsers                               */
   .hero-outer {
-    height: calc(100vh - var(--navbar-h));
-    height: calc(100dvh - var(--navbar-h));
+    height: calc(70vh - var(--navbar-h));
+    height: calc(70dvh - var(--navbar-h));
     display: flex;
     flex-direction: column;
     overflow: hidden; /* clips bg image to the section boundary */
@@ -121,7 +121,7 @@
         <span class="h-2 w-2 rounded-full bg-coral pulse-dot"></span>
         Live · {{ total_events|default:"24" }} games · Gandhinagar
       </div>
-      <div class="hidden md:flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-semibold">
+      <div class="hidden md:flex items-center gap-6 text-[11.5px] uppercase tracking-[0.22em] font-semibold">
         <span>Tonight · Clear skies</span>
         {% now "D d M" as today_str %}
         <span class="text-coral-soft">{{ today_str|upper }}</span>
@@ -181,10 +181,11 @@
           <!-- Social proof pill -->
           <div class="flex items-center gap-3 rounded-full bg-white/10 backdrop-blur border border-white/20 pl-1 pr-4 py-1">
             <div class="flex -space-x-2">
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">A</span>
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">R</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">j</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">s</span>
+              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">D</span>
               <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">K</span>
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
+               <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
             </div>
             <div class="text-[11px] uppercase tracking-[0.2em] font-bold">
               <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream/60">this month</span>
