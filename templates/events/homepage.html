@@ -58,8 +58,6 @@ body::before {
   .bg-coral { background-color: var(--coral); } .text-coral { color: var(--coral); } .border-coral { border-color: var(--coral); }
   .bg-teal { background-color: var(--teal); } .text-teal { color: var(--teal); }
   .bg-sage { background-color: var(--sage); } .bg-sage-deep { background-color: var(--sage-deep); }
-  .bg-amber {  background-image: url("/static/images/cricket.png"); }
-  .bg-sage { background-image: url("/static/images/football.png"); }
   .bg-mist { background-color: var(--mist); } .bg-mist\/60 { background-color: rgba(238,241,234,0.6); }
   .text-coral-soft { color: var(--coral-soft); }
 
@@ -266,18 +264,30 @@ body::before {
 
     <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
       {% for activity in activities %}
-        <a href="{% url 'venues:activity_venues' activity.slug %}"
-           class="group relative overflow-hidden rounded-3xl {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' %} p-6 aspect-[3/4] flex flex-col justify-between transition-transform hover:-translate-y-1">
-          <div class="flex items-start justify-between">
-            <span class="text-[10px] uppercase tracking-[0.22em] font-bold opacity-70">{{ activity.tagline|default:"This week" }}</span>
-            <span class="h-8 w-8 rounded-full bg-white/15 grid place-items-center text-sm">→</span>
-          </div>
-          <div class="font-display text-[6.5rem] leading-none opacity-15 absolute -bottom-4 -right-2 select-none">{{ forloop.counter|stringformat:"02d" }}</div>
-          <div class="relative">
-            <div class="font-display text-4xl md:text-5xl tracking-wide uppercase">{{ activity.name }}</div>
-            <div class="mt-2 text-sm font-semibold opacity-80">{{ activity.event_count|default:0 }} game{{ activity.event_count|pluralize }} this week</div>
-          </div>
-        </a>
+       <a href="{% url 'venues:activity_venues' activity.slug %}"
+   class="group relative overflow-hidden rounded-3xl {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' %} p-6 aspect-[3/4] flex flex-col justify-between transition-transform hover:-translate-y-1">
+
+  <div class="flex items-start justify-between">
+    <span class="text-[10px] uppercase tracking-[0.22em] font-bold opacity-70">{{ activity.tagline|default:"This week" }}</span>
+    <span class="h-8 w-8 rounded-full bg-white/15 grid place-items-center text-sm">→</span>
+  </div>
+
+  <!-- ✅ Show uploaded icon if available -->
+  {% if activity.icon_image %}
+    <img src="{{ activity.icon_image.url }}"
+         alt="{{ activity.name }}"
+         class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none">
+  {% else %}
+    <div class="font-display text-[6.5rem] leading-none opacity-15 absolute -bottom-4 -right-2 select-none">
+      {{ forloop.counter|stringformat:"02d" }}
+    </div>
+  {% endif %}
+
+  <div class="relative">
+    <div class="font-display text-4xl md:text-5xl tracking-wide uppercase">{{ activity.name }}</div>
+    <div class="mt-2 text-sm font-semibold opacity-80">{{ activity.event_count|default:0 }} game{{ activity.event_count|pluralize }} this week</div>
+  </div>
+</a>
       {% empty %}
         <p class="text-ink/50 col-span-full">No activities yet — add them from the admin.</p>
       {% endfor %}
