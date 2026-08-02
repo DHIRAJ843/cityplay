@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ activity.name }} Courts — City Play{% endblock %}
+
+{% block content %}
+<div class="bg-cream min-h-screen">
+
+  {# ============ HEADER ============ #}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6">
+    <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-ink/50 hover:text-coral transition-colors mb-4">
+      &larr; All Activities
+    </a>
+    <h1 class="font-extrabold uppercase tracking-tight text-ink" style="font-size: clamp(1.75rem, 4.5vw, 3rem); line-height: 1.05;">
+      {{ activity.name }} Courts in Gandhinagar
+    </h1>
+    <p class="mt-2 text-ink/50 text-sm">{{ total }} venue{{ total|pluralize }} found</p>
+
+    {# FILTER BAR #}
+    <div class="mt-6 flex flex-wrap items-center gap-3">
+      <a href="?"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors
+                {% if not under_5 %}bg-ink text-cream border-ink{% else %}bg-white text-ink/70 border-black/10 hover:border-ink{% endif %}">
+        All Distances
+      </a>
+      <a href="?under5=1"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors
+                {% if under_5 %}bg-ink text-cream border-ink{% else %}bg-white text-ink/70 border-black/10 hover:border-ink{% endif %}">
+        Under 5 km
+      </a>
+    </div>
+  </div>
+
+  {# ============ VENUE GRID ============ #}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    {% if venues %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for venue in venues %}
+          <a href="{% url 'venues:venue_detail' venue.pk %}"
+             class="card overflow-hidden hover:shadow-md transition-shadow block group">
+            <div class="relative h-40 bg-teal overflow-hidden">
+              {% if venue.cover_image %}
+                <img src="{{ venue.cover_image.url }}" alt="{{ venue.name }}"
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              {% else %}
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="text-white/20 text-5xl font-extrabold select-none">{{ venue.name|slice:":1" }}</span>
+                </div>
+              {% endif %}
+            </div>
+            <div class="p-4">
+              <p class="font-bold text-ink text-base leading-tight truncate">{{ venue.name }}</p>
+              <p class="flex items-center gap-1.5 text-xs text-ink/50 mt-1">
+                {% if venue.distance_km %}{{ venue.distance_km|floatformat:1 }} km &bull; {% endif %}{{ venue.sector }}
+              </p>
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                {% for a in venue.activities.all %}
+                  <span class="text-[11px] font-semibold px-2 py-1 rounded-full bg-teal-light text-teal-dark">{{ a.name }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-24">
+        <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/>
+            <circle cx="12" cy="10" r="2.5"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-lg text-ink">No {{ activity.name }} venues yet</h3>
+        <p class="text-ink/50 text-sm mt-2 mb-6">Check back soon — new courts added weekly.</p>
+        <a href="{% url 'home' %}" class="btn-primary">Browse All Activities</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
