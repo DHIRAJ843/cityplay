@@ -1,11 +1,14 @@
+{% load static %}
 <footer class="bg-ink text-white/70 mt-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
     <div class="col-span-2 md:col-span-1">
       <div class="flex items-center gap-2 mb-3">
         <span class="w-7 h-7 rounded-lg bg-teal flex items-center justify-center">
-          <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11 2 3 12h6l-1 6 9-11h-6l1-5z"/></svg>
+          <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><img src="{% static 'images/logo.png' %}" 
+           alt="CityPlay Logo"
+           class="w-13 h-15 object-contain rounded-lg transition-transform duration-300 hover:scale-110"></svg>
         </span>
-        <span class="font-bold text-white">FieldDay GNR</span>
+        <span class="font-bold text-white">City Play</span>
       </div>
       <p class="text-sm text-white/50 leading-relaxed">Your local sports &amp; community platform, built for Gandhinagar.</p>
     </div>
