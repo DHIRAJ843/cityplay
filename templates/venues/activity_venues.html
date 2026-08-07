@@ -1,81 +1,184 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ activity.name }} Courts — City Play{% endblock %}
+{% block title %}{{ activity.name }} Courts in Gandhinagar — City Play{% endblock %}
+
+{% block extra_head %}{% include "venues/_cp_tokens.html" %}{% endblock %}
 
 {% block content %}
-<div class="bg-cream min-h-screen">
+<div class="cp-page min-h-screen">
 
-  {# ============ HEADER ============ #}
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6">
-    <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-ink/50 hover:text-coral transition-colors mb-4">
-      &larr; All Activities
+  {# ==================== HERO ==================== #}
+  <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
+    <a href="{% url 'home' %}" class="cp-link" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cp-ink-3)">
+      &larr; All activities
     </a>
-    <h1 class="font-extrabold uppercase tracking-tight text-ink" style="font-size: clamp(1.75rem, 4.5vw, 3rem); line-height: 1.05;">
-      {{ activity.name }} Courts in Gandhinagar
-    </h1>
-    <p class="mt-2 text-ink/50 text-sm">{{ total }} venue{{ total|pluralize }} found</p>
 
-    {# FILTER BAR #}
-    <div class="mt-6 flex flex-wrap items-center gap-3">
-      <a href="?"
-         class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors
-                {% if not under_5 %}bg-ink text-cream border-ink{% else %}bg-white text-ink/70 border-black/10 hover:border-ink{% endif %}">
-        All Distances
-      </a>
-      <a href="?under5=1"
-         class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-colors
-                {% if under_5 %}bg-ink text-cream border-ink{% else %}bg-white text-ink/70 border-black/10 hover:border-ink{% endif %}">
-        Under 5 km
-      </a>
+    <div class="mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:justify-between">
+      <div class="min-w-0">
+        <div class="flex items-center gap-3">
+          {# sport silhouette #}
+          <span class="grid place-items-center shrink-0"
+                style="width:48px;height:48px;border-radius:14px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+            <svg class="cp-ico" style="width:26px;height:26px" viewBox="0 0 24 24">
+              <ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/>
+              <circle cx="19" cy="6" r="2.2"/>
+            </svg>
+          </span>
+          <span class="cp-chip" style="background:var(--cp-coral-soft);color:var(--cp-coral)">
+            {{ total }} venue{{ total|pluralize }} near you
+          </span>
+        </div>
+
+        <h1 class="cp-display mt-3" style="font-size:clamp(2.25rem,6vw,4.5rem)">
+          {{ activity.name }} Courts<br class="hidden sm:block"> in Gandhinagar
+        </h1>
+
+        <p class="mt-3 text-sm max-w-xl" style="color:var(--cp-ink-2);line-height:1.6">
+          Turf-verified courts across Sector 9, Infocity, Kudasan and Sargasan. Live pricing, real photos,
+          and no payment until you reach the venue.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  {# ==================== STICKY FILTER BAR ==================== #}
+  <div class="cp-sticky-bar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 cp-scroll-x">
+      <form method="get" class="flex items-center gap-3 min-w-max">
+
+        {# ---- Distance ---- #}
+        <span class="text-[11px] font-semibold uppercase tracking-widest pr-1" style="color:var(--cp-ink-3)">Distance</span>
+        <a href="?{% if price %}price={{ price }}&{% endif %}{% for a in amenities %}amenity={{ a }}&{% endfor %}"
+           class="cp-pill {% if not under_5 and not under_10 %}cp-pill--on{% endif %}">All</a>
+        <a href="?under5=1{% if price %}&price={{ price }}{% endif %}{% for a in amenities %}&amenity={{ a }}{% endfor %}"
+           class="cp-pill {% if under_5 %}cp-pill--on{% endif %}">Under 5 km</a>
+        <a href="?under10=1{% if price %}&price={{ price }}{% endif %}{% for a in amenities %}&amenity={{ a }}{% endfor %}"
+           class="cp-pill {% if under_10 %}cp-pill--on{% endif %}">Under 10 km</a>
+
+        <span class="mx-1 h-6 w-px" style="background:var(--cp-line)"></span>
+
+        {# ---- Price range ---- #}
+        <span class="text-[11px] font-semibold uppercase tracking-widest pr-1" style="color:var(--cp-ink-3)">Price</span>
+        <a href="?price=500{% if under_5 %}&under5=1{% endif %}{% if under_10 %}&under10=1{% endif %}"
+           class="cp-pill {% if price == '500' %}cp-pill--on{% endif %}">Under &#8377;500</a>
+        <a href="?price=1000{% if under_5 %}&under5=1{% endif %}{% if under_10 %}&under10=1{% endif %}"
+           class="cp-pill {% if price == '1000' %}cp-pill--on{% endif %}">&#8377;500&ndash;1000</a>
+        <a href="?price=1000plus{% if under_5 %}&under5=1{% endif %}{% if under_10 %}&under10=1{% endif %}"
+           class="cp-pill {% if price == '1000plus' %}cp-pill--on{% endif %}">&#8377;1000+</a>
+
+        <span class="mx-1 h-6 w-px" style="background:var(--cp-line)"></span>
+
+        {# ---- Amenities ---- #}
+        <span class="text-[11px] font-semibold uppercase tracking-widest pr-1" style="color:var(--cp-ink-3)">Amenities</span>
+        <a href="?amenity=floodlights" class="cp-pill {% if 'floodlights' in amenities %}cp-pill--on{% endif %}">
+          <svg class="cp-ico" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
+          Flood lights
+        </a>
+        <a href="?amenity=parking" class="cp-pill {% if 'parking' in amenities %}cp-pill--on{% endif %}">
+          <svg class="cp-ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
+          Parking
+        </a>
+        <a href="?amenity=wifi" class="cp-pill {% if 'wifi' in amenities %}cp-pill--on{% endif %}">
+          <svg class="cp-ico" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>
+          WiFi
+        </a>
+        <a href="?amenity=washroom" class="cp-pill {% if 'washroom' in amenities %}cp-pill--on{% endif %}">
+          <svg class="cp-ico" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5M15 16l1-5h2l1 5"/></svg>
+          Washrooms
+        </a>
+      </form>
     </div>
   </div>
 
-  {# ============ VENUE GRID ============ #}
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  {# ==================== VENUE GRID ==================== #}
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
     {% if venues %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <p class="text-xs font-semibold uppercase tracking-widest mb-4" style="color:var(--cp-ink-3)">
+        Showing {{ venues|length }} of {{ total }}
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for venue in venues %}
-          <a href="{% url 'venues:venue_detail' venue.pk %}"
-             class="card overflow-hidden hover:shadow-md transition-shadow block group">
-            <div class="relative h-40 bg-teal overflow-hidden">
-              {% if venue.cover_image %}
-                <img src="{{ venue.cover_image.url }}" alt="{{ venue.name }}"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-              {% else %}
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span class="text-white/20 text-5xl font-extrabold select-none">{{ venue.name|slice:":1" }}</span>
-                </div>
+          <article class="cp-card cp-venue-card flex flex-col">
+
+            {# ---- photo ---- #}
+            <div class="cp-photo relative overflow-hidden" style="aspect-ratio:16/10;background:var(--cp-teal-soft)">
+              <img src="{% if venue.cover_image %}{{ venue.cover_image.url }}{% else %}https://via.placeholder.com/800x500?text=Venue+Photo{% endif %}"
+                   alt="{{ venue.name }} — {{ activity.name }} court in {{ venue.sector }}"
+                   loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+              <div class="absolute inset-x-0 bottom-0 h-1/2"
+                   style="background:linear-gradient(to top,rgba(20,32,28,.55),transparent)"></div>
+
+              {% if venue.distance_km %}
+                <span class="absolute top-3 left-3 cp-chip" style="background:rgba(255,255,255,.94)">
+                  <svg class="cp-ico" style="width:12px;height:12px" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                  {{ venue.distance_km|floatformat:1 }} km
+                </span>
+              {% endif %}
+
+              {% if venue.slots_left and venue.slots_left <= 3 %}
+                <span class="absolute top-3 right-3 cp-chip" style="background:var(--cp-coral);color:#fff">
+                  Only {{ venue.slots_left }} slot{{ venue.slots_left|pluralize }} left
+                </span>
               {% endif %}
             </div>
-            <div class="p-4">
-              <p class="font-bold text-ink text-base leading-tight truncate">{{ venue.name }}</p>
-              <p class="flex items-center gap-1.5 text-xs text-ink/50 mt-1">
-                {% if venue.distance_km %}{{ venue.distance_km|floatformat:1 }} km &bull; {% endif %}{{ venue.sector }}
-              </p>
-              <div class="flex flex-wrap gap-1.5 mt-3">
-                {% for a in venue.activities.all %}
-                  <span class="text-[11px] font-semibold px-2 py-1 rounded-full bg-teal-light text-teal-dark">{{ a.name }}</span>
+
+            {# ---- body ---- #}
+            <div class="flex flex-1 flex-col p-5">
+              <div class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                <div class="min-w-0">
+                  <h2 class="font-bold text-[17px] leading-snug truncate">{{ venue.name }}</h2>
+                  <p class="mt-1 text-[13px] truncate" style="color:var(--cp-ink-2)">
+                    {% if venue.distance_km %}{{ venue.distance_km|floatformat:1 }} km &middot; {% endif %}{{ venue.sector|default:"Gandhinagar" }}
+                  </p>
+                </div>
+                <div class="text-right shrink-0">
+                  <p class="cp-price" style="font-size:18px">&#8377;{{ venue.price_per_hour|default:"700"|floatformat:0 }}</p>
+                  <p class="text-[11px]" style="color:var(--cp-ink-3)">per hour</p>
+                </div>
+              </div>
+
+              {# amenity icon row #}
+              <div class="mt-4 flex items-center gap-3" style="color:var(--cp-ink-3)">
+                {% if venue.has_floodlights %}<svg class="cp-ico" viewBox="0 0 24 24" aria-label="Flood lights"><title>Flood lights</title><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>{% endif %}
+                {% if venue.has_parking %}<svg class="cp-ico" viewBox="0 0 24 24" aria-label="Parking"><title>Parking</title><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>{% endif %}
+                {% if venue.has_wifi %}<svg class="cp-ico" viewBox="0 0 24 24" aria-label="WiFi"><title>WiFi</title><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>{% endif %}
+                {% if venue.has_washroom %}<svg class="cp-ico" viewBox="0 0 24 24" aria-label="Washrooms"><title>Washrooms</title><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>{% endif %}
+                {% if venue.equipment_included %}<svg class="cp-ico" viewBox="0 0 24 24" aria-label="Equipment included"><title>Equipment included</title><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18M3 12h18"/></svg>{% endif %}
+              </div>
+
+              {# sport tags #}
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                {% for a in venue.activities.all|slice:":3" %}
+                  <span class="cp-chip">{{ a.name }}</span>
                 {% endfor %}
               </div>
+
+              {# footer #}
+              <div class="mt-5 pt-4 flex items-center justify-between gap-3" style="border-top:1px solid var(--cp-line)">
+                <a href="{% url 'venues:venue_detail' venue.pk %}" class="cp-link">View details &rarr;</a>
+                <a href="{% url 'venues:venue_detail' venue.pk %}" class="cp-btn cp-btn--sm cp-book">Book Now</a>
+              </div>
             </div>
-          </a>
+          </article>
         {% endfor %}
       </div>
+
     {% else %}
-      <div class="text-center py-24">
-        <div class="w-16 h-16 rounded-full bg-teal/10 flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-teal" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/>
-            <circle cx="12" cy="10" r="2.5"/>
-          </svg>
+      {# ---- empty state ---- #}
+      <div class="cp-card text-center px-6 py-20 max-w-xl mx-auto">
+        <div class="mx-auto grid place-items-center" style="width:64px;height:64px;border-radius:20px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+          <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
         </div>
-        <h3 class="font-bold text-lg text-ink">No {{ activity.name }} venues yet</h3>
-        <p class="text-ink/50 text-sm mt-2 mb-6">Check back soon — new courts added weekly.</p>
-        <a href="{% url 'home' %}" class="btn-primary">Browse All Activities</a>
+        <h3 class="cp-display mt-5" style="font-size:1.75rem">No {{ activity.name }} venues yet</h3>
+        <p class="mt-2 text-sm" style="color:var(--cp-ink-2)">Try widening the distance filter — or check back soon, we add new courts weekly.</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="?" class="cp-btn">Clear filters</a>
+          <a href="{% url 'home' %}" class="cp-btn" style="background:#fff;color:var(--cp-teal-dark);border:1px solid var(--cp-line)">Browse all activities</a>
+        </div>
       </div>
     {% endif %}
-  </div>
-
+  </main>
 </div>
 {% endblock %}
