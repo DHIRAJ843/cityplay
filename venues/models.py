@@ -36,6 +36,14 @@ class Venue(models.Model):
     equipment_included = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(default=timezone.now)
+    @property
+    def rating_average(self):
+        """Calculates the average rating from all reviews for this venue."""
+        all_reviews = self.reviews.all()
+        if all_reviews:
+            total_score = sum(review.rating for review in all_reviews)
+            return round(total_score / len(all_reviews), 1)
+        return 4.8  # Default display rating if nobody has reviewed it yet
 
     def __str__(self):
         return f"{self.name} ({self.sector})"
@@ -56,3 +64,62 @@ class VenueImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.venue.name}"
+
+
+# ==========================================
+# NEW MODELS ADDED BELOW (DO NOT DELETE)
+# ==========================================
+
+class Court(models.Model):
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='courts')
+    name = models.CharField(max_length=100, default="Standard Court")
+    is_active = models.BooleanField(default=True)
+    base_price = models.DecimalField(max_digits=8, decimal_places=2, default=1000.00)
+    peak_price_extra = models.DecimalField(max_digits=8, decimal_places=2, default=200.00)
+    open_hour = models.IntegerField(default=6) # 6 AM
+    close_hour = models.IntegerField(default=23) # 11 PM
+
+    def is_peak(self, hour):
+        # Example: 6 PM to 9 PM is peak pricing
+        return 18 <= hour <= 21
+
+    def price_for_hour(self, hour):
+        if self.is_peak(hour):
+            return self.base_price + self.peak_price_extra
+        return self.base_price
+
+    def __str__(self):
+        return f"{self.venue.name} - {self.name}"
+
+
+class CourtBooking(models.Model):
+    court = models.ForeignKey(Court, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField()
+    hour = models.IntegerField()
+    status = models.CharField(max_length=20, default='pending')
+    base_price = models.DecimalField(max_digits=8, decimal_places=2)
+    peak_charge = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    platform_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    total_price = models.DecimalField(max_digits=8, decimal_places=2)
+
+
+class VenueReview(models.Model):
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=5)
+    body = models.TextField()
+    
+    @property
+    def helpful_count(self):
+        return self.helpful_votes.count()
+
+
+class ReviewHelpful(models.Model):
+    review = models.ForeignKey(VenueReview, on_delete=models.CASCADE, related_name='helpful_votes')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+
+class VenueFavourite(models.Model):
+    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='favourites')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
