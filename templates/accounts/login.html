@@ -5,125 +5,319 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login | CityPlay</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root{
+    --paper:      #FAFAF7;
+    --ink:        #14181C;
+    --muted:      #767B83;
+    --line:       #E3E1DA;
+    --accent:     #FF5A36;
+    --accent-soft:rgba(255,90,54,0.08);
+
+    --font-display:'Oswald', sans-serif;
+    --font-body:   'Inter', sans-serif;
+  }
+
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
+
   body{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-body);
     min-height:100vh;
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:40px 16px;
-
-    /* ✅ your actual background image, used as-is */
-    background-image: url("{% static 'images/size-bg.jpeg' %}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    overflow-x:hidden;
+    background:#020210;
+    color:#EAEAEA;
   }
 
+  /* ---------- space canvas background ---------- */
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* ---------- nebula/galaxy glow overlays ---------- */
+  .nebula {
+    position: fixed;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: nebulaPulse 12s ease-in-out infinite;
+  }
+  .nebula-1 {
+    top: -30%;
+    left: -15%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(100,60,255,0.6) 0%, rgba(40,20,120,0.3) 40%, transparent 70%);
+    animation-delay: 0s;
+  }
+  .nebula-2 {
+    bottom: -25%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,60,120,0.5) 0%, rgba(120,20,60,0.3) 40%, transparent 70%);
+    animation-delay: -4s;
+  }
+  .nebula-3 {
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(60,150,220,0.4) 0%, rgba(20,60,100,0.2) 40%, transparent 70%);
+    animation-delay: -8s;
+  }
+  @keyframes nebulaPulse {
+    0%, 100% { opacity: 0.12; transform: scale(1) rotate(0deg); }
+    25% { opacity: 0.18; transform: scale(1.08) rotate(2deg); }
+    50% { opacity: 0.14; transform: scale(1.02) rotate(-1deg); }
+    75% { opacity: 0.2; transform: scale(1.1) rotate(1deg); }
+  }
+
+  /* ---------- shooting star ---------- */
+  .shooting-star {
+    position: fixed;
+    z-index: 2;
+    pointer-events: none;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
+    border-radius: 1px;
+    opacity: 0;
+    animation: shoot 4s ease-in-out infinite;
+  }
+  .shooting-star:nth-child(1) {
+    top: 15%;
+    left: 20%;
+    animation-delay: 0s;
+  }
+  .shooting-star:nth-child(2) {
+    top: 25%;
+    left: 60%;
+    animation-delay: 2.5s;
+    height: 60px;
+  }
+  .shooting-star:nth-child(3) {
+    top: 10%;
+    left: 80%;
+    animation-delay: 5s;
+    height: 100px;
+  }
+  @keyframes shoot {
+    0% { opacity: 0; transform: translateX(0) translateY(0) rotate(-35deg); }
+    5% { opacity: 1; }
+    15% { opacity: 0; transform: translateX(-120px) translateY(120px) rotate(-35deg); }
+    100% { opacity: 0; transform: translateX(-120px) translateY(120px) rotate(-35deg); }
+  }
+
+  /* ---------- card ---------- */
   .card{
     position:relative;
     width:100%;
     max-width:400px;
-    background:#faf8f5;
+    background:rgba(250,248,245,0.97);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.15);
     border-radius:24px;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08) inset;
     padding:40px 36px;
-    animation:cardIn .5s cubic-bezier(.16,1,.3,1) both;
-    z-index:2;
+    animation:cardIn .6s cubic-bezier(.16,1,.3,1) both;
+    z-index:10;
   }
-  @keyframes cardIn{ from{ opacity:0; transform:translateY(16px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
+  @keyframes cardIn{ 
+    from{ opacity:0; transform:translateY(20px) scale(.96);} 
+    to{ opacity:1; transform:translateY(0) scale(1);}
+  }
 
-  .brand{ text-align:center; margin-bottom:22px; }
-  .brand img{ height:52px; width:auto; display:block; margin:0 auto 8px; animation:pulse 2.6s ease-in-out infinite; }
-  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:.75;} }
-  .brand p{ margin:0; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#9a9a9a; }
+  .brand{ text-align:center; margin-bottom:24px; }
+  .brand img{ 
+    height:48px; width:auto; display:block; margin:0 auto 10px; 
+    animation:softPulse 3s ease-in-out infinite; 
+  }
+  @keyframes softPulse{ 
+    0%,100%{ opacity:1; transform:scale(1);} 
+    50%{ opacity:.85; transform:scale(.98);} 
+  }
+  .brand p{
+    margin:0;
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:10px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
 
-  h1{ font-size:20px; font-weight:700; color:#161616; text-align:center; margin:0 0 4px; }
-  .sub{ font-size:13px; color:#8a8a8a; text-align:center; margin:0 0 26px; }
+  h1{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-0.3px;
+    color:var(--ink);
+    text-align:center;
+    margin:0 0 4px;
+  }
+  .sub{ 
+    font-size:13px; color:var(--muted); text-align:center; 
+    margin:0 0 28px; font-weight:400; 
+  }
 
-  .msg{ font-size:13px; border-radius:10px; padding:10px 14px; margin-bottom:16px; }
-  .msg.error{ background:#fdecea; color:#c0392b; }
-  .msg.ok{ background:#e3f6f1; color:#0f6e5a; }
+  .msg{ font-size:13px; border-radius:10px; padding:10px 14px; margin-bottom:18px; }
+  .msg.error{ background:rgba(192,57,43,0.08); color:#C0392B; border:1px solid rgba(192,57,43,0.15); }
+  .msg.ok{ background:rgba(29,122,76,0.08); color:#1D7A4C; border:1px solid rgba(29,122,76,0.15); }
 
   .field{ margin-bottom:18px; }
-  .field label{ display:block; font-size:13px; font-weight:600; color:#3a3a3a; margin-bottom:6px; }
+  .field label{
+    display:block;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
   .input-wrap{ position:relative; }
   .input-wrap svg{
     position:absolute; left:14px; top:50%; transform:translateY(-50%);
-    width:18px; height:18px; color:#a3a3a3; pointer-events:none;
+    width:16px; height:16px; color:#B0B0B0; pointer-events:none;
   }
   .input-wrap input{
     width:100%;
     padding:12px 14px 12px 42px;
-    border:1.5px solid #e4e2dc;
-    border-radius:10px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
     font-size:14px;
-    color:#1a1a1a;
+    font-family:var(--font-body);
+    color:var(--ink);
     outline:none;
-    background:#fff;
+    background:rgba(255,255,255,0.8);
+    transition:all .2s ease;
   }
-  .input-wrap input:focus{ border-color:#0fb8a1; box-shadow:0 0 0 3px rgba(15,184,161,0.15); }
+  .input-wrap input:focus{
+    border-color:var(--accent);
+    background:#fff;
+    box-shadow:0 0 0 4px var(--accent-soft);
+  }
   .input-wrap .toggle-eye{
     position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    background:none; border:none; padding:4px; cursor:pointer; color:#a3a3a3;
+    background:none; border:none; padding:4px; cursor:pointer; color:#B0B0B0;
+    transition:color .15s ease;
   }
-  .err{ font-size:12px; color:#c0392b; margin:4px 0 0; }
+  .input-wrap .toggle-eye:hover{ color:var(--ink); }
+  .err{ font-size:12px; color:#C0392B; margin:4px 0 0 2px; }
 
-  .forgot{ text-align:right; margin:-8px 0 18px; }
-  .forgot a{ font-size:13px; color:#0f9d8c; text-decoration:none; font-weight:500; }
+  .forgot{ text-align:right; margin:-4px 0 22px; }
+  .forgot a{ 
+    font-size:12px; color:var(--accent); text-decoration:none; 
+    font-weight:500; opacity:.85; transition:opacity .15s ease; 
+  }
+  .forgot a:hover{ opacity:1; text-decoration:underline; }
 
   .submit{
     width:100%;
-    background:#ff6a52;
+    background:var(--accent);
     color:#fff;
     border:none;
     padding:14px;
-    border-radius:10px;
-    font-size:15px;
-    font-weight:700;
+    border-radius:12px;
+    font-size:14px;
+    font-family:var(--font-display);
+    font-weight:600;
+    letter-spacing:0.8px;
+    text-transform:uppercase;
     cursor:pointer;
-    box-shadow:0 10px 24px -6px rgba(255,90,60,0.45);
-    transition:transform .15s ease, box-shadow .2s ease;
+    box-shadow:0 8px 20px -4px rgba(255,90,54,0.35);
+    transition:all .2s ease;
   }
-  .submit:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -6px rgba(255,90,60,0.55); }
+  .submit:hover{ 
+    background:#F04D2E; 
+    transform:translateY(-1px); 
+    box-shadow:0 12px 24px -6px rgba(255,90,54,0.45); 
+  }
   .submit:active{ transform:translateY(0); }
 
-  .divider{ display:flex; align-items:center; gap:10px; margin:24px 0; }
-  .divider .line{ flex:1; height:1px; background:#e6e4de; }
-  .divider span{ font-size:12px; color:#a3a3a3; }
-
-  .socials{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .socials button{
-    border:1.5px solid #e6e4de; background:#fff; border-radius:10px;
-    padding:11px; font-size:14px; font-weight:600; color:#3a3a3a; cursor:pointer;
+  .divider{ 
+    display:flex; align-items:center; gap:12px; margin:26px 0; 
   }
-  .socials button:hover{ background:#f7f6f3; }
+  .divider .line{ flex:1; height:1px; background:var(--line); }
+  .divider span{ 
+    font-size:11px; color:var(--muted); text-transform:uppercase; 
+    letter-spacing:1px; font-weight:500; 
+  }
 
-  .foot{ text-align:center; font-size:13px; color:#8a8a8a; margin-top:22px; }
-  .foot a{ color:#0f9d8c; font-weight:700; text-decoration:none; }
+  .socials{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .socials button{
+    border:1.5px solid var(--line); 
+    background:rgba(255,255,255,0.6); 
+    border-radius:12px;
+    padding:11px 10px; 
+    font-size:13px; font-weight:600; 
+    color:var(--ink); cursor:pointer;
+    transition:all .15s ease;
+    font-family:var(--font-body);
+  }
+  .socials button:hover{ 
+    background:#fff; 
+    border-color:#D0CDC4; 
+    box-shadow:0 2px 8px rgba(0,0,0,0.04); 
+  }
+
+  .foot{ 
+    text-align:center; font-size:13px; color:var(--muted); 
+    margin-top:24px; font-weight:400; 
+  }
+  .foot a{ color:var(--accent); font-weight:600; text-decoration:none; }
+  .foot a:hover{ text-decoration:underline; }
+
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
 
   @media (prefers-reduced-motion: reduce){
-    .brand img, .card{ animation:none !important; }
+    .card, .brand img{ animation:none !important; }
     .submit{ transition:none !important; }
+    .nebula, .shooting-star{ animation:none !important; }
+  }
+
+  @media (max-width:420px){
+    .card{ padding:32px 24px; }
+    h1{ font-size:20px; }
   }
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
+
+<div class="nebula nebula-1" aria-hidden="true"></div>
+<div class="nebula nebula-2" aria-hidden="true"></div>
+<div class="nebula nebula-3" aria-hidden="true"></div>
+
+<div class="shooting-star" aria-hidden="true"></div>
+<div class="shooting-star" aria-hidden="true"></div>
+<div class="shooting-star" aria-hidden="true"></div>
 
   <div class="card">
     <div class="brand">
       <img src="{% static 'images/logo.png' %}" alt="CityPlay">
-      <p>Play. Book. Meet.</p>
+      <p>Play &middot; Book &middot; Meet</p>
     </div>
 
-    <h1>Welcome back!</h1>
-    <p class="sub">Login to continue your play journey</p>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to book your next game</p>
 
     {% if messages %}
       {% for message in messages %}
@@ -149,7 +343,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 0h10.5A1.5 1.5 0 0118.75 12v7.5a1.5 1.5 0 01-1.5 1.5H6.75a1.5 1.5 0 01-1.5-1.5V12a1.5 1.5 0 011.5-1.5z"/></svg>
           {{ form.password }}
           <button type="button" class="toggle-eye" onclick="const p=this.previousElementSibling; p.type = p.type==='password' ? 'text' : 'password';">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           </button>
         </div>
       </div>
@@ -168,5 +362,255 @@
 
     <p class="foot">New here? <a href="{% url 'register' %}">Sign up</a></p>
   </div>
+
+<script>
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- SPACE BACKGROUND CANVAS ----------
+  const canvas = document.getElementById("bg-canvas");
+  const ctx = canvas.getContext("2d");
+
+  let w, h;
+  let stars = [];
+  let galaxies = [];
+  const mouse = { x: null, y: null, radius: 150 };
+
+  function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  window.addEventListener("mousemove", function(e) {
+      mouse.x = e.x;
+      mouse.y = e.y;
+  });
+
+  window.addEventListener("mouseleave", function() {
+      mouse.x = null;
+      mouse.y = null;
+  });
+
+  // Star class - twinkling stars with varying brightness
+  class Star {
+      constructor() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h;
+          this.size = Math.random() * 2.5 + 0.5;
+          this.baseAlpha = Math.random() * 0.8 + 0.2;
+          this.alpha = this.baseAlpha;
+          this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+          this.twinkleOffset = Math.random() * Math.PI * 2;
+          this.hue = Math.random() < 0.1 ? 
+              (Math.random() < 0.5 ? 210 : 30) : // Blue or warm stars
+              0; // White stars
+          this.saturation = this.hue ? '40%' : '0%';
+          this.lightness = this.hue ? '80%' : '100%';
+          this.driftX = (Math.random() - 0.5) * 0.1;
+          this.driftY = (Math.random() - 0.5) * 0.1;
+      }
+
+      draw(timestamp) {
+          const twinkle = Math.sin(timestamp * this.twinkleSpeed + this.twinkleOffset) * 0.3 + 0.7;
+          this.alpha = this.baseAlpha * twinkle;
+          
+          ctx.beginPath();
+          if (this.hue) {
+              ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}, ${this.lightness}, ${this.alpha})`;
+          } else {
+              ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
+          }
+          
+          // Glow effect for brighter stars
+          if (this.size > 1.5 && this.alpha > 0.6) {
+              ctx.shadowColor = this.hue ? 
+                  `hsla(${this.hue}, 50%, 70%, 0.6)` : 
+                  'rgba(200,220,255,0.6)';
+              ctx.shadowBlur = 6;
+          }
+          
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+      }
+
+      update() {
+          // Slow drift
+          this.x += this.driftX;
+          this.y += this.driftY;
+          
+          // Wrap around edges
+          if (this.x < -10) this.x = w + 10;
+          if (this.x > w + 10) this.x = -10;
+          if (this.y < -10) this.y = h + 10;
+          if (this.y > h + 10) this.y = -10;
+
+          // Mouse interaction
+          if (mouse.x != null) {
+              const dx = this.x - mouse.x;
+              const dy = this.y - mouse.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < mouse.radius) {
+                  const force = (mouse.radius - dist) / mouse.radius;
+                  this.x += (dx / dist) * force * 1.5;
+                  this.y += (dy / dist) * force * 1.5;
+              }
+          }
+      }
+  }
+
+  // Galaxy cluster class - dense star groups
+  class Galaxy {
+      constructor() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h;
+          this.radius = Math.random() * 80 + 40;
+          this.stars = [];
+          const starCount = Math.floor(Math.random() * 15 + 8);
+          
+          for (let i = 0; i < starCount; i++) {
+              const angle = Math.random() * Math.PI * 2;
+              const distance = Math.random() * this.radius;
+              this.stars.push({
+                  x: Math.cos(angle) * distance,
+                  y: Math.sin(angle) * distance,
+                  size: Math.random() * 1.2 + 0.3,
+                  alpha: Math.random() * 0.5 + 0.3
+              });
+          }
+          
+          this.rotationSpeed = (Math.random() - 0.5) * 0.0005;
+          this.angle = Math.random() * Math.PI * 2;
+      }
+
+      draw(timestamp) {
+          this.angle += this.rotationSpeed;
+          
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.angle);
+          
+          // Galaxy glow
+          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+          gradient.addColorStop(0, 'rgba(150,180,255,0.08)');
+          gradient.addColorStop(0.5, 'rgba(100,130,255,0.03)');
+          gradient.addColorStop(1, 'rgba(50,80,255,0)');
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Galaxy stars
+          this.stars.forEach(star => {
+              ctx.beginPath();
+              ctx.fillStyle = `rgba(200,220,255,${star.alpha})`;
+              ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+              ctx.fill();
+          });
+          
+          ctx.restore();
+      }
+  }
+
+  function initSpace() {
+      stars = [];
+      galaxies = [];
+      
+      // Create stars based on screen size
+      const starCount = Math.floor((w * h) / 1500);
+      for (let i = 0; i < starCount; i++) {
+          stars.push(new Star());
+      }
+      
+      // Create galaxy clusters
+      const galaxyCount = Math.floor((w * h) / 200000);
+      for (let i = 0; i < galaxyCount; i++) {
+          galaxies.push(new Galaxy());
+      }
+  }
+
+  let lastTimestamp = 0;
+
+  function animateSpace(timestamp) {
+      if (reduceMotion) {
+          requestAnimationFrame(animateSpace);
+          return;
+      }
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      // Draw galaxies first (background)
+      galaxies.forEach(galaxy => galaxy.draw(timestamp));
+      
+      // Draw stars
+      stars.forEach(star => {
+          star.update();
+          star.draw(timestamp);
+      });
+      
+      // Draw connecting lines between nearby stars
+      for (let i = 0; i < stars.length; i++) {
+          for (let j = i + 1; j < stars.length; j++) {
+              const dx = stars[i].x - stars[j].x;
+              const dy = stars[i].y - stars[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              
+              const maxDist = 100;
+              if (dist < maxDist) {
+                  const lineAlpha = (1 - dist / maxDist) * 0.15;
+                  ctx.beginPath();
+                  ctx.strokeStyle = `rgba(150,180,255,${lineAlpha})`;
+                  ctx.lineWidth = 0.4;
+                  ctx.moveTo(stars[i].x, stars[i].y);
+                  ctx.lineTo(stars[j].x, stars[j].y);
+                  ctx.stroke();
+              }
+          }
+      }
+      
+      // Draw mouse constellation effect
+      if (mouse.x != null) {
+          const nearbyStars = stars.filter(star => {
+              const dx = star.x - mouse.x;
+              const dy = star.y - mouse.y;
+              return Math.sqrt(dx * dx + dy * dy) < mouse.radius;
+          });
+          
+          for (let i = 0; i < nearbyStars.length; i++) {
+              for (let j = i + 1; j < nearbyStars.length; j++) {
+                  const dx = nearbyStars[i].x - nearbyStars[j].x;
+                  const dy = nearbyStars[i].y - nearbyStars[j].y;
+                  const dist = Math.sqrt(dx * dx + dy * dy);
+                  
+                  if (dist < 120) {
+                      const lineAlpha = (1 - dist / 120) * 0.3;
+                      ctx.beginPath();
+                      ctx.strokeStyle = `rgba(180,200,255,${lineAlpha})`;
+                      ctx.lineWidth = 0.6;
+                      ctx.moveTo(nearbyStars[i].x, nearbyStars[i].y);
+                      ctx.lineTo(nearbyStars[j].x, nearbyStars[j].y);
+                      ctx.stroke();
+                  }
+              }
+          }
+      }
+
+      lastTimestamp = timestamp;
+      requestAnimationFrame(animateSpace);
+  }
+
+  initSpace();
+  requestAnimationFrame(animateSpace);
+
+  window.addEventListener("resize", function() {
+      resize();
+      initSpace();
+  });
+
+})();
+</script>
+
 </body>
 </html>
