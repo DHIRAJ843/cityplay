@@ -7,248 +7,413 @@
 
 {% block content %}
 <div class="cp-page min-h-screen">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-32 lg:pb-24">
 
-  {# ==================== GALLERY ==================== #}
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-    <a href="{% if venue_activities.0 %}{% url 'venues:activity_venues' venue_activities.0.slug %}{% else %}{% url 'home' %}{% endif %}"
-       class="cp-link" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cp-ink-3)">
-      &larr; Back to results
-    </a>
+  <a href="{% if venue_activities.0 %}{% url 'venues:activity_venues' venue_activities.0.slug %}{% else %}{% url 'home' %}{% endif %}"
+     class="cp-link" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cp-ink-3)">
+    &larr; Back to results
+  </a>
 
-    <div id="cp-gallery" class="mt-4 rounded-[12px] overflow-hidden" style="border:1px solid var(--cp-line)">
-      {# desktop: 3-up strip / mobile: swipe carousel #}
-      <div class="cp-scroll-x flex snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-[2px]"
-           style="height:380px;background:var(--cp-line)">
+  <div class="mt-4 grid gap-8 lg:grid-cols-[62fr_38fr] items-start">
+
+    {# ==================== LEFT ==================== #}
+    <div class="min-w-0">
+
+      {# ---- hero image ---- #}
+      <div class="relative rounded-[14px] overflow-hidden" style="border:1px solid var(--cp-line);background:var(--cp-teal-soft)">
         {% with cover=venue.cover_image %}
-        <figure class="relative shrink-0 snap-center w-full md:w-auto" style="background:var(--cp-teal-soft)">
-          <img src="{% if cover %}{{ cover.url }}{% else %}https://via.placeholder.com/800x500?text=Venue+Photo{% endif %}"
-               alt="{{ venue.name }} main court" class="absolute inset-0 w-full h-full object-cover">
-        </figure>
+        <img src="{% if cover %}{{ cover.url }}{% else %}https://via.placeholder.com/1200x700?text=Venue+Photo{% endif %}"
+             alt="{{ venue.name }} main court" class="w-full object-cover" style="height:clamp(240px,42vw,460px)">
         {% endwith %}
-        {% for img in gallery|slice:":2" %}
-          <figure class="relative shrink-0 snap-center w-full md:w-auto" style="background:var(--cp-teal-soft)">
-            <img src="{{ img.image.url }}" alt="{{ img.caption|default:venue.name }}"
-                 loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+
+        <button type="button"
+                class="absolute top-4 right-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+                style="background:rgba(255,255,255,.94);border:1px solid var(--cp-line);color:var(--cp-ink);backdrop-filter:blur(8px)">
+          <svg class="cp-ico" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 20s-7-4.3-7-9.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 15.7 12 20 12 20Z"/></svg>
+          Add to favourites
+        </button>
+
+        {% if venue.has_floodlights %}
+        <span class="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-2 rounded-full text-[12px] font-semibold"
+              style="background:var(--cp-coral);color:#fff">
+          <svg class="cp-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6 6a8.5 8.5 0 0 0 0 12M18 6a8.5 8.5 0 0 1 0 12"/></svg>
+          Floodlit venue
+        </span>
+        {% endif %}
+      </div>
+
+      {# ---- thumbnail strip ---- #}
+      <div class="mt-2 cp-scroll-x flex gap-2 snap-x">
+        {% for img in gallery|slice:":4" %}
+          <figure class="shrink-0 rounded-[10px] overflow-hidden snap-start"
+                  style="width:150px;height:96px;border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};background:var(--cp-teal-soft)">
+            <img src="{{ img.image.url }}" alt="{{ img.caption|default:venue.name }}" loading="lazy"
+                 class="w-full h-full object-cover">
           </figure>
         {% empty %}
-          <figure class="relative shrink-0 snap-center w-full md:w-auto" style="background:var(--cp-teal-soft)">
-            <img src="https://via.placeholder.com/800x500?text=Venue+Photo" alt="{{ venue.name }} court view"
-                 loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          {% for i in "123" %}
+          <figure class="shrink-0 rounded-[10px] overflow-hidden snap-start"
+                  style="width:150px;height:96px;border:1px solid var(--cp-line);background:var(--cp-teal-soft)">
+            <img src="https://via.placeholder.com/300x200?text=Venue" alt="{{ venue.name }} photo" loading="lazy"
+                 class="w-full h-full object-cover">
           </figure>
-          <figure class="relative shrink-0 snap-center w-full md:w-auto" style="background:var(--cp-teal-soft)">
-            <img src="https://via.placeholder.com/800x500?text=Venue+Photo" alt="{{ venue.name }} facilities"
-                 loading="lazy" class="absolute inset-0 w-full h-full object-cover">
-          </figure>
+          {% endfor %}
         {% endfor %}
+        {% if gallery|length > 4 %}
+          <a href="#gallery" class="shrink-0 grid place-items-center rounded-[10px] text-center snap-start"
+             style="width:150px;height:96px;border:1px dashed var(--cp-line);color:var(--cp-ink-2)">
+            <span><span class="block font-bold" style="color:var(--cp-ink)">+{{ gallery|length|add:"-4" }}</span>
+            <span class="text-[12px]">Photos</span></span>
+          </a>
+        {% endif %}
       </div>
-    </div>
 
-    {# carousel dots (mobile) #}
-    <div class="mt-3 flex justify-center gap-2 md:hidden" aria-hidden="true">
-      <span style="width:22px;height:6px;border-radius:999px;background:var(--cp-teal);display:block"></span>
-      <span style="width:6px;height:6px;border-radius:999px;background:var(--cp-ink-3);opacity:.45;display:block"></span>
-      <span style="width:6px;height:6px;border-radius:999px;background:var(--cp-ink-3);opacity:.45;display:block"></span>
-    </div>
-  </section>
+      {# ---- title ---- #}
+      <h1 class="cp-display mt-7" style="font-size:clamp(1.9rem,4vw,2.9rem)">
+        {{ venue.name }}
+        {% if venue.is_verified %}
+          <svg class="cp-ico cp-ico-lg inline-block align-middle" style="color:var(--cp-teal)" viewBox="0 0 24 24"><path d="M12 3l2.2 1.6 2.7-.2 1 2.5 2.3 1.4-.8 2.6.8 2.6-2.3 1.4-1 2.5-2.7-.2L12 21l-2.2-1.6-2.7.2-1-2.5L3.8 15l.8-2.6L3.8 9.8 6.1 8.4l1-2.5 2.7.2Z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
+        {% endif %}
+      </h1>
 
-  {# ==================== TWO COLUMN ==================== #}
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 lg:pb-24">
-    <div class="mt-10 grid gap-10 lg:grid-cols-[65fr_35fr]">
+      <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style="color:var(--cp-ink-2)">
+        <span class="inline-flex items-start gap-2">
+          <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          {{ venue.address }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
+        </span>
+        {% if venue.rating %}
+        <span class="inline-flex items-center gap-2" style="color:var(--cp-ink)">
+          <svg class="cp-ico" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
+          <b>{{ venue.rating|floatformat:1 }}</b>
+          <span style="color:var(--cp-ink-2)">({{ reviews_count|default:0 }} reviews)</span>
+        </span>
+        {% endif %}
+        {% if venue.latitude and venue.longitude %}
+          <a class="cp-link" target="_blank" rel="noopener"
+             href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
+            Open in Google Maps &rarr;
+          </a>
+        {% endif %}
+      </div>
 
-      {# ---------- LEFT ---------- #}
-      <div class="min-w-0">
-        <h1 class="cp-display" style="font-size:clamp(2rem,4.5vw,3.25rem)">{{ venue.name }}</h1>
+      {# ---- amenity row ---- #}
+      <div class="mt-5 flex flex-wrap gap-2">
+        {% if venue.has_floodlights %}
+        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
+          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
+          </span>Floodlights
+        </span>
+        {% endif %}
+        {% if venue.has_parking %}
+        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
+          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
+          </span>Parking
+        </span>
+        {% endif %}
+        {% if venue.has_washroom %}
+        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
+          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>
+          </span>Washrooms
+        </span>
+        {% endif %}
+        {% if venue.has_wifi %}
+        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
+          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>
+          </span>WiFi
+        </span>
+        {% endif %}
+      </div>
 
-        <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" style="color:var(--cp-ink-2)">
-          <span class="inline-flex items-start gap-2">
-            <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-            {{ venue.address }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
-          </span>
-          {% if venue.latitude and venue.longitude %}
-            <a class="cp-link" target="_blank" rel="noopener"
-               href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
-              Open in Google Maps &rarr;
-            </a>
-          {% endif %}
+      {# ---- description ---- #}
+      <p class="mt-6 text-[15px]" style="color:var(--cp-ink-2);line-height:1.75;max-width:66ch">
+        {% if venue.description %}{{ venue.description|linebreaksbr }}{% else %}
+        A well-maintained facility in {{ venue.sector|default:"Gandhinagar" }} with cushioned, ITF-standard playing
+        surfaces and full floodlight coverage for evening games. Courts are marked and swept before every slot,
+        rackets and balls are available at the desk, and there is shaded seating for anyone waiting their turn.
+        {% endif %}
+      </p>
+
+      {# ---- tabs ---- #}
+      <div class="mt-8 flex gap-6 text-sm font-semibold" style="border-bottom:1px solid var(--cp-line)">
+        <a href="#overview" class="pb-3" style="color:var(--cp-ink);border-bottom:2px solid var(--cp-teal)">Overview</a>
+        <a href="#amenities" class="pb-3" style="color:var(--cp-ink-3)">Amenities</a>
+        <a href="#reviews" class="pb-3" style="color:var(--cp-ink-3)">Reviews{% if reviews_count %} ({{ reviews_count }}){% endif %}</a>
+      </div>
+
+      {# ---- sports available ---- #}
+      <section id="overview" class="cp-sec">
+        <h2 class="cp-display" style="font-size:1.375rem">Sports available</h2>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {% for a in venue_activities %}
+            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
+                  style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
+              <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+                <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/></svg>
+              </span>{{ a.name }}
+            </span>
+          {% empty %}
+            <span class="cp-chip">Multi-sport turf</span>
+          {% endfor %}
         </div>
+      </section>
 
-        {# ---- sports available ---- #}
-        <section class="cp-sec">
-          <h2 class="cp-display" style="font-size:1.375rem">Sports available</h2>
-          <div class="mt-4 flex flex-wrap gap-2">
-            {% for a in venue_activities %}
-              <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-                    style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-                <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                  <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24">
-                    <ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/>
-                  </svg>
+      {# ---- things to know ---- #}
+      <section id="amenities" class="cp-sec">
+        <h2 class="cp-display" style="font-size:1.375rem">Things to know</h2>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Duration</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{{ venue.duration_label|default:"60 min slots" }}</p></div>
+          </div>
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><rect x="2" y="9" width="6" height="6" rx="2" transform="rotate(-45 5 12)"/><rect x="16" y="9" width="6" height="6" rx="2" transform="rotate(-45 19 12)"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Equipment</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.equipment_included %}Included free{% else %}Bring your own{% endif %}</p></div>
+          </div>
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M4 18v-6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6M2 18h20M5 18v2M19 18v2"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Seating</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_seating_lounge %}Shaded lounge{% else %}Limited benches{% endif %}</p></div>
+          </div>
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Flood lights</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_floodlights %}Available till 11 PM{% else %}Daytime play only{% endif %}</p></div>
+          </div>
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Washrooms</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_washroom %}On site{% else %}Not available{% endif %}</p></div>
+          </div>
+
+          <div class="cp-card flex items-start gap-3 p-4">
+            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
+            </span>
+            <div class="min-w-0"><p class="text-sm font-semibold">Parking</p>
+              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_parking %}Free, on site{% else %}Street parking{% endif %}</p></div>
+          </div>
+        </div>
+      </section>
+
+      {# ---- reviews ---- #}
+      {% if reviews %}
+      <section id="reviews" class="cp-sec">
+        <h2 class="cp-display" style="font-size:1.375rem">Reviews{% if reviews_count %} ({{ reviews_count }}){% endif %}</h2>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          {% for r in reviews|slice:":4" %}
+            <article class="cp-card p-5">
+              <div class="flex items-center gap-3">
+                <span class="grid place-items-center font-bold"
+                      style="width:40px;height:40px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
+                  {{ r.user.first_name|default:r.user.username|slice:":1"|upper }}
                 </span>
-                {{ a.name }}
-              </span>
-            {% empty %}
-              <span class="cp-chip">Multi-sport turf</span>
-            {% endfor %}
-          </div>
-        </section>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold truncate">{{ r.user.get_full_name|default:r.user.username }}</p>
+                  <p class="text-[12px]" style="color:var(--cp-ink-3)">{{ r.created_at|timesince }} ago</p>
+                </div>
+              </div>
+              <div class="mt-3 flex items-center gap-1" style="color:var(--cp-coral)">
+                {% for s in "12345" %}
+                  <svg class="cp-ico" style="opacity:{% if forloop.counter <= r.rating %}1{% else %}.25{% endif %}" viewBox="0 0 24 24"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
+                {% endfor %}
+              </div>
+              <p class="mt-3 text-[14px]" style="color:var(--cp-ink-2);line-height:1.7">{{ r.comment }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
 
-        {# ---- about ---- #}
-        <section class="cp-sec">
-          <h2 class="cp-display" style="font-size:1.375rem">About this venue</h2>
-          <p class="mt-4 text-[15px]" style="color:var(--cp-ink-2);line-height:1.75;max-width:64ch">
-            {% if venue.description %}{{ venue.description|linebreaksbr }}{% else %}
-            A well-maintained facility in {{ venue.sector|default:"Gandhinagar" }} with cushioned, ITF-standard
-            playing surfaces and full floodlight coverage for evening games. Courts are marked and swept before
-            every slot, rackets and balls are available at the desk, and there is shaded seating for anyone
-            waiting their turn. Easy to reach from Sector 9, Infocity and Kudasan, with open parking on site.
-            {% endif %}
-          </p>
-        </section>
+    {# ==================== RIGHT: BOOKING PANEL ==================== #}
+    <aside>
+      <div class="lg:sticky lg:top-24 space-y-4">
 
-        {# ---- things to know ---- #}
-        <section class="cp-sec">
-          <h2 class="cp-display" style="font-size:1.375rem">Things to know</h2>
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Duration</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{{ venue.duration_label|default:"60 min slots" }}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><rect x="2" y="9" width="6" height="6" rx="2" transform="rotate(-45 5 12)"/><rect x="16" y="9" width="6" height="6" rx="2" transform="rotate(-45 19 12)"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Equipment</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.equipment_included %}Included free{% else %}Bring your own{% endif %}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M4 18v-6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6M2 18h20M5 18v2M19 18v2"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Seating</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_seating_lounge %}Shaded lounge{% else %}Limited benches{% endif %}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Flood lights</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_floodlights %}Available till 11 PM{% else %}Daytime play only{% endif %}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Washrooms</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_washroom %}On site{% else %}Not available{% endif %}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">WiFi</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_wifi %}Free guest network{% else %}Not available{% endif %}</p></div>
-            </div>
-
-            <div class="cp-card flex items-start gap-3 p-4">
-              <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
-              </span>
-              <div class="min-w-0"><p class="text-sm font-semibold">Parking</p>
-                <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_parking %}Free, on site{% else %}Street parking{% endif %}</p></div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {# ---------- RIGHT (sticky) ---------- #}
-      <aside>
-        <div class="lg:sticky lg:top-24 space-y-4">
-
-          {# location card #}
-          <div class="cp-card p-5">
-            <p class="font-bold">{{ venue.name }}</p>
-            <p class="text-[13px] mt-1" style="color:var(--cp-ink-2)">
-              {{ venue.sector|default:"Gandhinagar" }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
-            </p>
-            <div class="mt-3 flex items-start gap-2 text-[13px]" style="color:var(--cp-ink-2)">
-              <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-              <span>{{ venue.address }}</span>
-            </div>
-            {% if venue.latitude and venue.longitude %}
-              <a class="cp-link mt-3" target="_blank" rel="noopener"
-                 href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
-                Open in Google Maps &rarr;
-              </a>
-            {% endif %}
+        <div class="cp-card p-5">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="cp-display" style="font-size:1.25rem">Book Your Slot</h2>
+            <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold" style="color:var(--cp-teal)">
+              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 10-4-1.8-7-5.6-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+              Secure booking
+            </span>
           </div>
 
-          {# booking card #}
-          <div class="cp-card p-5">
-            <p class="font-bold">{{ venue.name }}</p>
-            <p class="text-[13px]" style="color:var(--cp-ink-2)">{{ venue.sector|default:"Gandhinagar" }}, Gujarat</p>
-
-            <p class="mt-5 text-[11px] font-semibold uppercase tracking-widest" style="color:var(--cp-ink-3)">Next available slot</p>
-
-            <div class="mt-2 space-y-2">
-              {% for event in upcoming_events|slice:":3" %}
-                <a href="{% url 'events:event_detail' event.id %}"
-                   class="flex items-center justify-between gap-3 rounded-[10px] px-3 py-3 text-sm transition-colors"
-                   style="border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};background:{% if forloop.first %}var(--cp-teal-soft){% else %}#fff{% endif %}">
-                  <span class="inline-flex items-center gap-2 min-w-0" style="color:var(--cp-ink)">
-                    <svg class="cp-ico shrink-0" style="color:var(--cp-teal)" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
-                    <span class="truncate">{{ event.date|date:"D, M j" }} &middot; {{ event.start_time|time:"g:i A" }}</span>
-                  </span>
-                  <span class="cp-price shrink-0">&#8377;{{ event.price_per_slot|floatformat:0 }}</span>
+          {# ---- date rail ---- #}
+          <div class="mt-4 flex items-center gap-2">
+            <span class="grid place-items-center shrink-0" style="width:30px;height:30px;border-radius:999px;border:1px solid var(--cp-line);color:var(--cp-ink-3)">
+              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></svg>
+            </span>
+            <div class="cp-scroll-x flex gap-2 flex-1">
+              {% regroup upcoming_events by date as event_days %}
+              {% for day in event_days|slice:":5" %}
+                <a href="?date={{ day.grouper|date:'Y-m-d' }}"
+                   class="shrink-0 text-center rounded-[10px] px-3 py-2.5"
+                   style="min-width:62px;border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};background:{% if forloop.first %}var(--cp-teal-soft){% else %}#fff{% endif %}">
+                  <p class="text-[11px] uppercase tracking-wide" style="color:var(--cp-ink-3)">{{ day.grouper|date:"D" }}</p>
+                  <p class="text-[18px] font-bold" style="color:{% if forloop.first %}var(--cp-teal){% else %}var(--cp-ink){% endif %}">{{ day.grouper|date:"j" }}</p>
+                  <p class="text-[11px]" style="color:var(--cp-ink-3)">{{ day.grouper|date:"M" }}</p>
                 </a>
               {% empty %}
-                <div class="rounded-[10px] px-3 py-3 text-sm" style="border:1px dashed var(--cp-line);color:var(--cp-ink-2)">
-                  No slots published yet — request a time and the venue will confirm.
-                </div>
+                <div class="flex-1 rounded-[10px] px-3 py-3 text-[13px] text-center"
+                     style="border:1px dashed var(--cp-line);color:var(--cp-ink-2)">No dates published yet</div>
               {% endfor %}
             </div>
+            <span class="grid place-items-center shrink-0" style="width:30px;height:30px;border-radius:999px;border:1px solid var(--cp-line);color:var(--cp-ink-3)">
+              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></svg>
+            </span>
+          </div>
 
-            <div class="mt-5 pt-4 flex items-end justify-between" style="border-top:1px solid var(--cp-line)">
+          {# ---- sport toggle ---- #}
+          {% if venue_activities %}
+          <div class="mt-4 grid gap-2" style="grid-template-columns:repeat({{ venue_activities|length|default:1 }},minmax(0,1fr))">
+            {% for a in venue_activities|slice:":3" %}
+              <a href="?activity={{ a.slug }}"
+                 class="inline-flex items-center justify-center gap-2 rounded-[10px] px-3 py-3 text-sm font-semibold"
+                 style="border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};
+                        background:{% if forloop.first %}var(--cp-teal-soft){% else %}#fff{% endif %};
+                        color:{% if forloop.first %}var(--cp-teal){% else %}var(--cp-ink-2){% endif %}">
+                <svg class="cp-ico" viewBox="0 0 24 24"><ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/></svg>
+                {{ a.name }}
+              </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {# ---- time slots ---- #}
+          <p class="mt-5 text-[11px] font-semibold uppercase tracking-widest" style="color:var(--cp-ink-3)">Select time slot</p>
+          <div class="mt-3 grid grid-cols-4 gap-2">
+            {% for event in upcoming_events|slice:":16" %}
+              {% if event.is_available|default_if_none:True %}
+                <a href="{% url 'events:event_detail' event.id %}"
+                   class="text-center rounded-[10px] px-2 py-2.5 text-[12px] font-semibold"
+                   style="border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};
+                          background:{% if forloop.first %}var(--cp-teal){% else %}#fff{% endif %};
+                          color:{% if forloop.first %}#fff{% else %}var(--cp-ink){% endif %}">
+                  {{ event.start_time|time:"g:i A" }}
+                </a>
+              {% else %}
+                <span class="text-center rounded-[10px] px-2 py-2.5 text-[12px] font-semibold"
+                      style="border:1px solid var(--cp-line);background:var(--cp-teal-soft);color:var(--cp-ink-3);opacity:.6;text-decoration:line-through">
+                  {{ event.start_time|time:"g:i A" }}
+                </span>
+              {% endif %}
+            {% empty %}
+              <div class="col-span-4 rounded-[10px] px-3 py-3 text-[13px]"
+                   style="border:1px dashed var(--cp-line);color:var(--cp-ink-2)">
+                No slots published yet — request a time and the venue will confirm.
+              </div>
+            {% endfor %}
+          </div>
+
+          {# ---- legend ---- #}
+          <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px]" style="color:var(--cp-ink-2)">
+            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;border:1px solid var(--cp-line);background:#fff;display:block"></span>Available</span>
+            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;background:var(--cp-teal);display:block"></span>Selected</span>
+            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;background:var(--cp-teal-soft);border:1px solid var(--cp-line);display:block"></span>Unavailable</span>
+          </div>
+
+          {# ---- price breakdown ---- #}
+          {% with slot=upcoming_events.0 %}
+          <div class="mt-5 pt-5" style="border-top:1px solid var(--cp-line)">
+            <p class="font-bold text-[15px]">Price breakdown</p>
+            <dl class="mt-3 space-y-2 text-[13px]">
+              <div class="flex items-center justify-between">
+                <dt style="color:var(--cp-ink-2)">Base price (1 court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
+                <dd class="font-semibold">&#8377;{{ slot.price_per_slot|default:7000|floatformat:0 }}</dd>
+              </div>
+              {% if slot.peak_charge %}
+              <div class="flex items-center justify-between">
+                <dt style="color:var(--cp-ink-2)">Peak hour charge</dt>
+                <dd class="font-semibold">&#8377;{{ slot.peak_charge|floatformat:0 }}</dd>
+              </div>
+              {% endif %}
+              {% if platform_fee %}
+              <div class="flex items-center justify-between">
+                <dt style="color:var(--cp-ink-2)">Platform fee</dt>
+                <dd class="font-semibold">&#8377;{{ platform_fee|floatformat:0 }}</dd>
+              </div>
+              {% endif %}
+            </dl>
+
+            <div class="mt-4 pt-4 flex items-end justify-between" style="border-top:1px dashed var(--cp-line)">
               <div>
-                <p class="text-[11px] uppercase tracking-widest" style="color:var(--cp-ink-3)">Total</p>
+                <p class="text-[11px] uppercase tracking-widest" style="color:var(--cp-ink-3)">Total price</p>
                 <p class="cp-price" style="font-size:30px;line-height:1.1">
-                  &#8377;{% if upcoming_events.0 %}{{ upcoming_events.0.price_per_slot|floatformat:0 }}{% else %}7000{% endif %}
+                  &#8377;{{ total_price|default:slot.price_per_slot|default:7000|floatformat:0 }}
                 </p>
               </div>
               <p class="text-[12px] text-right" style="color:var(--cp-ink-2)">per slot<br>{{ venue.duration_label|default:"60 min" }}</p>
             </div>
 
-            <a href="{% if upcoming_events.0 %}{% url 'events:event_detail' upcoming_events.0.id %}{% else %}#slots{% endif %}"
-               class="cp-btn w-full mt-4">Book Slots</a>
+            <a href="{% if slot %}{% url 'events:event_detail' slot.id %}{% else %}#slots{% endif %}"
+               class="cp-btn w-full mt-4">Continue to booking &rarr;</a>
 
-            <p class="mt-3 text-center text-[12px]" style="color:var(--cp-ink-3)">
-              No payment charged now &middot; Pay at venue
+            <p class="mt-3 text-center inline-flex w-full items-center justify-center gap-2 text-[12px]" style="color:var(--cp-ink-3)">
+              <svg class="cp-ico" style="color:var(--cp-teal)" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 10-4-1.8-7-5.6-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+              No payment now &middot; Pay at venue
             </p>
           </div>
+          {% endwith %}
         </div>
-      </aside>
-    </div>
-  </div>
 
-  {# ---- mobile sticky booking bar ---- #}
-  <div class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-4 py-3"
-       style="background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--cp-line)">
-    <div class="flex items-center gap-3">
-      <div class="min-w-0">
-        <p class="cp-price" style="font-size:20px">&#8377;{% if upcoming_events.0 %}{{ upcoming_events.0.price_per_slot|floatformat:0 }}{% else %}7000{% endif %}</p>
-        <p class="text-[11px] truncate" style="color:var(--cp-ink-3)">Pay at venue</p>
+        {# ---- location card ---- #}
+        <div class="cp-card p-5">
+          <p class="font-bold">{{ venue.name }}</p>
+          <p class="text-[13px] mt-1" style="color:var(--cp-ink-2)">
+            {{ venue.sector|default:"Gandhinagar" }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
+          </p>
+          <div class="mt-3 flex items-start gap-2 text-[13px]" style="color:var(--cp-ink-2)">
+            <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span>{{ venue.address }}</span>
+          </div>
+          {% if venue.latitude and venue.longitude %}
+            <a class="cp-link mt-3" target="_blank" rel="noopener"
+               href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
+              Open in Google Maps &rarr;
+            </a>
+          {% endif %}
+        </div>
       </div>
-      <a href="{% if upcoming_events.0 %}{% url 'events:event_detail' upcoming_events.0.id %}{% else %}#slots{% endif %}"
-         class="cp-btn flex-1">Book Slots</a>
-    </div>
+    </aside>
   </div>
+</div>
+
+{# ---- mobile sticky booking bar ---- #}
+<div class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-4 py-3"
+     style="background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--cp-line)">
+  <div class="flex items-center gap-3">
+    <div class="min-w-0">
+      <p class="cp-price" style="font-size:20px">&#8377;{% if upcoming_events.0 %}{{ upcoming_events.0.price_per_slot|floatformat:0 }}{% else %}7000{% endif %}</p>
+      <p class="text-[11px] truncate" style="color:var(--cp-ink-3)">Pay at venue</p>
+    </div>
+    <a href="{% if upcoming_events.0 %}{% url 'events:event_detail' upcoming_events.0.id %}{% else %}#slots{% endif %}"
+       class="cp-btn flex-1">Book Slots</a>
+  </div>
+</div>
 </div>
 {% endblock %}
