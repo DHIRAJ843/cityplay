@@ -66,6 +66,11 @@ def activity_venues(request, slug):
         is_active=True
     ).prefetch_related('activities', 'courts').distinct()
 
+    # --- SEARCH VIA TOP BAR ---
+    q = request.GET.get('q', '').strip()
+    if q:
+        venues = venues.filter(name__icontains=q)
+
     # --- 1. FILTER BY AMENITIES ---
     amenities = request.GET.getlist('amenity')
     if 'floodlights' in amenities:
@@ -105,7 +110,15 @@ def activity_venues(request, slug):
     elif under_10:
         venue_list = [v for v in venue_list if v.distance_km is not None and v.distance_km <= 10]
 
-    venue_list.sort(key=lambda v: (v.distance_km is None, v.distance_km))
+    # --- 4. SORTING VIA TOP BAR ---
+    sort_by = request.GET.get('sort', 'Recommended')
+    if sort_by == 'Price: Low to High':
+        venue_list.sort(key=lambda v: v.display_price)
+    elif sort_by == 'Distance':
+        venue_list.sort(key=lambda v: (v.distance_km is None, v.distance_km))
+    else:
+        # Default Recommended: sort by distance
+        venue_list.sort(key=lambda v: (v.distance_km is None, v.distance_km))
 
     context = {
         'activity': activity,
@@ -115,6 +128,8 @@ def activity_venues(request, slug):
         'under_10': under_10,
         'amenities': amenities,
         'price': price,
+        'q': q,
+        'sort': sort_by,
     }
     return render(request, 'venues/activity_venues.html', context)
 
