@@ -34,8 +34,12 @@ class Venue(models.Model):
     has_washroom = models.BooleanField(default=False)
     has_seating_lounge = models.BooleanField(default=False)
     equipment_included = models.BooleanField(default=False)
-
+    has_showers = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    live_match_now = models.BooleanField(default=False)
+    platform_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(default=timezone.now)
+
     @property
     def rating_average(self):
         """Calculates the average rating from all reviews for this venue."""
