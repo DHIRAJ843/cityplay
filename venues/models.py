@@ -10,7 +10,6 @@ class Venue(models.Model):
     address = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
 
-    # Which sports/activities this venue offers (Pickleball, Badminton, etc.)
     activities = models.ManyToManyField(
         'events.Activity',
         related_name='venues',
@@ -18,15 +17,12 @@ class Venue(models.Model):
         help_text="Sports available at this venue."
     )
 
-    # Content for the venue listing + detail pages
     cover_image = models.ImageField(upload_to='venue_images/', blank=True, null=True)
     description = models.TextField(blank=True)
 
-    # Used to calculate "X km away" on the listing page
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
-    # "Things to know" flags shown on the detail page
     duration_label = models.CharField(max_length=50, blank=True, default="1 Hour")
     has_floodlights = models.BooleanField(default=False)
     has_wifi = models.BooleanField(default=False)
@@ -42,12 +38,11 @@ class Venue(models.Model):
 
     @property
     def rating_average(self):
-        """Calculates the average rating from all reviews for this venue."""
         all_reviews = self.reviews.all()
         if all_reviews:
             total_score = sum(review.rating for review in all_reviews)
             return round(total_score / len(all_reviews), 1)
-        return 4.8  # Default display rating if nobody has reviewed it yet
+        return 4.8
 
     def __str__(self):
         return f"{self.name} ({self.sector})"
@@ -57,7 +52,6 @@ class Venue(models.Model):
 
 
 class VenueImage(models.Model):
-    """Extra gallery photos for a venue, shown in the 'Gallery' section."""
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='venue_images/gallery/')
     caption = models.CharField(max_length=150, blank=True)
@@ -70,22 +64,21 @@ class VenueImage(models.Model):
         return f"Image for {self.venue.name}"
 
 
-# ==========================================
-# NEW MODELS ADDED BELOW (DO NOT DELETE)
-# ==========================================
-
 class Court(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='courts')
+    activity = models.ForeignKey('events.Activity', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100, default="Standard Court")
     is_active = models.BooleanField(default=True)
     base_price = models.DecimalField(max_digits=8, decimal_places=2, default=1000.00)
     peak_price_extra = models.DecimalField(max_digits=8, decimal_places=2, default=200.00)
-    open_hour = models.IntegerField(default=6) # 6 AM
-    close_hour = models.IntegerField(default=23) # 11 PM
+    peak_start_hour = models.IntegerField(default=18)
+    peak_end_hour = models.IntegerField(default=21)
+    open_hour = models.IntegerField(default=6)
+    close_hour = models.IntegerField(default=23)
+    order = models.PositiveIntegerField(default=0)
 
     def is_peak(self, hour):
-        # Example: 6 PM to 9 PM is peak pricing
-        return 18 <= hour <= 21
+        return self.peak_start_hour <= hour <= self.peak_end_hour
 
     def price_for_hour(self, hour):
         if self.is_peak(hour):
@@ -113,7 +106,7 @@ class VenueReview(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.IntegerField(default=5)
     body = models.TextField()
-    
+
     @property
     def helpful_count(self):
         return self.helpful_votes.count()
