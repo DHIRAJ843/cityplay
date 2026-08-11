@@ -1,419 +1,467 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ venue.name }} — {{ venue.sector }} | City Play{% endblock %}
+{% block title %}{{ venue.name }} | City Play{% endblock %}
 
-{% block extra_head %}{% include "venues/_cp_tokens.html" %}{% endblock %}
+{% block extra_head %}
+<!-- Tailwind CDN for the custom dark mode design -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0F1219;
+    color: #FFFFFF;
+    overflow: hidden; 
+  }
+  
+  /* Custom Scrollbar with sleek styling */
+  .cp-scroll-y { overflow-y: auto; scroll-behavior: smooth; }
+  .cp-scroll-x { overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
+  .cp-scroll-x::-webkit-scrollbar { display: none; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0F1219; }
+  ::-webkit-scrollbar-thumb { background: #2A2F3D; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3F4659; }
+
+  /* Brand Colors */
+  .text-neon { color: #D4FF00; }
+  .bg-neon { background-color: #D4FF00; }
+  .border-neon { border-color: #D4FF00; }
+  
+  /* Smooth transitions for all interactive elements */
+  .smooth-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  /* Checkbox styling logic */
+  input[type="checkbox"].slot-checkbox:checked + div {
+    background-color: #D4FF00;
+    color: #0F1219;
+    border-color: #D4FF00;
+    box-shadow: 0 0 15px rgba(212, 255, 0, 0.2);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="cp-page min-h-screen">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-32 lg:pb-24">
+<!-- FULLSCREEN APP CONTAINER -->
+<div class="fixed inset-0 z-[100] flex flex-col bg-[#0F1219]">
 
-  <a href="{% if venue_activities.0 %}{% url 'venues:activity_venues' venue_activities.0.slug %}{% else %}{% url 'home' %}{% endif %}"
-     class="cp-link" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cp-ink-3)">
-    &larr; Back to results
-  </a>
-
-  <div class="mt-4 grid gap-8 lg:grid-cols-[62fr_38fr] items-start">
-
-    {# ==================== LEFT ==================== #}
-    <div class="min-w-0">
-
-      {# ---- hero image ---- #}
-      <div class="relative rounded-[14px] overflow-hidden" style="border:1px solid var(--cp-line);background:var(--cp-teal-soft)">
-        {% with cover=venue.cover_image %}
-        <img src="{% if cover %}{{ cover.url }}{% else %}https://via.placeholder.com/1200x700?text=Venue+Photo{% endif %}"
-             alt="{{ venue.name }} main court" class="w-full object-cover" style="height:clamp(240px,42vw,460px)">
-        {% endwith %}
-
-        <button type="button"
-                class="absolute top-4 right-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-                style="background:rgba(255,255,255,.94);border:1px solid var(--cp-line);color:var(--cp-ink);backdrop-filter:blur(8px)">
-          <svg class="cp-ico" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 20s-7-4.3-7-9.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 15.7 12 20 12 20Z"/></svg>
-          Add to favourites
-        </button>
-
-        {% if venue.has_floodlights %}
-        <span class="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-2 rounded-full text-[12px] font-semibold"
-              style="background:var(--cp-coral);color:#fff">
-          <svg class="cp-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6 6a8.5 8.5 0 0 0 0 12M18 6a8.5 8.5 0 0 1 0 12"/></svg>
-          Floodlit venue
-        </span>
-        {% endif %}
-      </div>
-
-      {# ---- thumbnail strip ---- #}
-      <div class="mt-2 cp-scroll-x flex gap-2 snap-x">
-        {% for img in gallery|slice:":4" %}
-          <figure class="shrink-0 rounded-[10px] overflow-hidden snap-start"
-                  style="width:150px;height:96px;border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};background:var(--cp-teal-soft)">
-            <img src="{{ img.image.url }}" alt="{{ img.caption|default:venue.name }}" loading="lazy"
-                 class="w-full h-full object-cover">
-          </figure>
-        {% empty %}
-          {% for i in "123" %}
-          <figure class="shrink-0 rounded-[10px] overflow-hidden snap-start"
-                  style="width:150px;height:96px;border:1px solid var(--cp-line);background:var(--cp-teal-soft)">
-            <img src="https://via.placeholder.com/300x200?text=Venue" alt="{{ venue.name }} photo" loading="lazy"
-                 class="w-full h-full object-cover">
-          </figure>
-          {% endfor %}
-        {% endfor %}
-        {% if gallery|length > 4 %}
-          <a href="#gallery" class="shrink-0 grid place-items-center rounded-[10px] text-center snap-start"
-             style="width:150px;height:96px;border:1px dashed var(--cp-line);color:var(--cp-ink-2)">
-            <span><span class="block font-bold" style="color:var(--cp-ink)">+{{ gallery|length|add:"-4" }}</span>
-            <span class="text-[12px]">Photos</span></span>
-          </a>
-        {% endif %}
-      </div>
-
-      {# ---- title ---- #}
-      <h1 class="cp-display mt-7" style="font-size:clamp(1.9rem,4vw,2.9rem)">
-        {{ venue.name }}
-        {% if venue.is_verified %}
-          <svg class="cp-ico cp-ico-lg inline-block align-middle" style="color:var(--cp-teal)" viewBox="0 0 24 24"><path d="M12 3l2.2 1.6 2.7-.2 1 2.5 2.3 1.4-.8 2.6.8 2.6-2.3 1.4-1 2.5-2.7-.2L12 21l-2.2-1.6-2.7.2-1-2.5L3.8 15l.8-2.6L3.8 9.8 6.1 8.4l1-2.5 2.7.2Z"/><path d="M9 12.2l2 2 4-4.2"/></svg>
-        {% endif %}
-      </h1>
-
-      <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style="color:var(--cp-ink-2)">
-        <span class="inline-flex items-start gap-2">
-          <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          {{ venue.address }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
-        </span>
-        {% if venue.rating %}
-        <span class="inline-flex items-center gap-2" style="color:var(--cp-ink)">
-          <svg class="cp-ico" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
-          <b>{{ venue.rating|floatformat:1 }}</b>
-          <span style="color:var(--cp-ink-2)">({{ reviews_count|default:0 }} reviews)</span>
-        </span>
-        {% endif %}
-        {% if venue.latitude and venue.longitude %}
-          <a class="cp-link" target="_blank" rel="noopener"
-             href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
-            Open in Google Maps &rarr;
-          </a>
-        {% endif %}
-      </div>
-
-      {# ---- amenity row ---- #}
-      <div class="mt-5 flex flex-wrap gap-2">
-        {% if venue.has_floodlights %}
-        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
-          </span>Floodlights
-        </span>
-        {% endif %}
-        {% if venue.has_parking %}
-        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
-          </span>Parking
-        </span>
-        {% endif %}
-        {% if venue.has_washroom %}
-        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>
-          </span>Washrooms
-        </span>
-        {% endif %}
-        {% if venue.has_wifi %}
-        <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-              style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-          <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-            <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>
-          </span>WiFi
-        </span>
-        {% endif %}
-      </div>
-
-      {# ---- description ---- #}
-      <p class="mt-6 text-[15px]" style="color:var(--cp-ink-2);line-height:1.75;max-width:66ch">
-        {% if venue.description %}{{ venue.description|linebreaksbr }}{% else %}
-        A well-maintained facility in {{ venue.sector|default:"Gandhinagar" }} with cushioned, ITF-standard playing
-        surfaces and full floodlight coverage for evening games. Courts are marked and swept before every slot,
-        rackets and balls are available at the desk, and there is shaded seating for anyone waiting their turn.
-        {% endif %}
-      </p>
-
-      {# ---- tabs ---- #}
-      <div class="mt-8 flex gap-6 text-sm font-semibold" style="border-bottom:1px solid var(--cp-line)">
-        <a href="#overview" class="pb-3" style="color:var(--cp-ink);border-bottom:2px solid var(--cp-teal)">Overview</a>
-        <a href="#amenities" class="pb-3" style="color:var(--cp-ink-3)">Amenities</a>
-        <a href="#reviews" class="pb-3" style="color:var(--cp-ink-3)">Reviews{% if reviews_count %} ({{ reviews_count }}){% endif %}</a>
-      </div>
-
-      {# ---- sports available ---- #}
-      <section id="overview" class="cp-sec">
-        <h2 class="cp-display" style="font-size:1.375rem">Sports available</h2>
-        <div class="mt-4 flex flex-wrap gap-2">
-          {% for a in venue_activities %}
-            <span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold"
-                  style="background:#fff;border:1px solid var(--cp-line);color:var(--cp-ink)">
-              <span class="grid place-items-center" style="width:26px;height:26px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                <svg class="cp-ico" style="width:15px;height:15px" viewBox="0 0 24 24"><ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/></svg>
-              </span>{{ a.name }}
-            </span>
-          {% empty %}
-            <span class="cp-chip">Multi-sport turf</span>
-          {% endfor %}
+  <!-- ==================== PREMIUM HEADER ==================== -->
+  <header class="h-[72px] shrink-0 border-b border-[#1F2433] bg-[#0F1219]/90 backdrop-blur-xl flex items-center justify-between px-6 lg:px-10 z-50">
+    <div class="flex items-center gap-8">
+      <a href="{% url 'home' %}" class="flex items-center gap-2 group">
+        <div class="relative">
+          <div class="absolute inset-0 bg-neon blur-md opacity-20 group-hover:opacity-40 smooth-hover rounded-full"></div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2.5" class="relative z-10"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </div>
-      </section>
-
-      {# ---- things to know ---- #}
-      <section id="amenities" class="cp-sec">
-        <h2 class="cp-display" style="font-size:1.375rem">Things to know</h2>
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Duration</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{{ venue.duration_label|default:"60 min slots" }}</p></div>
-          </div>
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><rect x="2" y="9" width="6" height="6" rx="2" transform="rotate(-45 5 12)"/><rect x="16" y="9" width="6" height="6" rx="2" transform="rotate(-45 19 12)"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Equipment</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.equipment_included %}Included free{% else %}Bring your own{% endif %}</p></div>
-          </div>
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M4 18v-6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6M2 18h20M5 18v2M19 18v2"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Seating</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_seating_lounge %}Shaded lounge{% else %}Limited benches{% endif %}</p></div>
-          </div>
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Flood lights</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_floodlights %}Available till 11 PM{% else %}Daytime play only{% endif %}</p></div>
-          </div>
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Washrooms</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_washroom %}On site{% else %}Not available{% endif %}</p></div>
-          </div>
-
-          <div class="cp-card flex items-start gap-3 p-4">
-            <span class="grid place-items-center shrink-0" style="width:36px;height:36px;border-radius:10px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-              <svg class="cp-ico cp-ico-lg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg>
-            </span>
-            <div class="min-w-0"><p class="text-sm font-semibold">Parking</p>
-              <p class="text-[13px]" style="color:var(--cp-ink-2)">{% if venue.has_parking %}Free, on site{% else %}Street parking{% endif %}</p></div>
-          </div>
-        </div>
-      </section>
-
-      {# ---- reviews ---- #}
-      {% if reviews %}
-      <section id="reviews" class="cp-sec">
-        <h2 class="cp-display" style="font-size:1.375rem">Reviews{% if reviews_count %} ({{ reviews_count }}){% endif %}</h2>
-        <div class="mt-4 grid gap-3 sm:grid-cols-2">
-          {% for r in reviews|slice:":4" %}
-            <article class="cp-card p-5">
-              <div class="flex items-center gap-3">
-                <span class="grid place-items-center font-bold"
-                      style="width:40px;height:40px;border-radius:999px;background:var(--cp-teal-soft);color:var(--cp-teal)">
-                  {{ r.user.first_name|default:r.user.username|slice:":1"|upper }}
-                </span>
-                <div class="min-w-0">
-                  <p class="text-sm font-semibold truncate">{{ r.user.get_full_name|default:r.user.username }}</p>
-                  <p class="text-[12px]" style="color:var(--cp-ink-3)">{{ r.created_at|timesince }} ago</p>
-                </div>
-              </div>
-              <div class="mt-3 flex items-center gap-1" style="color:var(--cp-coral)">
-                {% for s in "12345" %}
-                  <svg class="cp-ico" style="opacity:{% if forloop.counter <= r.rating %}1{% else %}.25{% endif %}" viewBox="0 0 24 24"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
-                {% endfor %}
-              </div>
-              <p class="mt-3 text-[14px]" style="color:var(--cp-ink-2);line-height:1.7">{{ r.comment }}</p>
-            </article>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
+        <span class="text-xl font-bold text-white tracking-widest group-hover:text-neon smooth-hover">CITYPLAY</span>
+      </a>
+      <div class="hidden md:flex items-center gap-1.5 text-sm text-[#A0A8C0] cursor-pointer hover:text-white smooth-hover bg-[#161925] px-3 py-1.5 rounded-full border border-[#1F2433]">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        {{ venue.sector|default:"Gandhinagar" }}
+      </div>
     </div>
 
-    {# ==================== RIGHT: BOOKING PANEL ==================== #}
-    <aside>
-      <div class="lg:sticky lg:top-24 space-y-4">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3 cursor-pointer group hover:bg-[#161925] p-1.5 pr-4 rounded-full border border-transparent hover:border-[#1F2433] smooth-hover">
+        <img src="https://ui-avatars.com/api/?name={{ request.user.first_name|default:request.user.username }}&background=D4FF00&color=0F1219&bold=true" alt="User" class="w-8 h-8 rounded-full shadow-lg">
+        <span class="hidden sm:block text-sm font-semibold text-white group-hover:text-neon smooth-hover">{{ request.user.first_name|default:request.user.username }}</span>
+      </div>
+    </div>
+  </header>
 
-        <div class="cp-card p-5">
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="cp-display" style="font-size:1.25rem">Book Your Slot</h2>
-            <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold" style="color:var(--cp-teal)">
-              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 10-4-1.8-7-5.6-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-              Secure booking
-            </span>
+  <!-- ==================== MAIN SCROLLABLE CONTENT ==================== -->
+  <div class="flex-1 cp-scroll-y">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+      
+      <a href="{% if venue_activities.0 %}{% url 'venues:activity_venues' venue_activities.0.slug %}{% else %}{% url 'home' %}{% endif %}"
+         class="inline-flex items-center gap-2 text-[#7A839E] hover:text-white text-sm font-semibold smooth-hover mb-6 group">
+        <div class="bg-[#161925] p-2 rounded-lg border border-[#1F2433] group-hover:border-[#3F4659] smooth-hover">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 smooth-hover"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        Back to results
+      </a>
+
+      <div class="grid gap-10 lg:grid-cols-[65fr_35fr] items-start">
+
+        {# ==================== LEFT COLUMN ==================== #}
+        <div class="min-w-0">
+          
+          {# ---- Cinematic Hero Image ---- #}
+          <div class="relative rounded-[24px] overflow-hidden bg-[#161925] border border-[#1F2433] h-[300px] md:h-[480px] w-full group shadow-2xl">
+            <img src="{% if venue.cover_image %}{{ venue.cover_image.url }}{% else %}https://via.placeholder.com/1200x700?text=Venue+Photo{% endif %}" alt="{{ venue.name }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out">
+            <!-- Deep cinematic gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0F1219] via-[#0F1219]/20 to-transparent opacity-100"></div>
+
+            <form method="POST" action="{% url 'venues:toggle_favourite' venue.pk %}" class="absolute top-6 right-6 z-10">
+              {% csrf_token %}
+              <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#0F1219]/60 backdrop-blur-md border border-[#2A2F3D] text-white hover:bg-[#0F1219] hover:border-white smooth-hover shadow-xl">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="{% if is_favourite %}#EF4444{% else %}none{% endif %}" stroke="{% if is_favourite %}#EF4444{% else %}currentColor{% endif %}" stroke-width="2.5" class="{% if is_favourite %}scale-110{% endif %} smooth-hover"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                {% if is_favourite %}Saved{% else %}Add to favourites{% endif %}
+              </button>
+            </form>
+
+            {% if venue.has_floodlights %}
+            <div class="absolute bottom-6 left-6 bg-[#450a0a]/80 backdrop-blur-md border border-[#ef4444]/50 text-white text-[11px] font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.3)] z-10">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48 0a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+              Floodlit venue
+            </div>
+            {% endif %}
           </div>
 
-          {# ---- date rail ---- #}
-          <div class="mt-4 flex items-center gap-2">
-            <span class="grid place-items-center shrink-0" style="width:30px;height:30px;border-radius:999px;border:1px solid var(--cp-line);color:var(--cp-ink-3)">
-              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></svg>
-            </span>
-            <div class="cp-scroll-x flex gap-2 flex-1">
-              {% regroup upcoming_events by date as event_days %}
-              {% for day in event_days|slice:":5" %}
-                <a href="?date={{ day.grouper|date:'Y-m-d' }}"
-                   class="shrink-0 text-center rounded-[10px] px-3 py-2.5"
-                   style="min-width:62px;border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};background:{% if forloop.first %}var(--cp-teal-soft){% else %}#fff{% endif %}">
-                  <p class="text-[11px] uppercase tracking-wide" style="color:var(--cp-ink-3)">{{ day.grouper|date:"D" }}</p>
-                  <p class="text-[18px] font-bold" style="color:{% if forloop.first %}var(--cp-teal){% else %}var(--cp-ink){% endif %}">{{ day.grouper|date:"j" }}</p>
-                  <p class="text-[11px]" style="color:var(--cp-ink-3)">{{ day.grouper|date:"M" }}</p>
-                </a>
+          {# ---- Interactive Thumbnail Strip ---- #}
+          <div class="mt-5 cp-scroll-x flex gap-4 snap-x pb-2">
+            {% for img in gallery|slice:":4" %}
+              <figure class="shrink-0 rounded-2xl overflow-hidden snap-start w-[140px] h-[90px] border {% if forloop.first %}border-neon shadow-[0_0_10px_rgba(212,255,0,0.15)]{% else %}border-[#1F2433]{% endif %} bg-[#161925] cursor-pointer group">
+                <img src="{{ img.image.url }}" alt="{{ img.caption|default:venue.name }}" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+              </figure>
+            {% empty %}
+              {% for i in "1234" %}
+              <figure class="shrink-0 rounded-2xl overflow-hidden snap-start w-[140px] h-[90px] border {% if forloop.first %}border-neon{% else %}border-[#1F2433]{% endif %} bg-[#161925] opacity-50">
+                <img src="https://via.placeholder.com/300x200?text=CityPlay" alt="Placeholder" class="w-full h-full object-cover">
+              </figure>
+              {% endfor %}
+            {% endfor %}
+            
+            {% if gallery|length > 4 %}
+              <a href="#gallery" class="shrink-0 flex flex-col items-center justify-center rounded-2xl snap-start w-[140px] h-[90px] bg-[#141720] border border-[#1F2433] cursor-pointer hover:border-[#3F4659] hover:bg-[#161925] smooth-hover group">
+                <span class="text-2xl font-black text-white group-hover:text-neon smooth-hover">+{{ gallery|length|add:"-4" }}</span>
+                <span class="text-[10px] uppercase tracking-widest text-[#7A839E]">Photos</span>
+              </a>
+            {% endif %}
+          </div>
+
+          {# ---- Venue Title & Real Meta Info ---- #}
+          <div class="mt-10">
+            <h1 class="text-4xl md:text-5xl font-black text-white flex items-center gap-3 tracking-tight">
+              {{ venue.name }}
+              {% if venue.is_verified %}
+              <div class="bg-[#3B82F6]/20 p-1.5 rounded-full">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#3B82F6" stroke="#0F1219" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="3"/></svg>
+              </div>
+              {% endif %}
+            </h1>
+            <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#A0A8C0] font-medium">
+              <span class="inline-flex items-center gap-2 bg-[#161925] px-3 py-1.5 rounded-lg border border-[#1F2433]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{ venue.address }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
+              </span>
+              
+              {% if venue.rating_average or review_count %}
+              <span class="inline-flex items-center gap-2 bg-[#161925] px-3 py-1.5 rounded-lg border border-[#1F2433]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#D4FF00" stroke="#D4FF00" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <b class="text-white">{{ venue.rating_average|default:"4.8" }}</b>
+                <span>({{ review_count|default:0 }} reviews)</span>
+              </span>
+              {% endif %}
+            </div>
+          </div>
+
+          {# ---- Quick Amenities Bar ---- #}
+          <div class="mt-8 flex flex-wrap gap-4 text-xs font-bold text-[#A0A8C0]">
+            {% if venue.has_floodlights %}
+            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg> Floodlights</span>
+            {% endif %}
+            {% if venue.has_parking %}
+            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg> Parking</span>
+            {% endif %}
+            {% if venue.has_washroom %}
+            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg> Washrooms</span>
+            {% endif %}
+            {% if venue.has_wifi %}
+            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> WiFi Available</span>
+            {% endif %}
+          </div>
+
+          {# ---- Description ---- #}
+          <p class="mt-8 text-[15px] text-[#A0A8C0] leading-relaxed max-w-3xl font-medium">
+            {% if venue.description %}
+              {{ venue.description|linebreaksbr }}
+            {% else %}
+              A well-maintained facility in {{ venue.sector|default:"Gandhinagar" }} with cushioned, ITF-standard playing
+              surfaces and full floodlight coverage for evening games. Courts are marked and swept before every slot,
+              rackets and balls are available at the desk, and there is shaded seating for anyone waiting their turn. Easy to reach from Sector 9, Infocity and Kudasan, with open parking on site.
+            {% endif %}
+          </p>
+
+          {# ---- Premium Tabs ---- #}
+          <div class="mt-12 flex gap-8 text-sm font-bold border-b border-[#1F2433]">
+            <a href="#overview" class="pb-4 text-[#A0A8C0] hover:text-white smooth-hover relative group">
+              Overview
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#3F4659] group-hover:w-full smooth-hover"></span>
+            </a>
+            <a href="#amenities" class="pb-4 text-[#A0A8C0] hover:text-white smooth-hover relative group">
+              Amenities
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#3F4659] group-hover:w-full smooth-hover"></span>
+            </a>
+            <a href="#reviews" class="pb-4 text-neon border-b-2 border-neon">Reviews{% if review_count %} ({{ review_count }}){% endif %}</a>
+          </div>
+
+          {# ---- Real Sports Available ---- #}
+          <section id="overview" class="mt-10">
+            <h2 class="text-xl font-bold text-white mb-5">Sports available</h2>
+            <div class="flex flex-wrap gap-4">
+              {% for a in venue_activities %}
+                <span class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold bg-gradient-to-br from-[#161925] to-[#141720] border border-[#2A2F3D] text-white shadow-sm">
+                  <div class="bg-neon/10 p-1.5 rounded-full text-neon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                  </div>
+                  {{ a.name }}
+                </span>
               {% empty %}
-                <div class="flex-1 rounded-[10px] px-3 py-3 text-[13px] text-center"
-                     style="border:1px dashed var(--cp-line);color:var(--cp-ink-2)">No dates published yet</div>
+                <span class="inline-flex items-center px-5 py-3 rounded-2xl text-sm font-bold bg-[#141720] border border-[#2A2F3D] text-[#7A839E]">Multi-sport turf</span>
               {% endfor %}
             </div>
-            <span class="grid place-items-center shrink-0" style="width:30px;height:30px;border-radius:999px;border:1px solid var(--cp-line);color:var(--cp-ink-3)">
-              <svg class="cp-ico" viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></svg>
-            </span>
-          </div>
+          </section>
 
-          {# ---- sport toggle ---- #}
-          {% if venue_activities %}
-          <div class="mt-4 grid gap-2" style="grid-template-columns:repeat({{ venue_activities|length|default:1 }},minmax(0,1fr))">
-            {% for a in venue_activities|slice:":3" %}
-              <a href="?activity={{ a.slug }}"
-                 class="inline-flex items-center justify-center gap-2 rounded-[10px] px-3 py-3 text-sm font-semibold"
-                 style="border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};
-                        background:{% if forloop.first %}var(--cp-teal-soft){% else %}#fff{% endif %};
-                        color:{% if forloop.first %}var(--cp-teal){% else %}var(--cp-ink-2){% endif %}">
-                <svg class="cp-ico" viewBox="0 0 24 24"><ellipse cx="10.5" cy="8.5" rx="6.5" ry="7"/><path d="M15 14.2l5 6.3a1.6 1.6 0 0 1-2.4 2.1l-4.9-6"/></svg>
-                {{ a.name }}
-              </a>
-            {% endfor %}
-          </div>
+          {# ---- Detailed Amenities Cards ---- #}
+          <section id="amenities" class="mt-12">
+            <h2 class="text-xl font-bold text-white mb-5">Things to know</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                <p class="text-sm font-bold text-white">Duration</p>
+                <p class="text-xs text-[#A0A8C0]">{{ venue.duration_label|default:"60 min slots" }}</p>
+              </div>
+
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11"/><rect x="2" y="9" width="6" height="6" rx="2" transform="rotate(-45 5 12)"/></svg></span>
+                <p class="text-sm font-bold text-white">Equipment</p>
+                <p class="text-xs text-[#A0A8C0]">{% if venue.equipment_included %}Included free{% else %}Bring your own{% endif %}</p>
+              </div>
+
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18v-6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6M2 18h20M5 18v2M19 18v2"/></svg></span>
+                <p class="text-sm font-bold text-white">Seating</p>
+                <p class="text-xs text-[#A0A8C0]">{% if venue.has_seating_lounge %}Shaded lounge{% else %}Limited benches{% endif %}</p>
+              </div>
+
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg></span>
+                <p class="text-sm font-bold text-white">Flood lights</p>
+                <p class="text-xs text-[#A0A8C0]">{% if venue.has_floodlights %}Available till 11 PM{% else %}Daytime play only{% endif %}</p>
+              </div>
+
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg></span>
+                <p class="text-sm font-bold text-white">Washrooms</p>
+                <p class="text-xs text-[#A0A8C0]">{% if venue.has_washroom %}On site{% else %}Not available{% endif %}</p>
+              </div>
+
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg></span>
+                <p class="text-sm font-bold text-white">Parking</p>
+                <p class="text-xs text-[#A0A8C0]">{% if venue.has_parking %}Free, on site{% else %}Street parking{% endif %}</p>
+              </div>
+
+            </div>
+          </section>
+
+          {# ---- Real Reviews Database Loop ---- #}
+          {% if reviews %}
+          <section id="reviews" class="mt-12 relative">
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="text-xl font-bold text-white">Reviews</h2>
+              <a href="#" class="text-xs font-bold text-neon hover:underline">View all</a>
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2">
+              {% for r in reviews|slice:":4" %}
+                <article class="bg-[#141720] border border-[#1F2433] hover:border-[#3F4659] rounded-[24px] p-6 relative smooth-hover hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#0F1219]">
+                  <button class="absolute top-6 right-6 text-[#3F4659] hover:text-white smooth-hover"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  <div class="flex items-center gap-4">
+                    <span class="grid place-items-center font-black text-lg w-12 h-12 rounded-full bg-gradient-to-br from-[#2A2F3D] to-[#1F2433] text-white shadow-inner">
+                      {{ r.user.first_name|default:r.user.username|slice:":1"|upper }}
+                    </span>
+                    <div class="min-w-0">
+                      <p class="text-sm font-bold text-white truncate">{{ r.user.get_full_name|default:r.user.username }}</p>
+                      <p class="text-[11px] text-[#7A839E] mt-0.5 uppercase tracking-wide font-semibold">{{ r.created_at|timesince }} ago</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 flex items-center gap-1">
+                    {% for s in "12345" %}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="{% if forloop.counter <= r.rating %}#D4FF00{% else %}none{% endif %}" stroke="{% if forloop.counter <= r.rating %}#D4FF00{% else %}#3F4659{% endif %}" stroke-width="2.5"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
+                    {% endfor %}
+                  </div>
+                  
+                  <p class="mt-3 text-[13px] text-[#A0A8C0] leading-relaxed line-clamp-4 font-medium">{{ r.body|default:r.comment }}</p>
+                  
+                  <form method="POST" action="{% url 'venues:mark_review_helpful' r.id %}" class="mt-5 pt-4 border-t border-[#1F2433]">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center gap-1.5 text-xs font-bold text-[#7A839E] hover:text-white transition-colors w-max group">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:-translate-y-0.5 smooth-hover"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                      Helpful ({{ r.helpful_count|default:0 }})
+                    </button>
+                  </form>
+                </article>
+              {% endfor %}
+            </div>
+          </section>
           {% endif %}
 
-          {# ---- time slots ---- #}
-          <p class="mt-5 text-[11px] font-semibold uppercase tracking-widest" style="color:var(--cp-ink-3)">Select time slot</p>
-          <div class="mt-3 grid grid-cols-4 gap-2">
-            {% for event in upcoming_events|slice:":16" %}
-              {% if event.is_available|default_if_none:True %}
-                <a href="{% url 'events:event_detail' event.id %}"
-                   class="text-center rounded-[10px] px-2 py-2.5 text-[12px] font-semibold"
-                   style="border:1px solid {% if forloop.first %}var(--cp-teal){% else %}var(--cp-line){% endif %};
-                          background:{% if forloop.first %}var(--cp-teal){% else %}#fff{% endif %};
-                          color:{% if forloop.first %}#fff{% else %}var(--cp-ink){% endif %}">
-                  {{ event.start_time|time:"g:i A" }}
-                </a>
-              {% else %}
-                <span class="text-center rounded-[10px] px-2 py-2.5 text-[12px] font-semibold"
-                      style="border:1px solid var(--cp-line);background:var(--cp-teal-soft);color:var(--cp-ink-3);opacity:.6;text-decoration:line-through">
-                  {{ event.start_time|time:"g:i A" }}
-                </span>
-              {% endif %}
-            {% empty %}
-              <div class="col-span-4 rounded-[10px] px-3 py-3 text-[13px]"
-                   style="border:1px dashed var(--cp-line);color:var(--cp-ink-2)">
-                No slots published yet — request a time and the venue will confirm.
-              </div>
-            {% endfor %}
-          </div>
+        </div>
 
-          {# ---- legend ---- #}
-          <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px]" style="color:var(--cp-ink-2)">
-            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;border:1px solid var(--cp-line);background:#fff;display:block"></span>Available</span>
-            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;background:var(--cp-teal);display:block"></span>Selected</span>
-            <span class="inline-flex items-center gap-2"><span style="width:13px;height:13px;border-radius:4px;background:var(--cp-teal-soft);border:1px solid var(--cp-line);display:block"></span>Unavailable</span>
-          </div>
+        {# ==================== RIGHT COLUMN (BOOKING PANEL) ==================== #}
+        <aside>
+          <!-- Premium Floating Glass Booking Card -->
+          <div class="lg:sticky lg:top-8 bg-[#141720]/80 backdrop-blur-2xl border border-[#1F2433] rounded-[24px] p-6 shadow-2xl relative overflow-hidden">
+            
+            <!-- Subtle Top Neon Accent -->
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-neon to-transparent opacity-50"></div>
 
-          {# ---- price breakdown ---- #}
-          {% with slot=upcoming_events.0 %}
-          <div class="mt-5 pt-5" style="border-top:1px solid var(--cp-line)">
-            <p class="font-bold text-[15px]">Price breakdown</p>
-            <dl class="mt-3 space-y-2 text-[13px]">
-              <div class="flex items-center justify-between">
-                <dt style="color:var(--cp-ink-2)">Base price (1 court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
-                <dd class="font-semibold">&#8377;{{ slot.price_per_slot|default:7000|floatformat:0 }}</dd>
-              </div>
-              {% if slot.peak_charge %}
-              <div class="flex items-center justify-between">
-                <dt style="color:var(--cp-ink-2)">Peak hour charge</dt>
-                <dd class="font-semibold">&#8377;{{ slot.peak_charge|floatformat:0 }}</dd>
-              </div>
-              {% endif %}
-              {% if platform_fee %}
-              <div class="flex items-center justify-between">
-                <dt style="color:var(--cp-ink-2)">Platform fee</dt>
-                <dd class="font-semibold">&#8377;{{ platform_fee|floatformat:0 }}</dd>
-              </div>
-              {% endif %}
-            </dl>
-
-            <div class="mt-4 pt-4 flex items-end justify-between" style="border-top:1px dashed var(--cp-line)">
-              <div>
-                <p class="text-[11px] uppercase tracking-widest" style="color:var(--cp-ink-3)">Total price</p>
-                <p class="cp-price" style="font-size:30px;line-height:1.1">
-                  &#8377;{{ total_price|default:slot.price_per_slot|default:7000|floatformat:0 }}
-                </p>
-              </div>
-              <p class="text-[12px] text-right" style="color:var(--cp-ink-2)">per slot<br>{{ venue.duration_label|default:"60 min" }}</p>
+            <div class="flex items-center justify-between gap-3 mb-6">
+              <h2 class="text-lg font-black text-white tracking-wide">Book Your Slot</h2>
+              <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-[#10B981] bg-[#10B981]/10 px-2.5 py-1.5 rounded-lg border border-[#10B981]/20">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                Secure
+              </span>
             </div>
 
-            <a href="{% if slot %}{% url 'events:event_detail' slot.id %}{% else %}#slots{% endif %}"
-               class="cp-btn w-full mt-4">Continue to booking &rarr;</a>
+            {# ---- Real Date Rail ---- #}
+            <div class="flex items-center gap-2 mb-8">
+              <a href="?from={{ prev_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
+                 class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0 {% if not has_prev %}opacity-30 pointer-events-none{% endif %}">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              </a>
+              
+              <div class="cp-scroll-x flex gap-2 flex-1 justify-between px-1">
+                {% for day in days %}
+                  <a href="?from={{ strip_from }}&date={{ day.iso }}&court={{ active_court.id }}"
+                     class="shrink-0 flex flex-col items-center justify-center rounded-xl py-2 px-1 transition-all duration-300 w-[55px] md:w-[60px]"
+                     style="border: 1px solid {% if day.is_selected %}#D4FF00{% else %}#1F2433{% endif %}; background: {% if day.is_selected %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %}; box-shadow: {% if day.is_selected %}0 0 10px rgba(212,255,0,0.1){% else %}none{% endif %};">
+                    <span class="text-[10px] font-bold uppercase tracking-wider {% if day.is_selected %}text-white{% else %}text-[#7A839E]{% endif %}">{{ day.date|date:"D" }}</span>
+                    <span class="text-xl font-black my-0.5 {% if day.is_selected %}text-neon{% else %}text-white{% endif %}">{{ day.date|date:"j" }}</span>
+                    <span class="text-[10px] font-semibold {% if day.is_selected %}text-white{% else %}text-[#3F4659]{% endif %}">{{ day.date|date:"M" }}</span>
+                  </a>
+                {% endfor %}
+              </div>
 
-            <p class="mt-3 text-center inline-flex w-full items-center justify-center gap-2 text-[12px]" style="color:var(--cp-ink-3)">
-              <svg class="cp-ico" style="color:var(--cp-teal)" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 10-4-1.8-7-5.6-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-              No payment now &middot; Pay at venue
-            </p>
-          </div>
-          {% endwith %}
-        </div>
+              <a href="?from={{ next_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
+                 class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </a>
+            </div>
 
-        {# ---- location card ---- #}
-        <div class="cp-card p-5">
-          <p class="font-bold">{{ venue.name }}</p>
-          <p class="text-[13px] mt-1" style="color:var(--cp-ink-2)">
-            {{ venue.sector|default:"Gandhinagar" }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
-          </p>
-          <div class="mt-3 flex items-start gap-2 text-[13px]" style="color:var(--cp-ink-2)">
-            <svg class="cp-ico mt-[2px]" style="color:var(--cp-coral)" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-            <span>{{ venue.address }}</span>
+            {# ---- Real Court Toggle ---- #}
+            {% if courts %}
+            <div class="grid grid-cols-2 gap-3 mb-8">
+              {% for c in courts|slice:":2" %}
+                <a href="?from={{ strip_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ c.id }}"
+                   class="flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold smooth-hover"
+                   style="border: 1px solid {% if c.id == active_court.id %}#D4FF00{% else %}#2A2F3D{% endif %}; color: {% if c.id == active_court.id %}#D4FF00{% else %}#A0A8C0{% endif %}; background: {% if c.id == active_court.id %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %};">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                  {{ c.name }}
+                </a>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            {# ---- Real Time Slots ---- #}
+            <div class="mb-8">
+              <h3 class="text-sm font-bold text-white mb-4">Select Time Slot</h3>
+              <form id="slotForm" method="GET" action="">
+                <input type="hidden" name="from" value="{{ strip_from }}">
+                <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                <input type="hidden" name="court" value="{{ active_court.id }}">
+                
+                <div class="grid grid-cols-4 gap-3">
+                  {% for s in slots %}
+                    <label class="cursor-pointer {% if not s.available %}cursor-not-allowed opacity-40{% endif %}">
+                      <input type="checkbox" name="slot" value="{{ s.hour }}" class="hidden slot-checkbox" onchange="this.form.submit()" {% if s.selected %}checked{% endif %} {% if not s.available %}disabled{% endif %}>
+                      <div class="flex items-center justify-center rounded-lg py-2.5 text-[11px] font-bold smooth-hover
+                                  {% if s.selected %} bg-neon text-[#0F1219] border border-neon shadow-[0_0_15px_rgba(212,255,0,0.2)]
+                                  {% elif s.available %} bg-[#0F1219] text-[#A0A8C0] border border-[#2A2F3D] hover:border-neon hover:text-white
+                                  {% else %} bg-[#0F1219] text-[#3F4659] border border-[#1F2433] {% endif %}">
+                        {{ s.label }}
+                      </div>
+                    </label>
+                  {% empty %}
+                    <div class="col-span-4 text-center py-5 text-xs font-bold text-[#3F4659] border border-dashed border-[#1F2433] bg-[#0F1219] rounded-xl">No slots scheduled.</div>
+                  {% endfor %}
+                </div>
+              </form>
+              
+              <div class="mt-5 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-wider text-[#7A839E]">
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] border border-[#3F4659] bg-[#0F1219] block"></span>Available</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-neon shadow-[0_0_8px_rgba(212,255,0,0.4)] block"></span>Selected</span>
+                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-[#1F2433] opacity-40 block"></span>Unavailable</span>
+              </div>
+            </div>
+
+            {# ---- Real Price Breakdown & Booking Form ---- #}
+            <div class="pt-6 border-t border-[#1F2433]">
+              <h3 class="text-sm font-bold text-white mb-4">Price Breakdown</h3>
+              <dl class="space-y-3 text-xs font-medium text-[#A0A8C0]">
+                <div class="flex items-center justify-between">
+                  <dt>Base Price ({{ selected_slots|length }} Court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
+                  <dd class="font-bold text-white">₹{{ base_total|floatformat:0 }}</dd>
+                </div>
+                {% if peak_total > 0 %}
+                <div class="flex items-center justify-between">
+                  <dt>Peak Hour Charge</dt>
+                  <dd class="font-bold text-white">₹{{ peak_total|floatformat:0 }}</dd>
+                </div>
+                {% endif %}
+                {% if platform_fee > 0 %}
+                <div class="flex items-center justify-between">
+                  <dt class="flex items-center gap-1.5">Platform Fee <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></dt>
+                  <dd class="font-bold text-white">₹{{ platform_fee|floatformat:0 }}</dd>
+                </div>
+                {% endif %}
+              </dl>
+
+              <div class="mt-5 pt-5 border-t border-dashed border-[#3F4659] flex items-center justify-between mb-8">
+                <span class="text-sm font-black text-white uppercase tracking-wider">Total Price</span>
+                <span class="text-3xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹{{ total_price|floatformat:0 }}</span>
+              </div>
+
+              <!-- Your REAL Form to views.py -> start_booking -->
+              <form action="{% url 'venues:start_booking' venue.pk %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                <input type="hidden" name="court" value="{{ active_court.id }}">
+                <input type="hidden" name="slots" value="{{ selected_hours_csv }}">
+                
+                <button type="submit" {% if not selected_slots %}disabled{% endif %}
+                        class="w-full bg-neon text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 smooth-hover
+                               {% if not selected_slots %}opacity-50 cursor-not-allowed{% else %}hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.4)] hover:-translate-y-0.5{% endif %}">
+                  Continue to payment
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </form>
+
+              <p class="mt-5 text-center flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-[#7A839E]">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                Secure payments. Easy cancellations.
+              </p>
+            </div>
+
           </div>
-          {% if venue.latitude and venue.longitude %}
-            <a class="cp-link mt-3" target="_blank" rel="noopener"
-               href="https://www.google.com/maps/search/?api=1&query={{ venue.latitude }},{{ venue.longitude }}">
-              Open in Google Maps &rarr;
-            </a>
-          {% endif %}
-        </div>
+        </aside>
+
       </div>
-    </aside>
-  </div>
-</div>
-
-{# ---- mobile sticky booking bar ---- #}
-<div class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-4 py-3"
-     style="background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--cp-line)">
-  <div class="flex items-center gap-3">
-    <div class="min-w-0">
-      <p class="cp-price" style="font-size:20px">&#8377;{% if upcoming_events.0 %}{{ upcoming_events.0.price_per_slot|floatformat:0 }}{% else %}7000{% endif %}</p>
-      <p class="text-[11px] truncate" style="color:var(--cp-ink-3)">Pay at venue</p>
     </div>
-    <a href="{% if upcoming_events.0 %}{% url 'events:event_detail' upcoming_events.0.id %}{% else %}#slots{% endif %}"
-       class="cp-btn flex-1">Book Slots</a>
   </div>
-</div>
+
+  {# ---- Mobile Sticky Booking Bar (Floating Glass Effect) ---- #}
+  <div class="lg:hidden fixed inset-x-0 bottom-0 z-[110] px-4 py-4 bg-[#141720]/80 backdrop-blur-xl border-t border-[#2A2F3D] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+    <div class="flex items-center gap-5">
+      <div class="min-w-0 flex-1">
+        <p class="text-2xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹{{ total_price|floatformat:0 }}</p>
+        <p class="text-[10px] text-[#A0A8C0] font-bold uppercase tracking-wider mt-0.5">Pay at venue</p>
+      </div>
+      
+      <form action="{% url 'venues:start_booking' venue.pk %}" method="POST" class="flex-shrink-0 w-[160px]">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+        <input type="hidden" name="court" value="{{ active_court.id }}">
+        <input type="hidden" name="slots" value="{{ selected_hours_csv }}">
+        <button type="submit" {% if not selected_slots %}disabled{% endif %} class="w-full bg-neon text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center smooth-hover {% if not selected_slots %}opacity-50{% else %}shadow-[0_0_15px_rgba(212,255,0,0.3)]{% endif %}">
+          Book Slots
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}
