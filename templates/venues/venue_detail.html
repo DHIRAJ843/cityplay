@@ -6,7 +6,7 @@
 {% block extra_head %}
 <!-- Tailwind CDN for the custom dark mode design -->
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -15,7 +15,6 @@
     overflow: hidden; 
   }
   
-  /* Custom Scrollbar with sleek styling */
   .cp-scroll-y { overflow-y: auto; scroll-behavior: smooth; }
   .cp-scroll-x { overflow-x: auto; scrollbar-width: none; scroll-behavior: smooth; }
   .cp-scroll-x::-webkit-scrollbar { display: none; }
@@ -24,29 +23,26 @@
   ::-webkit-scrollbar-thumb { background: #2A2F3D; border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #3F4659; }
 
-  /* Brand Colors */
   .text-neon { color: #D4FF00; }
   .bg-neon { background-color: #D4FF00; }
   .border-neon { border-color: #D4FF00; }
   
-  /* Smooth transitions for all interactive elements */
-  .smooth-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .smooth-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   
-  /* Checkbox styling logic */
+  /* Forces the checkbox to turn neon WITHOUT reloading the page */
   input[type="checkbox"].slot-checkbox:checked + div {
-    background-color: #D4FF00;
-    color: #0F1219;
-    border-color: #D4FF00;
-    box-shadow: 0 0 15px rgba(212, 255, 0, 0.2);
+    background-color: #D4FF00 !important;
+    color: #0F1219 !important;
+    border-color: #D4FF00 !important;
+    box-shadow: 0 0 15px rgba(212, 255, 0, 0.2) !important;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- FULLSCREEN APP CONTAINER -->
 <div class="fixed inset-0 z-[100] flex flex-col bg-[#0F1219]">
 
-  <!-- ==================== PREMIUM HEADER ==================== -->
+  <!-- ==================== HEADER ==================== -->
   <header class="h-[72px] shrink-0 border-b border-[#1F2433] bg-[#0F1219]/90 backdrop-blur-xl flex items-center justify-between px-6 lg:px-10 z-50">
     <div class="flex items-center gap-8">
       <a href="{% url 'home' %}" class="flex items-center gap-2 group">
@@ -70,7 +66,7 @@
     </div>
   </header>
 
-  <!-- ==================== MAIN SCROLLABLE CONTENT ==================== -->
+  <!-- ==================== MAIN CONTENT ==================== -->
   <div class="flex-1 cp-scroll-y">
     <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
       
@@ -87,10 +83,8 @@
         {# ==================== LEFT COLUMN ==================== #}
         <div class="min-w-0">
           
-          {# ---- Cinematic Hero Image ---- #}
           <div class="relative rounded-[24px] overflow-hidden bg-[#161925] border border-[#1F2433] h-[300px] md:h-[480px] w-full group shadow-2xl">
             <img src="{% if venue.cover_image %}{{ venue.cover_image.url }}{% else %}https://via.placeholder.com/1200x700?text=Venue+Photo{% endif %}" alt="{{ venue.name }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out">
-            <!-- Deep cinematic gradient -->
             <div class="absolute inset-0 bg-gradient-to-t from-[#0F1219] via-[#0F1219]/20 to-transparent opacity-100"></div>
 
             <form method="POST" action="{% url 'venues:toggle_favourite' venue.pk %}" class="absolute top-6 right-6 z-10">
@@ -109,7 +103,6 @@
             {% endif %}
           </div>
 
-          {# ---- Interactive Thumbnail Strip ---- #}
           <div class="mt-5 cp-scroll-x flex gap-4 snap-x pb-2">
             {% for img in gallery|slice:":4" %}
               <figure class="shrink-0 rounded-2xl overflow-hidden snap-start w-[140px] h-[90px] border {% if forloop.first %}border-neon shadow-[0_0_10px_rgba(212,255,0,0.15)]{% else %}border-[#1F2433]{% endif %} bg-[#161925] cursor-pointer group">
@@ -122,16 +115,8 @@
               </figure>
               {% endfor %}
             {% endfor %}
-            
-            {% if gallery|length > 4 %}
-              <a href="#gallery" class="shrink-0 flex flex-col items-center justify-center rounded-2xl snap-start w-[140px] h-[90px] bg-[#141720] border border-[#1F2433] cursor-pointer hover:border-[#3F4659] hover:bg-[#161925] smooth-hover group">
-                <span class="text-2xl font-black text-white group-hover:text-neon smooth-hover">+{{ gallery|length|add:"-4" }}</span>
-                <span class="text-[10px] uppercase tracking-widest text-[#7A839E]">Photos</span>
-              </a>
-            {% endif %}
           </div>
 
-          {# ---- Venue Title & Real Meta Info ---- #}
           <div class="mt-10">
             <h1 class="text-4xl md:text-5xl font-black text-white flex items-center gap-3 tracking-tight">
               {{ venue.name }}
@@ -146,7 +131,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                 {{ venue.address }}{% if distance_km %} &middot; {{ distance_km|floatformat:1 }} km away{% endif %}
               </span>
-              
               {% if venue.rating_average or review_count %}
               <span class="inline-flex items-center gap-2 bg-[#161925] px-3 py-1.5 rounded-lg border border-[#1F2433]">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#D4FF00" stroke="#D4FF00" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -157,168 +141,44 @@
             </div>
           </div>
 
-          {# ---- Quick Amenities Bar ---- #}
-          <div class="mt-8 flex flex-wrap gap-4 text-xs font-bold text-[#A0A8C0]">
-            {% if venue.has_floodlights %}
-            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg> Floodlights</span>
-            {% endif %}
-            {% if venue.has_parking %}
-            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg> Parking</span>
-            {% endif %}
-            {% if venue.has_washroom %}
-            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg> Washrooms</span>
-            {% endif %}
-            {% if venue.has_wifi %}
-            <span class="inline-flex items-center gap-2 bg-[#141720] border border-[#2A2F3D] px-4 py-2 rounded-xl"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4FF00" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg> WiFi Available</span>
-            {% endif %}
-          </div>
-
-          {# ---- Description ---- #}
           <p class="mt-8 text-[15px] text-[#A0A8C0] leading-relaxed max-w-3xl font-medium">
-            {% if venue.description %}
-              {{ venue.description|linebreaksbr }}
-            {% else %}
-              A well-maintained facility in {{ venue.sector|default:"Gandhinagar" }} with cushioned, ITF-standard playing
-              surfaces and full floodlight coverage for evening games. Courts are marked and swept before every slot,
-              rackets and balls are available at the desk, and there is shaded seating for anyone waiting their turn. Easy to reach from Sector 9, Infocity and Kudasan, with open parking on site.
+            {% if venue.description %}{{ venue.description|linebreaksbr }}{% else %}
+            A well-maintained facility with cushioned, ITF-standard playing surfaces and full floodlight coverage for evening games. Courts are marked and swept before every slot.
             {% endif %}
           </p>
 
-          {# ---- Premium Tabs ---- #}
-          <div class="mt-12 flex gap-8 text-sm font-bold border-b border-[#1F2433]">
-            <a href="#overview" class="pb-4 text-[#A0A8C0] hover:text-white smooth-hover relative group">
-              Overview
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#3F4659] group-hover:w-full smooth-hover"></span>
-            </a>
-            <a href="#amenities" class="pb-4 text-[#A0A8C0] hover:text-white smooth-hover relative group">
-              Amenities
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#3F4659] group-hover:w-full smooth-hover"></span>
-            </a>
-            <a href="#reviews" class="pb-4 text-neon border-b-2 border-neon">Reviews{% if review_count %} ({{ review_count }}){% endif %}</a>
-          </div>
-
-          {# ---- Real Sports Available ---- #}
-          <section id="overview" class="mt-10">
-            <h2 class="text-xl font-bold text-white mb-5">Sports available</h2>
-            <div class="flex flex-wrap gap-4">
-              {% for a in venue_activities %}
-                <span class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold bg-gradient-to-br from-[#161925] to-[#141720] border border-[#2A2F3D] text-white shadow-sm">
-                  <div class="bg-neon/10 p-1.5 rounded-full text-neon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                  </div>
-                  {{ a.name }}
-                </span>
-              {% empty %}
-                <span class="inline-flex items-center px-5 py-3 rounded-2xl text-sm font-bold bg-[#141720] border border-[#2A2F3D] text-[#7A839E]">Multi-sport turf</span>
-              {% endfor %}
-            </div>
-          </section>
-
-          {# ---- Detailed Amenities Cards ---- #}
           <section id="amenities" class="mt-12">
             <h2 class="text-xl font-bold text-white mb-5">Things to know</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
                 <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
                 <p class="text-sm font-bold text-white">Duration</p>
                 <p class="text-xs text-[#A0A8C0]">{{ venue.duration_label|default:"60 min slots" }}</p>
               </div>
 
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
+              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
                 <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5l11 11"/><rect x="2" y="9" width="6" height="6" rx="2" transform="rotate(-45 5 12)"/></svg></span>
                 <p class="text-sm font-bold text-white">Equipment</p>
                 <p class="text-xs text-[#A0A8C0]">{% if venue.equipment_included %}Included free{% else %}Bring your own{% endif %}</p>
               </div>
 
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
-                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18v-6a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6M2 18h20M5 18v2M19 18v2"/></svg></span>
-                <p class="text-sm font-bold text-white">Seating</p>
-                <p class="text-xs text-[#A0A8C0]">{% if venue.has_seating_lounge %}Shaded lounge{% else %}Limited benches{% endif %}</p>
-              </div>
-
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
-                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v3M4.9 4.9l2.1 2.1M2 12h3M19 12h3M17 7l2.1-2.1"/><path d="M8 21h8l-1-7H9l-1 7Z"/></svg></span>
-                <p class="text-sm font-bold text-white">Flood lights</p>
-                <p class="text-xs text-[#A0A8C0]">{% if venue.has_floodlights %}Available till 11 PM{% else %}Daytime play only{% endif %}</p>
-              </div>
-
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
-                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v6M4 9h4M6 21v-6"/><circle cx="17" cy="5" r="2"/><path d="M14 21v-5h6v5"/></svg></span>
-                <p class="text-sm font-bold text-white">Washrooms</p>
-                <p class="text-xs text-[#A0A8C0]">{% if venue.has_washroom %}On site{% else %}Not available{% endif %}</p>
-              </div>
-
-              <div class="bg-[#141720] hover:bg-[#161925] border border-[#1F2433] hover:border-[#2A2F3D] rounded-2xl flex flex-col gap-2 p-5 smooth-hover">
-                <span class="text-[#7A839E] bg-[#1F2433] w-10 h-10 rounded-full flex items-center justify-center mb-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3a3 3 0 0 1 0 6h-3"/></svg></span>
-                <p class="text-sm font-bold text-white">Parking</p>
-                <p class="text-xs text-[#A0A8C0]">{% if venue.has_parking %}Free, on site{% else %}Street parking{% endif %}</p>
-              </div>
-
             </div>
           </section>
-
-          {# ---- Real Reviews Database Loop ---- #}
-          {% if reviews %}
-          <section id="reviews" class="mt-12 relative">
-            <div class="flex items-center justify-between mb-5">
-              <h2 class="text-xl font-bold text-white">Reviews</h2>
-              <a href="#" class="text-xs font-bold text-neon hover:underline">View all</a>
-            </div>
-            <div class="grid gap-5 sm:grid-cols-2">
-              {% for r in reviews|slice:":4" %}
-                <article class="bg-[#141720] border border-[#1F2433] hover:border-[#3F4659] rounded-[24px] p-6 relative smooth-hover hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#0F1219]">
-                  <button class="absolute top-6 right-6 text-[#3F4659] hover:text-white smooth-hover"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
-                  <div class="flex items-center gap-4">
-                    <span class="grid place-items-center font-black text-lg w-12 h-12 rounded-full bg-gradient-to-br from-[#2A2F3D] to-[#1F2433] text-white shadow-inner">
-                      {{ r.user.first_name|default:r.user.username|slice:":1"|upper }}
-                    </span>
-                    <div class="min-w-0">
-                      <p class="text-sm font-bold text-white truncate">{{ r.user.get_full_name|default:r.user.username }}</p>
-                      <p class="text-[11px] text-[#7A839E] mt-0.5 uppercase tracking-wide font-semibold">{{ r.created_at|timesince }} ago</p>
-                    </div>
-                  </div>
-
-                  <div class="mt-5 flex items-center gap-1">
-                    {% for s in "12345" %}
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="{% if forloop.counter <= r.rating %}#D4FF00{% else %}none{% endif %}" stroke="{% if forloop.counter <= r.rating %}#D4FF00{% else %}#3F4659{% endif %}" stroke-width="2.5"><path d="M12 4l2.3 4.9 5.2.7-3.8 3.6.9 5.2L12 15.9 7.4 18.4l.9-5.2L4.5 9.6l5.2-.7Z"/></svg>
-                    {% endfor %}
-                  </div>
-                  
-                  <p class="mt-3 text-[13px] text-[#A0A8C0] leading-relaxed line-clamp-4 font-medium">{{ r.body|default:r.comment }}</p>
-                  
-                  <form method="POST" action="{% url 'venues:mark_review_helpful' r.id %}" class="mt-5 pt-4 border-t border-[#1F2433]">
-                    {% csrf_token %}
-                    <button type="submit" class="flex items-center gap-1.5 text-xs font-bold text-[#7A839E] hover:text-white transition-colors w-max group">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:-translate-y-0.5 smooth-hover"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-                      Helpful ({{ r.helpful_count|default:0 }})
-                    </button>
-                  </form>
-                </article>
-              {% endfor %}
-            </div>
-          </section>
-          {% endif %}
 
         </div>
 
         {# ==================== RIGHT COLUMN (BOOKING PANEL) ==================== #}
         <aside>
-          <!-- Premium Floating Glass Booking Card -->
           <div class="lg:sticky lg:top-8 bg-[#141720]/80 backdrop-blur-2xl border border-[#1F2433] rounded-[24px] p-6 shadow-2xl relative overflow-hidden">
             
-            <!-- Subtle Top Neon Accent -->
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-neon to-transparent opacity-50"></div>
 
             <div class="flex items-center justify-between gap-3 mb-6">
               <h2 class="text-lg font-black text-white tracking-wide">Book Your Slot</h2>
-              <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-[#10B981] bg-[#10B981]/10 px-2.5 py-1.5 rounded-lg border border-[#10B981]/20">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                Secure
-              </span>
             </div>
 
-            {# ---- Real Date Rail ---- #}
+            {# ---- Date Rail (Reloads page to fetch slots for this day) ---- #}
             <div class="flex items-center gap-2 mb-8">
               <a href="?from={{ prev_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
                  class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0 {% if not has_prev %}opacity-30 pointer-events-none{% endif %}">
@@ -343,7 +203,7 @@
               </a>
             </div>
 
-            {# ---- Real Court Toggle ---- #}
+            {# ---- Court Toggle (Reloads page to fetch slots for this court) ---- #}
             {% if courts %}
             <div class="grid grid-cols-2 gap-3 mb-8">
               {% for c in courts|slice:":2" %}
@@ -357,30 +217,29 @@
             </div>
             {% endif %}
 
-            {# ---- Real Time Slots ---- #}
+            {# ---- Time Slots (NO RELOAD! Pure JavaScript updates) ---- #}
             <div class="mb-8">
               <h3 class="text-sm font-bold text-white mb-4">Select Time Slot</h3>
-              <form id="slotForm" method="GET" action="">
-                <input type="hidden" name="from" value="{{ strip_from }}">
-                <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
-                <input type="hidden" name="court" value="{{ active_court.id }}">
-                
-                <div class="grid grid-cols-4 gap-3">
-                  {% for s in slots %}
-                    <label class="cursor-pointer {% if not s.available %}cursor-not-allowed opacity-40{% endif %}">
-                      <input type="checkbox" name="slot" value="{{ s.hour }}" class="hidden slot-checkbox" onchange="this.form.submit()" {% if s.selected %}checked{% endif %} {% if not s.available %}disabled{% endif %}>
-                      <div class="flex items-center justify-center rounded-lg py-2.5 text-[11px] font-bold smooth-hover
-                                  {% if s.selected %} bg-neon text-[#0F1219] border border-neon shadow-[0_0_15px_rgba(212,255,0,0.2)]
-                                  {% elif s.available %} bg-[#0F1219] text-[#A0A8C0] border border-[#2A2F3D] hover:border-neon hover:text-white
-                                  {% else %} bg-[#0F1219] text-[#3F4659] border border-[#1F2433] {% endif %}">
-                        {{ s.label }}
-                      </div>
-                    </label>
-                  {% empty %}
-                    <div class="col-span-4 text-center py-5 text-xs font-bold text-[#3F4659] border border-dashed border-[#1F2433] bg-[#0F1219] rounded-xl">No slots scheduled.</div>
-                  {% endfor %}
-                </div>
-              </form>
+              
+              <div class="grid grid-cols-4 gap-3">
+                {% for s in slots %}
+                  <label class="cursor-pointer {% if not s.available %}cursor-not-allowed opacity-40{% endif %}">
+                    <!-- NO ONCHANGE FORM SUBMIT -->
+                    <input type="checkbox" name="slot" value="{{ s.hour }}" class="hidden slot-checkbox" 
+                           data-price="{{ s.price }}" data-is-peak="{% if s.is_peak %}true{% else %}false{% endif %}"
+                           onchange="updatePricing()" {% if s.selected %}checked{% endif %} {% if not s.available %}disabled{% endif %}>
+                    
+                    <div class="flex items-center justify-center rounded-lg py-2.5 text-[11px] font-bold smooth-hover
+                                {% if s.selected %} bg-neon text-[#0F1219] border border-neon shadow-[0_0_15px_rgba(212,255,0,0.2)]
+                                {% elif s.available %} bg-[#0F1219] text-[#A0A8C0] border border-[#2A2F3D] hover:border-neon hover:text-white
+                                {% else %} bg-[#0F1219] text-[#3F4659] border border-[#1F2433] {% endif %}">
+                      {{ s.label }}
+                    </div>
+                  </label>
+                {% empty %}
+                  <div class="col-span-4 text-center py-5 text-xs font-bold text-[#3F4659] border border-dashed border-[#1F2433] bg-[#0F1219] rounded-xl">No slots scheduled.</div>
+                {% endfor %}
+              </div>
               
               <div class="mt-5 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-wider text-[#7A839E]">
                 <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] border border-[#3F4659] bg-[#0F1219] block"></span>Available</span>
@@ -389,43 +248,40 @@
               </div>
             </div>
 
-            {# ---- Real Price Breakdown & Booking Form ---- #}
+            {# ---- Dynamic Price Breakdown ---- #}
             <div class="pt-6 border-t border-[#1F2433]">
               <h3 class="text-sm font-bold text-white mb-4">Price Breakdown</h3>
               <dl class="space-y-3 text-xs font-medium text-[#A0A8C0]">
                 <div class="flex items-center justify-between">
-                  <dt>Base Price ({{ selected_slots|length }} Court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
-                  <dd class="font-bold text-white">₹{{ base_total|floatformat:0 }}</dd>
+                  <dt>Base Price (<span id="display-base-count">0</span> Court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
+                  <dd id="display-base-price" class="font-bold text-white">₹0</dd>
                 </div>
-                {% if peak_total > 0 %}
-                <div class="flex items-center justify-between">
+                
+                <div id="peak-charge-row" class="hidden items-center justify-between">
                   <dt>Peak Hour Charge</dt>
-                  <dd class="font-bold text-white">₹{{ peak_total|floatformat:0 }}</dd>
+                  <dd id="display-peak-charge" class="font-bold text-white">₹0</dd>
                 </div>
-                {% endif %}
-                {% if platform_fee > 0 %}
-                <div class="flex items-center justify-between">
+                
+                <div id="platform-fee-row" class="hidden items-center justify-between">
                   <dt class="flex items-center gap-1.5">Platform Fee <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></dt>
-                  <dd class="font-bold text-white">₹{{ platform_fee|floatformat:0 }}</dd>
+                  <dd id="display-platform-fee" class="font-bold text-white">₹0</dd>
                 </div>
-                {% endif %}
               </dl>
 
               <div class="mt-5 pt-5 border-t border-dashed border-[#3F4659] flex items-center justify-between mb-8">
                 <span class="text-sm font-black text-white uppercase tracking-wider">Total Price</span>
-                <span class="text-3xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹{{ total_price|floatformat:0 }}</span>
+                <span id="display-total-price" class="text-3xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹0</span>
               </div>
 
-              <!-- Your REAL Form to views.py -> start_booking -->
+              <!-- REAL FORM POST TO CHECKOUT -->
               <form action="{% url 'venues:start_booking' venue.pk %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
                 <input type="hidden" name="court" value="{{ active_court.id }}">
-                <input type="hidden" name="slots" value="{{ selected_hours_csv }}">
+                <input type="hidden" id="hidden-slots-input" name="slots" value="{{ selected_hours_csv }}">
                 
-                <button type="submit" {% if not selected_slots %}disabled{% endif %}
-                        class="w-full bg-neon text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 smooth-hover
-                               {% if not selected_slots %}opacity-50 cursor-not-allowed{% else %}hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.4)] hover:-translate-y-0.5{% endif %}">
+                <button type="submit" id="submit-payment-btn" disabled
+                        class="w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed smooth-hover">
                   Continue to payment
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
@@ -444,11 +300,11 @@
     </div>
   </div>
 
-  {# ---- Mobile Sticky Booking Bar (Floating Glass Effect) ---- #}
+  {# ---- Mobile Sticky Booking Bar ---- #}
   <div class="lg:hidden fixed inset-x-0 bottom-0 z-[110] px-4 py-4 bg-[#141720]/80 backdrop-blur-xl border-t border-[#2A2F3D] shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
     <div class="flex items-center gap-5">
       <div class="min-w-0 flex-1">
-        <p class="text-2xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹{{ total_price|floatformat:0 }}</p>
+        <p id="mobile-display-total-price" class="text-2xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹0</p>
         <p class="text-[10px] text-[#A0A8C0] font-bold uppercase tracking-wider mt-0.5">Pay at venue</p>
       </div>
       
@@ -456,12 +312,101 @@
         {% csrf_token %}
         <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
         <input type="hidden" name="court" value="{{ active_court.id }}">
-        <input type="hidden" name="slots" value="{{ selected_hours_csv }}">
-        <button type="submit" {% if not selected_slots %}disabled{% endif %} class="w-full bg-neon text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center smooth-hover {% if not selected_slots %}opacity-50{% else %}shadow-[0_0_15px_rgba(212,255,0,0.3)]{% endif %}">
+        <input type="hidden" id="mobile-hidden-slots-input" name="slots" value="{{ selected_hours_csv }}">
+        <button type="submit" id="mobile-submit-payment-btn" disabled class="w-full bg-[#8A9A00] text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center cursor-not-allowed smooth-hover">
           Book Slots
         </button>
       </form>
     </div>
   </div>
 </div>
+
+<script>
+  // DYNAMIC PRICING SCRIPT (Stops the page from reloading!)
+  const baseCourtPrice = parseFloat("{{ active_court.base_price|default:0 }}");
+  const platformFee = parseFloat("{{ venue.platform_fee|default:100 }}"); 
+  const peakExtra = parseFloat("{{ active_court.peak_price_extra|default:0 }}");
+
+  function updatePricing() {
+    const checkboxes = document.querySelectorAll('.slot-checkbox:checked');
+    let selectedHours = [];
+    let totalBase = 0;
+    let totalPeak = 0;
+
+    checkboxes.forEach(cb => {
+      selectedHours.push(cb.value);
+      totalBase += baseCourtPrice;
+      if (cb.dataset.isPeak === 'true') {
+        totalPeak += peakExtra;
+      }
+    });
+
+    const count = checkboxes.length;
+    const hasSlots = count > 0;
+    const currentPlatformFee = hasSlots ? platformFee : 0;
+    const grandTotal = totalBase + totalPeak + currentPlatformFee;
+
+    // Update Text Elements
+    if(document.getElementById('display-base-count')) document.getElementById('display-base-count').innerText = count;
+    if(document.getElementById('display-base-price')) document.getElementById('display-base-price').innerText = '₹' + totalBase;
+
+    const peakRow = document.getElementById('peak-charge-row');
+    if (totalPeak > 0) {
+      if(peakRow) { peakRow.classList.remove('hidden'); peakRow.classList.add('flex'); }
+      if(document.getElementById('display-peak-charge')) document.getElementById('display-peak-charge').innerText = '₹' + totalPeak;
+    } else {
+      if(peakRow) { peakRow.classList.add('hidden'); peakRow.classList.remove('flex'); }
+    }
+
+    const platformRow = document.getElementById('platform-fee-row');
+    if (currentPlatformFee > 0) {
+      if(platformRow) { platformRow.classList.remove('hidden'); platformRow.classList.add('flex'); }
+      if(document.getElementById('display-platform-fee')) document.getElementById('display-platform-fee').innerText = '₹' + currentPlatformFee;
+    } else {
+      if(platformRow) { platformRow.classList.add('hidden'); platformRow.classList.remove('flex'); }
+    }
+
+    if(document.getElementById('display-total-price')) document.getElementById('display-total-price').innerText = '₹' + grandTotal;
+
+    // Mobile Total
+    const mobileTotal = document.getElementById('mobile-display-total-price');
+    if (mobileTotal) mobileTotal.innerText = '₹' + grandTotal;
+
+    // Inject data into forms so Python backend catches it when clicking "Continue"
+    const csv = selectedHours.join(',');
+    
+    const hiddenSlots = document.getElementById('hidden-slots-input');
+    if (hiddenSlots) hiddenSlots.value = csv;
+    
+    const mobileHidden = document.getElementById('mobile-hidden-slots-input');
+    if (mobileHidden) mobileHidden.value = csv;
+
+    // Turn button Neon when active, Muddy-Green when disabled
+    const btn = document.getElementById('submit-payment-btn');
+    const mobileBtn = document.getElementById('mobile-submit-payment-btn');
+
+    if (hasSlots) {
+      if(btn) {
+        btn.disabled = false;
+        btn.className = "w-full bg-neon text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 smooth-hover hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.4)] hover:-translate-y-0.5 cursor-pointer";
+      }
+      if (mobileBtn) {
+        mobileBtn.disabled = false;
+        mobileBtn.className = "w-full bg-neon text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center smooth-hover shadow-[0_0_15px_rgba(212,255,0,0.3)]";
+      }
+    } else {
+      if(btn) {
+        btn.disabled = true;
+        btn.className = "w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed transition-colors";
+      }
+      if (mobileBtn) {
+        mobileBtn.disabled = true;
+        mobileBtn.className = "w-full bg-[#8A9A00] text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center cursor-not-allowed transition-colors";
+      }
+    }
+  }
+
+  // Run on page load to set correct initial state
+  updatePricing();
+</script>
 {% endblock %}

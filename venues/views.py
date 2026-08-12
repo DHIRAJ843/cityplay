@@ -285,6 +285,8 @@ def start_booking(request, pk):
     day = _parse_date(request.POST.get('date'), timezone.localdate())
 
     hours = sorted({int(h) for h in request.POST.get('slots', '').split(',') if h.strip().isdigit()})
+    
+    # If no slots were passed, reload the page with an error
     if not hours:
         messages.error(request, "Please pick at least one time slot.")
         return redirect(f"{reverse('venues:venue_detail', args=[venue.pk])}?date={day.isoformat()}&court={court.pk}")
@@ -306,14 +308,9 @@ def start_booking(request, pk):
         return redirect(f"{reverse('venues:venue_detail', args=[venue.pk])}?date={day.isoformat()}&court={court.pk}")
 
     request.session['pending_court_bookings'] = [b.pk for b in created]
-
-    # Hook into your existing payment flow if it exists; otherwise land on My Bookings.
-    for name in ('bookings:payment', 'bookings:checkout', 'bookings:my_bookings'):
-        try:
-            return redirect(reverse(name))
-        except NoReverseMatch:
-            continue
-    return redirect('venues:venue_detail', pk=venue.pk)
+    
+    # Send the user directly to the new payment page
+    return redirect('venues:checkout')
 
 
 @login_required
@@ -389,3 +386,35 @@ def resolve_map_link(request):
             return JsonResponse({'lat': m.group(1), 'lng': m.group(2)})
 
     return JsonResponse({'error': 'Could not find coordinates in that link'}, status=404)
+
+
+@login_required
+def checkout(request):
+    """Renders the checkout page for pending bookings."""
+    booking_ids = request.session.get('pending_court_bookings', [])
+    bookings = CourtBooking.objects.filter(id__in=booking_ids, user=request.user)
+
+    if not bookings.exists():
+        messages.error(request, "No pending bookings found.")
+        return redirect('home')
+
+    first_booking = bookings.first()
+    venue = first_booking.court.venue
+    
+    # Calculate totals matching the UI
+    base_total = sum(b.base_price + b.peak_charge for b in bookings)
+    platform_fee = first_booking.platform_fee
+    convenience_fee = Decimal('50.00') # Static fee to match your screenshot
+    
+    total_price = base_total + platform_fee + convenience_fee
+
+    context = {
+        'venue': venue,
+        'bookings': bookings,
+        'first_booking': first_booking,
+        'base_total': base_total,
+        'platform_fee': platform_fee,
+        'convenience_fee': convenience_fee,
+        'total_price': total_price,
+    }
+    return render(request, 'venues/checkout.html', context)
