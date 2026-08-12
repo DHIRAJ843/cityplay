@@ -4,91 +4,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign Up | CityPlay</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Sign Up | CityPlay · Play, Book, Meet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  *{ box-sizing:border-box; }
+  :root{
+    --paper:      #FAFAF7;
+    --ink:        #14181C;
+    --muted:      #767B83;
+    --line:       #E3E1DA;
+    --accent:     #0FB8A1;
+    --accent-soft:rgba(15,184,161,0.08);
+    --accent-hover: #0A9D8A;
+    --secondary:  #FF5A36;
+
+    --font-display:'Oswald', sans-serif;
+    --font-body:   'Inter', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ margin:0; padding:0; }
+
   body{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-body);
     min-height:100vh;
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:40px 16px;
-
-    /* ✅ your actual background image, used as-is */
-    background-image: url("{% static 'images/background 3.png' %}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    overflow-x:hidden;
+    background:#020210;
+    color:#EAEAEA;
   }
 
+  /* ---------- Canvas background ---------- */
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ---------- Nebula overlays (CSS) ---------- */
+  .nebula {
+    position: fixed;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: nebulaPulse 12s ease-in-out infinite;
+  }
+  .nebula-1 {
+    top: -30%;
+    left: -15%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(100,60,255,0.6) 0%, rgba(40,20,120,0.3) 40%, transparent 70%);
+    animation-delay: 0s;
+  }
+  .nebula-2 {
+    bottom: -25%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(15,184,161,0.5) 0%, rgba(10,100,90,0.3) 40%, transparent 70%);
+    animation-delay: -4s;
+  }
+  .nebula-3 {
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(60,150,220,0.4) 0%, rgba(20,60,100,0.2) 40%, transparent 70%);
+    animation-delay: -8s;
+  }
+  @keyframes nebulaPulse {
+    0%, 100% { opacity: 0.12; transform: scale(1) rotate(0deg); }
+    25% { opacity: 0.18; transform: scale(1.08) rotate(2deg); }
+    50% { opacity: 0.14; transform: scale(1.02) rotate(-1deg); }
+    75% { opacity: 0.2; transform: scale(1.1) rotate(1deg); }
+  }
+
+  /* ---------- Shooting stars ---------- */
+  .shooting-star {
+    position: fixed;
+    z-index: 2;
+    pointer-events: none;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
+    border-radius: 1px;
+    opacity: 0;
+    animation: shoot 4s ease-in-out infinite;
+  }
+  .shooting-star:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+  .shooting-star:nth-child(2) { top: 25%; left: 60%; animation-delay: 2.5s; height: 60px; }
+  .shooting-star:nth-child(3) { top: 10%; left: 80%; animation-delay: 5s; height: 100px; }
+  @keyframes shoot {
+    0% { opacity: 0; transform: translateX(0) translateY(0) rotate(-35deg); }
+    5% { opacity: 1; }
+    15% { opacity: 0; transform: translateX(-120px) translateY(120px) rotate(-35deg); }
+    100% { opacity: 0; transform: translateX(-120px) translateY(120px) rotate(-35deg); }
+  }
+
+  /* ---------- Card ---------- */
   .card{
     position:relative;
     width:100%;
-    max-width:460px;
-    background:#faf8f5;
+    max-width:480px;
+    background:rgba(250,248,245,0.97);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.2);
     border-radius:24px;
-    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
-    padding:36px 36px 32px;
-    animation:cardIn .5s cubic-bezier(.16,1,.3,1) both;
-    z-index:2;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset;
+    padding:36px 34px 32px;
+    animation:cardIn 0.6s cubic-bezier(.16,1,.3,1) both;
+    z-index:10;
   }
-  @keyframes cardIn{ from{ opacity:0; transform:translateY(16px) scale(.97);} to{ opacity:1; transform:translateY(0) scale(1);} }
+  @keyframes cardIn{ 
+    from{ opacity:0; transform:translateY(20px) scale(.96);} 
+    to{ opacity:1; transform:translateY(0) scale(1);}
+  }
 
-  .brand{ text-align:center; margin-bottom:16px; }
-  .brand img{ height:48px; width:auto; display:block; margin:0 auto 8px; animation:pulse 2.6s ease-in-out infinite; }
-  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:.75;} }
-  .brand p{ margin:0; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#9a9a9a; }
+  .brand{ text-align:center; margin-bottom:18px; }
+  .brand img{ 
+    height:48px; width:auto; display:block; margin:0 auto 8px; 
+    animation:softPulse 3s ease-in-out infinite;
+  }
+  @keyframes softPulse{ 
+    0%,100%{ opacity:1; transform:scale(1);} 
+    50%{ opacity:.85; transform:scale(.98);} 
+  }
+  .brand p{
+    margin:0;
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:10px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
 
-  h1{ font-size:19px; font-weight:700; color:#161616; text-align:center; margin:0 0 4px; }
-  .sub{ font-size:13px; color:#8a8a8a; text-align:center; margin:0 0 14px; }
+  h1{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-0.3px;
+    color:var(--ink);
+    text-align:center;
+    margin:0 0 4px;
+  }
+  .sub{ 
+    font-size:13px; color:var(--muted); text-align:center; 
+    margin:0 0 18px; font-weight:400; 
+  }
 
-  .perks{ display:flex; justify-content:center; gap:18px; margin-bottom:20px; flex-wrap:wrap; }
-  .perks span{ font-size:12px; color:#6a6a6a; display:flex; align-items:center; gap:5px; }
-  .perks svg{ width:14px; height:14px; color:#0f9d8c; }
+  /* ---------- Perks ---------- */
+  .perks{ 
+    display:flex; justify-content:center; gap:16px; margin-bottom:22px; 
+    flex-wrap:wrap;
+  }
+  .perks span{ 
+    font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px;
+    animation:fadeIn 0.5s ease-out both;
+  }
+  .perks span:nth-child(2) { animation-delay: 0.1s; }
+  .perks span:nth-child(3) { animation-delay: 0.2s; }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+  .perks svg{ width:14px; height:14px; color:var(--accent); }
 
   .msg{ font-size:13px; border-radius:10px; padding:10px 14px; margin-bottom:16px; }
-  .msg.error{ background:#fdecea; color:#c0392b; }
-  .msg.ok{ background:#e3f6f1; color:#0f6e5a; }
+  .msg.error{ background:rgba(192,57,43,0.08); color:#C0392B; border:1px solid rgba(192,57,43,0.15); }
+  .msg.ok{ background:rgba(15,184,161,0.08); color:#0F6E5A; border:1px solid rgba(15,184,161,0.15); }
 
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .field{ margin-bottom:14px; }
-  .field label{ display:block; font-size:13px; font-weight:600; color:#3a3a3a; margin-bottom:6px; }
-  .field input{
-    width:100%; padding:11px 13px; border:1.5px solid #e4e2dc; border-radius:10px;
-    font-size:14px; color:#1a1a1a; outline:none; background:#fff;
+  .field{ margin-bottom:16px; }
+  .field label{ 
+    display:block; font-size:13px; font-weight:600; color:#3a3a3a; margin-bottom:6px;
   }
-  .field input:focus{ border-color:#0fb8a1; box-shadow:0 0 0 3px rgba(15,184,161,0.15); }
-  .err{ font-size:12px; color:#c0392b; margin:4px 0 0; }
+  .field input{
+    width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:10px;
+    font-size:14px; font-family:var(--font-body); color:var(--ink); outline:none; 
+    background:rgba(255,255,255,0.85); transition:border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field input:focus{ 
+    border-color:var(--accent); 
+    background:#fff; 
+    box-shadow:0 0 0 3px var(--accent-soft); 
+  }
+  .err{ font-size:12px; color:#C0392B; margin:4px 0 0 2px; }
 
   .submit{
-    width:100%; background:#0fb8a1; color:#fff; border:none; padding:14px;
-    border-radius:10px; font-size:15px; font-weight:700; cursor:pointer;
-    box-shadow:0 10px 24px -6px rgba(15,184,161,0.4);
-    transition:transform .15s ease, box-shadow .2s ease; margin-top:6px;
+    width:100%; 
+    background:var(--accent); 
+    color:#fff; 
+    border:none; 
+    padding:14px;
+    border-radius:12px; 
+    font-size:15px; 
+    font-family:var(--font-display);
+    font-weight:600; 
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    box-shadow:0 8px 20px -4px rgba(15,184,161,0.4);
+    transition:background 0.2s ease, transform 0.2s ease; 
+    margin-top:6px;
   }
-  .submit:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -6px rgba(15,184,161,0.5); }
+  .submit:hover{ 
+    background:var(--accent-hover); 
+    transform:translateY(-1px); 
+  }
   .submit:active{ transform:translateY(0); }
 
-  .foot{ text-align:center; font-size:13px; color:#8a8a8a; margin-top:20px; }
-  .foot a{ color:#ff6a52; font-weight:700; text-decoration:none; }
+  .foot{ 
+    text-align:center; font-size:13px; color:var(--muted); 
+    margin-top:22px; font-weight:400; 
+  }
+  .foot a{ 
+    color:var(--secondary); font-weight:700; text-decoration:none;
+  }
+  .foot a:hover{ text-decoration:underline; }
+
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
 
   @media (prefers-reduced-motion: reduce){
-    .brand img, .card{ animation:none !important; }
+    .card, .perks span, .brand img{ animation:none !important; }
+    .nebula, .shooting-star{ animation:none !important; }
     .submit{ transition:none !important; }
+  }
+
+  @media (max-width:500px){
+    .card{ padding:30px 22px; }
+    .row{ grid-template-columns:1fr; }
+    h1{ font-size:20px; }
   }
 </style>
 </head>
 <body>
 
-  <div class="card">
+<canvas id="bg-canvas"></canvas>
+
+<div class="nebula nebula-1" aria-hidden="true"></div>
+<div class="nebula nebula-2" aria-hidden="true"></div>
+<div class="nebula nebula-3" aria-hidden="true"></div>
+
+<div class="shooting-star" aria-hidden="true"></div>
+<div class="shooting-star" aria-hidden="true"></div>
+<div class="shooting-star" aria-hidden="true"></div>
+
+<div class="card">
     <div class="brand">
       <img src="{% static 'images/logo.png' %}" alt="CityPlay">
-      <p>Play. Book. Meet.</p>
+      <p>Play &middot; Book &middot; Meet</p>
     </div>
 
     <h1>Join the game</h1>
@@ -145,6 +324,271 @@
     </form>
 
     <p class="foot">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
-  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ==================== SPACE BACKGROUND ====================
+  const canvas = document.getElementById("bg-canvas");
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let w, h;
+  let stars = [];
+  let galaxies = [];
+  const mouse = { x: null, y: null, radius: 160 };
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  window.addEventListener("mousemove", function(e) {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  window.addEventListener("mouseleave", function() {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  // Touch support
+  window.addEventListener("touchmove", function(e) {
+    if (e.touches.length > 0) {
+      mouse.x = e.touches[0].clientX;
+      mouse.y = e.touches[0].clientY;
+    }
+  }, { passive: true });
+  window.addEventListener("touchend", function() {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  // ---------- Star class ----------
+  class Star {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.size = Math.random() * 2.5 + 0.5;
+      this.baseAlpha = Math.random() * 0.8 + 0.2;
+      this.alpha = this.baseAlpha;
+      this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+      this.twinkleOffset = Math.random() * Math.PI * 2;
+      // color variations: mostly white, some teal, some blue
+      const colorRoll = Math.random();
+      if (colorRoll < 0.65) {
+        this.hue = 0; // white
+      } else if (colorRoll < 0.85) {
+        this.hue = 160; // teal
+      } else {
+        this.hue = 210; // blue
+      }
+      this.saturation = this.hue ? '50%' : '0%';
+      this.lightness = this.hue ? '80%' : '100%';
+      this.driftX = (Math.random() - 0.5) * 0.08;
+      this.driftY = (Math.random() - 0.5) * 0.08;
+    }
+
+    draw(timestamp) {
+      const twinkle = Math.sin(timestamp * this.twinkleSpeed + this.twinkleOffset) * 0.3 + 0.7;
+      this.alpha = this.baseAlpha * twinkle;
+      
+      ctx.beginPath();
+      if (this.hue) {
+        ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}, ${this.lightness}, ${this.alpha})`;
+      } else {
+        ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
+      }
+      
+      // Glow for larger stars
+      if (this.size > 1.8 && this.alpha > 0.55) {
+        ctx.shadowColor = this.hue ? 
+          `hsla(${this.hue}, 60%, 70%, 0.7)` : 
+          'rgba(200,230,255,0.7)';
+        ctx.shadowBlur = 6;
+      }
+      
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    update() {
+      this.x += this.driftX;
+      this.y += this.driftY;
+      if (this.x < -10) this.x = w + 10;
+      if (this.x > w + 10) this.x = -10;
+      if (this.y < -10) this.y = h + 10;
+      if (this.y > h + 10) this.y = -10;
+
+      if (mouse.x !== null && mouse.x !== undefined) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius && dist > 0) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          this.x += (dx / dist) * force * 1.5;
+          this.y += (dy / dist) * force * 1.5;
+        }
+      }
+    }
+  }
+
+  // ---------- Galaxy cluster class ----------
+  class Galaxy {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.radius = Math.random() * 80 + 40;
+      this.stars = [];
+      const starCount = Math.floor(Math.random() * 15 + 8);
+      for (let i = 0; i < starCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * this.radius;
+        this.stars.push({
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance,
+          size: Math.random() * 1.2 + 0.3,
+          alpha: Math.random() * 0.5 + 0.3,
+          hue: Math.random() < 0.3 ? (Math.random() < 0.5 ? 160 : 200) : null
+        });
+      }
+      this.rotationSpeed = (Math.random() - 0.5) * 0.0005;
+      this.angle = Math.random() * Math.PI * 2;
+    }
+
+    draw(timestamp) {
+      this.angle += this.rotationSpeed;
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+      gradient.addColorStop(0, 'rgba(15,184,161,0.1)');
+      gradient.addColorStop(0.5, 'rgba(15,150,140,0.04)');
+      gradient.addColorStop(1, 'rgba(10,100,90,0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      this.stars.forEach(function(star) {
+        ctx.beginPath();
+        if (star.hue) {
+          ctx.fillStyle = `hsla(${star.hue}, 50%, 80%, ${star.alpha})`;
+        } else {
+          ctx.fillStyle = `rgba(220,235,255,${star.alpha})`;
+        }
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.restore();
+    }
+  }
+
+  function initSpace() {
+    stars = [];
+    galaxies = [];
+    // Star count based on screen size, capped for performance
+    const starCount = Math.min(Math.floor((w * h) / 1500), 300);
+    for (let i = 0; i < starCount; i++) {
+      stars.push(new Star());
+    }
+    const galaxyCount = Math.min(Math.floor((w * h) / 200000), 15);
+    for (let i = 0; i < galaxyCount; i++) {
+      galaxies.push(new Galaxy());
+    }
+  }
+
+  function animateSpace(timestamp) {
+    if (reduceMotion) {
+      // Static background for reduced motion
+      ctx.clearRect(0, 0, w, h);
+      galaxies.forEach(galaxy => galaxy.draw(timestamp));
+      stars.forEach(star => star.draw(timestamp));
+      return;
+    }
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    galaxies.forEach(galaxy => galaxy.draw(timestamp));
+    
+    stars.forEach(star => {
+      star.update();
+      star.draw(timestamp);
+    });
+    
+    // Connection lines between nearby stars (constellation effect)
+    const connectionDist = 110;
+    for (let i = 0; i < stars.length; i++) {
+      for (let j = i + 1; j < stars.length; j++) {
+        const dx = stars[i].x - stars[j].x;
+        const dy = stars[i].y - stars[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connectionDist) {
+          const alpha = (1 - dist / connectionDist) * 0.15;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(150,200,190,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(stars[i].x, stars[i].y);
+          ctx.lineTo(stars[j].x, stars[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // Mouse constellation effect
+    if (mouse.x !== null && mouse.x !== undefined) {
+      const nearbyStars = stars.filter(star => {
+        const dx = star.x - mouse.x;
+        const dy = star.y - mouse.y;
+        return Math.sqrt(dx * dx + dy * dy) < mouse.radius;
+      });
+      
+      for (let i = 0; i < nearbyStars.length; i++) {
+        for (let j = i + 1; j < nearbyStars.length; j++) {
+          const dx = nearbyStars[i].x - nearbyStars[j].x;
+          const dy = nearbyStars[i].y - nearbyStars[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 130) {
+            const alpha = (1 - dist / 130) * 0.3;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(15,184,161,${alpha})`;
+            ctx.lineWidth = 0.7;
+            ctx.moveTo(nearbyStars[i].x, nearbyStars[i].y);
+            ctx.lineTo(nearbyStars[j].x, nearbyStars[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    requestAnimationFrame(animateSpace);
+  }
+
+  // Initialize
+  try {
+    initSpace();
+    requestAnimationFrame(animateSpace);
+    window.addEventListener("resize", function() {
+      resize();
+      initSpace();
+    });
+  } catch (error) {
+    console.error("Error initializing background:", error);
+  }
+
+})();
+</script>
 </body>
 </html>
