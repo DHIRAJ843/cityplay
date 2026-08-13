@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | CityPlay</title>
+<title>Login | CityPlay · Play, Book, Meet</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -19,7 +19,7 @@
     --font-body:   'Inter', sans-serif;
   }
 
-  *{ box-sizing:border-box; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ margin:0; padding:0; }
 
   body{
@@ -43,6 +43,7 @@
     width: 100%;
     height: 100%;
     z-index: 0;
+    pointer-events: none;
   }
 
   /* ---------- nebula/galaxy glow overlays ---------- */
@@ -127,7 +128,7 @@
   .card{
     position:relative;
     width:100%;
-    max-width:400px;
+    max-width:420px;
     background:rgba(250,248,245,0.97);
     backdrop-filter:blur(20px);
     -webkit-backdrop-filter:blur(20px);
@@ -193,6 +194,7 @@
   .input-wrap svg{
     position:absolute; left:14px; top:50%; transform:translateY(-50%);
     width:16px; height:16px; color:#B0B0B0; pointer-events:none;
+    z-index:1;
   }
   .input-wrap input{
     width:100%;
@@ -211,12 +213,7 @@
     background:#fff;
     box-shadow:0 0 0 4px var(--accent-soft);
   }
-  .input-wrap .toggle-eye{
-    position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    background:none; border:none; padding:4px; cursor:pointer; color:#B0B0B0;
-    transition:color .15s ease;
-  }
-  .input-wrap .toggle-eye:hover{ color:var(--ink); }
+  /* Remove eye toggle styles completely */
   .err{ font-size:12px; color:#C0392B; margin:4px 0 0 2px; }
 
   .forgot{ text-align:right; margin:-4px 0 22px; }
@@ -329,7 +326,7 @@
       {% csrf_token %}
 
       <div class="field">
-        <label>Name</label>
+        <label for="{{ form.username.id_for_label }}">Name</label>
         <div class="input-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0"/></svg>
           {{ form.username }}
@@ -338,14 +335,13 @@
       </div>
 
       <div class="field">
-        <label>Password</label>
+        <label for="{{ form.password.id_for_label }}">Password</label>
         <div class="input-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 0h10.5A1.5 1.5 0 0118.75 12v7.5a1.5 1.5 0 01-1.5 1.5H6.75a1.5 1.5 0 01-1.5-1.5V12a1.5 1.5 0 011.5-1.5z"/></svg>
           {{ form.password }}
-          <button type="button" class="toggle-eye" onclick="const p=this.previousElementSibling; p.type = p.type==='password' ? 'text' : 'password';">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
+          <!-- Eye toggle removed completely -->
         </div>
+        {% if form.password.errors %}<p class="err">{{ form.password.errors.0 }}</p>{% endif %}
       </div>
 
       <div class="forgot"><a href="#">Forgot password?</a></div>
@@ -365,11 +361,22 @@
 
 <script>
 (function(){
+  "use strict";
+  
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- SPACE BACKGROUND CANVAS ----------
   const canvas = document.getElementById("bg-canvas");
+  if (!canvas) {
+    console.error("Canvas element not found");
+    return;
+  }
+  
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    console.error("Canvas 2D context not supported");
+    return;
+  }
 
   let w, h;
   let stars = [];
@@ -377,237 +384,242 @@
   const mouse = { x: null, y: null, radius: 150 };
 
   function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
   }
+  
   window.addEventListener("resize", resize);
   resize();
 
   window.addEventListener("mousemove", function(e) {
-      mouse.x = e.x;
-      mouse.y = e.y;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
   });
 
   window.addEventListener("mouseleave", function() {
-      mouse.x = null;
-      mouse.y = null;
+    mouse.x = null;
+    mouse.y = null;
   });
 
   // Star class - twinkling stars with varying brightness
   class Star {
-      constructor() {
-          this.x = Math.random() * w;
-          this.y = Math.random() * h;
-          this.size = Math.random() * 2.5 + 0.5;
-          this.baseAlpha = Math.random() * 0.8 + 0.2;
-          this.alpha = this.baseAlpha;
-          this.twinkleSpeed = Math.random() * 0.02 + 0.005;
-          this.twinkleOffset = Math.random() * Math.PI * 2;
-          this.hue = Math.random() < 0.1 ? 
-              (Math.random() < 0.5 ? 210 : 30) : // Blue or warm stars
-              0; // White stars
-          this.saturation = this.hue ? '40%' : '0%';
-          this.lightness = this.hue ? '80%' : '100%';
-          this.driftX = (Math.random() - 0.5) * 0.1;
-          this.driftY = (Math.random() - 0.5) * 0.1;
-      }
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.size = Math.random() * 2.5 + 0.5;
+      this.baseAlpha = Math.random() * 0.8 + 0.2;
+      this.alpha = this.baseAlpha;
+      this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+      this.twinkleOffset = Math.random() * Math.PI * 2;
+      this.hue = Math.random() < 0.1 ? 
+        (Math.random() < 0.5 ? 210 : 30) : // Blue or warm stars
+        0; // White stars
+      this.saturation = this.hue ? '40%' : '0%';
+      this.lightness = this.hue ? '80%' : '100%';
+      this.driftX = (Math.random() - 0.5) * 0.1;
+      this.driftY = (Math.random() - 0.5) * 0.1;
+    }
 
-      draw(timestamp) {
-          const twinkle = Math.sin(timestamp * this.twinkleSpeed + this.twinkleOffset) * 0.3 + 0.7;
-          this.alpha = this.baseAlpha * twinkle;
-          
-          ctx.beginPath();
-          if (this.hue) {
-              ctx.fillStyle = `hsla(${this.hue}, ${this.saturation}, ${this.lightness}, ${this.alpha})`;
-          } else {
-              ctx.fillStyle = `rgba(255,255,255,${this.alpha})`;
-          }
-          
-          // Glow effect for brighter stars
-          if (this.size > 1.5 && this.alpha > 0.6) {
-              ctx.shadowColor = this.hue ? 
-                  `hsla(${this.hue}, 50%, 70%, 0.6)` : 
-                  'rgba(200,220,255,0.6)';
-              ctx.shadowBlur = 6;
-          }
-          
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
+    draw(timestamp) {
+      const twinkle = Math.sin(timestamp * this.twinkleSpeed + this.twinkleOffset) * 0.3 + 0.7;
+      this.alpha = this.baseAlpha * twinkle;
+      
+      ctx.beginPath();
+      if (this.hue) {
+        ctx.fillStyle = 'hsla(' + this.hue + ', ' + this.saturation + ', ' + this.lightness + ', ' + this.alpha + ')';
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,' + this.alpha + ')';
       }
-
-      update() {
-          // Slow drift
-          this.x += this.driftX;
-          this.y += this.driftY;
-          
-          // Wrap around edges
-          if (this.x < -10) this.x = w + 10;
-          if (this.x > w + 10) this.x = -10;
-          if (this.y < -10) this.y = h + 10;
-          if (this.y > h + 10) this.y = -10;
-
-          // Mouse interaction
-          if (mouse.x != null) {
-              const dx = this.x - mouse.x;
-              const dy = this.y - mouse.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < mouse.radius) {
-                  const force = (mouse.radius - dist) / mouse.radius;
-                  this.x += (dx / dist) * force * 1.5;
-                  this.y += (dy / dist) * force * 1.5;
-              }
-          }
+      
+      // Glow effect for brighter stars
+      if (this.size > 1.5 && this.alpha > 0.6) {
+        ctx.shadowColor = this.hue ? 
+          'hsla(' + this.hue + ', 50%, 70%, 0.6)' : 
+          'rgba(200,220,255,0.6)';
+        ctx.shadowBlur = 6;
       }
+      
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    update() {
+      // Slow drift
+      this.x += this.driftX;
+      this.y += this.driftY;
+      
+      // Wrap around edges
+      if (this.x < -10) this.x = w + 10;
+      if (this.x > w + 10) this.x = -10;
+      if (this.y < -10) this.y = h + 10;
+      if (this.y > h + 10) this.y = -10;
+
+      // Mouse interaction
+      if (mouse.x !== null && mouse.x !== undefined) {
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius && dist > 0) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          this.x += (dx / dist) * force * 1.5;
+          this.y += (dy / dist) * force * 1.5;
+        }
+      }
+    }
   }
 
   // Galaxy cluster class - dense star groups
   class Galaxy {
-      constructor() {
-          this.x = Math.random() * w;
-          this.y = Math.random() * h;
-          this.radius = Math.random() * 80 + 40;
-          this.stars = [];
-          const starCount = Math.floor(Math.random() * 15 + 8);
-          
-          for (let i = 0; i < starCount; i++) {
-              const angle = Math.random() * Math.PI * 2;
-              const distance = Math.random() * this.radius;
-              this.stars.push({
-                  x: Math.cos(angle) * distance,
-                  y: Math.sin(angle) * distance,
-                  size: Math.random() * 1.2 + 0.3,
-                  alpha: Math.random() * 0.5 + 0.3
-              });
-          }
-          
-          this.rotationSpeed = (Math.random() - 0.5) * 0.0005;
-          this.angle = Math.random() * Math.PI * 2;
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.radius = Math.random() * 80 + 40;
+      this.stars = [];
+      const starCount = Math.floor(Math.random() * 15 + 8);
+      
+      for (let i = 0; i < starCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * this.radius;
+        this.stars.push({
+          x: Math.cos(angle) * distance,
+          y: Math.sin(angle) * distance,
+          size: Math.random() * 1.2 + 0.3,
+          alpha: Math.random() * 0.5 + 0.3
+        });
       }
+      
+      this.rotationSpeed = (Math.random() - 0.5) * 0.0005;
+      this.angle = Math.random() * Math.PI * 2;
+    }
 
-      draw(timestamp) {
-          this.angle += this.rotationSpeed;
-          
-          ctx.save();
-          ctx.translate(this.x, this.y);
-          ctx.rotate(this.angle);
-          
-          // Galaxy glow
-          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
-          gradient.addColorStop(0, 'rgba(150,180,255,0.08)');
-          gradient.addColorStop(0.5, 'rgba(100,130,255,0.03)');
-          gradient.addColorStop(1, 'rgba(50,80,255,0)');
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Galaxy stars
-          this.stars.forEach(star => {
-              ctx.beginPath();
-              ctx.fillStyle = `rgba(200,220,255,${star.alpha})`;
-              ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-              ctx.fill();
-          });
-          
-          ctx.restore();
-      }
+    draw(timestamp) {
+      this.angle += this.rotationSpeed;
+      
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      
+      // Galaxy glow
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+      gradient.addColorStop(0, 'rgba(150,180,255,0.08)');
+      gradient.addColorStop(0.5, 'rgba(100,130,255,0.03)');
+      gradient.addColorStop(1, 'rgba(50,80,255,0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Galaxy stars
+      this.stars.forEach(function(star) {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(200,220,255,' + star.alpha + ')';
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.restore();
+    }
   }
 
   function initSpace() {
-      stars = [];
-      galaxies = [];
-      
-      // Create stars based on screen size
-      const starCount = Math.floor((w * h) / 1500);
-      for (let i = 0; i < starCount; i++) {
-          stars.push(new Star());
-      }
-      
-      // Create galaxy clusters
-      const galaxyCount = Math.floor((w * h) / 200000);
-      for (let i = 0; i < galaxyCount; i++) {
-          galaxies.push(new Galaxy());
-      }
+    stars = [];
+    galaxies = [];
+    
+    // Create stars based on screen size
+    const starCount = Math.floor((w * h) / 1500);
+    for (let i = 0; i < starCount; i++) {
+      stars.push(new Star());
+    }
+    
+    // Create galaxy clusters
+    const galaxyCount = Math.floor((w * h) / 200000);
+    for (let i = 0; i < galaxyCount; i++) {
+      galaxies.push(new Galaxy());
+    }
   }
-
-  let lastTimestamp = 0;
 
   function animateSpace(timestamp) {
-      if (reduceMotion) {
-          requestAnimationFrame(animateSpace);
-          return;
+    if (reduceMotion) {
+      requestAnimationFrame(animateSpace);
+      return;
+    }
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    // Draw galaxies first (background)
+    galaxies.forEach(function(galaxy) {
+      galaxy.draw(timestamp);
+    });
+    
+    // Draw stars
+    stars.forEach(function(star) {
+      star.update();
+      star.draw(timestamp);
+    });
+    
+    // Draw connecting lines between nearby stars
+    for (let i = 0; i < stars.length; i++) {
+      for (let j = i + 1; j < stars.length; j++) {
+        const dx = stars[i].x - stars[j].x;
+        const dy = stars[i].y - stars[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        const maxDist = 100;
+        if (dist < maxDist) {
+          const lineAlpha = (1 - dist / maxDist) * 0.15;
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(150,180,255,' + lineAlpha + ')';
+          ctx.lineWidth = 0.4;
+          ctx.moveTo(stars[i].x, stars[i].y);
+          ctx.lineTo(stars[j].x, stars[j].y);
+          ctx.stroke();
+        }
       }
-      
-      ctx.clearRect(0, 0, w, h);
-      
-      // Draw galaxies first (background)
-      galaxies.forEach(galaxy => galaxy.draw(timestamp));
-      
-      // Draw stars
-      stars.forEach(star => {
-          star.update();
-          star.draw(timestamp);
+    }
+    
+    // Draw mouse constellation effect
+    if (mouse.x !== null && mouse.x !== undefined) {
+      const nearbyStars = stars.filter(function(star) {
+        const dx = star.x - mouse.x;
+        const dy = star.y - mouse.y;
+        return Math.sqrt(dx * dx + dy * dy) < mouse.radius;
       });
       
-      // Draw connecting lines between nearby stars
-      for (let i = 0; i < stars.length; i++) {
-          for (let j = i + 1; j < stars.length; j++) {
-              const dx = stars[i].x - stars[j].x;
-              const dy = stars[i].y - stars[j].y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              
-              const maxDist = 100;
-              if (dist < maxDist) {
-                  const lineAlpha = (1 - dist / maxDist) * 0.15;
-                  ctx.beginPath();
-                  ctx.strokeStyle = `rgba(150,180,255,${lineAlpha})`;
-                  ctx.lineWidth = 0.4;
-                  ctx.moveTo(stars[i].x, stars[i].y);
-                  ctx.lineTo(stars[j].x, stars[j].y);
-                  ctx.stroke();
-              }
-          }
-      }
-      
-      // Draw mouse constellation effect
-      if (mouse.x != null) {
-          const nearbyStars = stars.filter(star => {
-              const dx = star.x - mouse.x;
-              const dy = star.y - mouse.y;
-              return Math.sqrt(dx * dx + dy * dy) < mouse.radius;
-          });
+      for (let i = 0; i < nearbyStars.length; i++) {
+        for (let j = i + 1; j < nearbyStars.length; j++) {
+          const dx = nearbyStars[i].x - nearbyStars[j].x;
+          const dy = nearbyStars[i].y - nearbyStars[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
           
-          for (let i = 0; i < nearbyStars.length; i++) {
-              for (let j = i + 1; j < nearbyStars.length; j++) {
-                  const dx = nearbyStars[i].x - nearbyStars[j].x;
-                  const dy = nearbyStars[i].y - nearbyStars[j].y;
-                  const dist = Math.sqrt(dx * dx + dy * dy);
-                  
-                  if (dist < 120) {
-                      const lineAlpha = (1 - dist / 120) * 0.3;
-                      ctx.beginPath();
-                      ctx.strokeStyle = `rgba(180,200,255,${lineAlpha})`;
-                      ctx.lineWidth = 0.6;
-                      ctx.moveTo(nearbyStars[i].x, nearbyStars[i].y);
-                      ctx.lineTo(nearbyStars[j].x, nearbyStars[j].y);
-                      ctx.stroke();
-                  }
-              }
+          if (dist < 120) {
+            const lineAlpha = (1 - dist / 120) * 0.3;
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(180,200,255,' + lineAlpha + ')';
+            ctx.lineWidth = 0.6;
+            ctx.moveTo(nearbyStars[i].x, nearbyStars[i].y);
+            ctx.lineTo(nearbyStars[j].x, nearbyStars[j].y);
+            ctx.stroke();
           }
+        }
       }
-
-      lastTimestamp = timestamp;
-      requestAnimationFrame(animateSpace);
+    }
+    
+    requestAnimationFrame(animateSpace);
   }
 
-  initSpace();
-  requestAnimationFrame(animateSpace);
-
-  window.addEventListener("resize", function() {
+  // Initialize and start animation
+  try {
+    initSpace();
+    requestAnimationFrame(animateSpace);
+    
+    window.addEventListener("resize", function() {
       resize();
       initSpace();
-  });
+    });
+  } catch (error) {
+    console.error("Error initializing space background:", error);
+  }
 
 })();
 </script>
