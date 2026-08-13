@@ -13,7 +13,7 @@
             <h1 class="font-bold text-lg text-ink">Confirm Booking</h1>
         </div>
 
-        <form method="POST" class="p-5 space-y-8">
+       <form method="POST" action="{% url 'bookings:solo_booking' event.id %}" class="p-5 space-y-8">
             {% csrf_token %}
             
             <!-- Event Summary Card -->

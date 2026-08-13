@@ -169,132 +169,127 @@
         </div>
 
         {# ==================== RIGHT COLUMN (BOOKING PANEL) ==================== #}
-        <aside>
-          <div class="lg:sticky lg:top-8 bg-[#141720]/80 backdrop-blur-2xl border border-[#1F2433] rounded-[24px] p-6 shadow-2xl relative overflow-hidden">
-            
-            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-neon to-transparent opacity-50"></div>
+<aside>
+  <div class="lg:sticky lg:top-8 bg-[#141720]/80 backdrop-blur-2xl border border-[#1F2433] rounded-[24px] p-6 shadow-2xl relative overflow-hidden">
+    
+    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-neon to-transparent opacity-50"></div>
 
-            <div class="flex items-center justify-between gap-3 mb-6">
-              <h2 class="text-lg font-black text-white tracking-wide">Book Your Slot</h2>
-            </div>
+    <div class="flex items-center justify-between gap-3 mb-6">
+      <h2 class="text-lg font-black text-white tracking-wide">Book Your Slot</h2>
+    </div>
 
-            {# ---- Date Rail (Reloads page to fetch slots for this day) ---- #}
-            <div class="flex items-center gap-2 mb-8">
-              <a href="?from={{ prev_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
-                 class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0 {% if not has_prev %}opacity-30 pointer-events-none{% endif %}">
-                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-              </a>
-              
-              <div class="cp-scroll-x flex gap-2 flex-1 justify-between px-1">
-                {% for day in days %}
-                  <a href="?from={{ strip_from }}&date={{ day.iso }}&court={{ active_court.id }}"
-                     class="shrink-0 flex flex-col items-center justify-center rounded-xl py-2 px-1 transition-all duration-300 w-[55px] md:w-[60px]"
-                     style="border: 1px solid {% if day.is_selected %}#D4FF00{% else %}#1F2433{% endif %}; background: {% if day.is_selected %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %}; box-shadow: {% if day.is_selected %}0 0 10px rgba(212,255,0,0.1){% else %}none{% endif %};">
-                    <span class="text-[10px] font-bold uppercase tracking-wider {% if day.is_selected %}text-white{% else %}text-[#7A839E]{% endif %}">{{ day.date|date:"D" }}</span>
-                    <span class="text-xl font-black my-0.5 {% if day.is_selected %}text-neon{% else %}text-white{% endif %}">{{ day.date|date:"j" }}</span>
-                    <span class="text-[10px] font-semibold {% if day.is_selected %}text-white{% else %}text-[#3F4659]{% endif %}">{{ day.date|date:"M" }}</span>
-                  </a>
-                {% endfor %}
+    {# ---- Date Rail ---- #}
+    <div class="flex items-center gap-2 mb-8">
+      <a href="?from={{ prev_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
+         class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0 {% if not has_prev %}opacity-30 pointer-events-none{% endif %}">
+         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="cp-scroll-x flex gap-2 flex-1 justify-between px-1">
+        {% for day in days %}
+          <a href="?from={{ strip_from }}&date={{ day.iso }}&court={{ active_court.id }}"
+             class="shrink-0 flex flex-col items-center justify-center rounded-xl py-2 px-1 transition-all duration-300 w-[55px] md:w-[60px]"
+             style="border: 1px solid {% if day.is_selected %}#D4FF00{% else %}#1F2433{% endif %}; background: {% if day.is_selected %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %}; box-shadow: {% if day.is_selected %}0 0 10px rgba(212,255,0,0.1){% else %}none{% endif %};">
+            <span class="text-[10px] font-bold uppercase tracking-wider {% if day.is_selected %}text-white{% else %}text-[#7A839E]{% endif %}">{{ day.date|date:"D" }}</span>
+            <span class="text-xl font-black my-0.5 {% if day.is_selected %}text-neon{% else %}text-white{% endif %}">{{ day.date|date:"j" }}</span>
+            <span class="text-[10px] font-semibold {% if day.is_selected %}text-white{% else %}text-[#3F4659]{% endif %}">{{ day.date|date:"M" }}</span>
+          </a>
+        {% endfor %}
+      </div>
+      <a href="?from={{ next_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
+         class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0">
+         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+
+    {# ---- Court Toggle ---- #}
+    {% if courts %}
+    <div class="grid grid-cols-2 gap-3 mb-8">
+      {% for c in courts|slice:":2" %}
+        <a href="?from={{ strip_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ c.id }}"
+           class="flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold smooth-hover"
+           style="border: 1px solid {% if c.id == active_court.id %}#D4FF00{% else %}#2A2F3D{% endif %}; color: {% if c.id == active_court.id %}#D4FF00{% else %}#A0A8C0{% endif %}; background: {% if c.id == active_court.id %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %};">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          {{ c.name }}
+        </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# ======= FORM STARTS HERE — checkboxes are now INSIDE the form ======= #}
+    <form action="{% url 'venues:start_booking' venue.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+      <input type="hidden" name="court" value="{{ active_court.id }}">
+
+      {# ---- Time Slots ---- #}
+      <div class="mb-8">
+        <h3 class="text-sm font-bold text-white mb-4">Select Time Slot</h3>
+        <div class="grid grid-cols-4 gap-3">
+          {% for s in slots %}
+            <label class="cursor-pointer {% if not s.available %}cursor-not-allowed opacity-40{% endif %}">
+              <input type="checkbox" name="slot" value="{{ s.hour }}"
+                     class="slot-checkbox sr-only"
+                     data-price="{{ s.price }}"
+                     data-is-peak="{% if s.is_peak %}true{% else %}false{% endif %}"
+                     onchange="updatePricing()"
+                     {% if s.selected %}checked{% endif %}
+                     {% if not s.available %}disabled{% endif %}>
+              <div class="flex items-center justify-center rounded-lg py-2.5 text-[11px] font-bold smooth-hover
+                          {% if s.selected %} bg-neon text-[#0F1219] border border-neon shadow-[0_0_15px_rgba(212,255,0,0.2)]
+                          {% elif s.available %} bg-[#0F1219] text-[#A0A8C0] border border-[#2A2F3D] hover:border-neon hover:text-white
+                          {% else %} bg-[#0F1219] text-[#3F4659] border border-[#1F2433] {% endif %}">
+                {{ s.label }}
               </div>
+            </label>
+          {% empty %}
+            <div class="col-span-4 text-center py-5 text-xs font-bold text-[#3F4659] border border-dashed border-[#1F2433] bg-[#0F1219] rounded-xl">No slots scheduled.</div>
+          {% endfor %}
+        </div>
+        <div class="mt-5 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-wider text-[#7A839E]">
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] border border-[#3F4659] bg-[#0F1219] block"></span>Available</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-neon shadow-[0_0_8px_rgba(212,255,0,0.4)] block"></span>Selected</span>
+          <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-[#1F2433] opacity-40 block"></span>Unavailable</span>
+        </div>
+      </div>
 
-              <a href="?from={{ next_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ active_court.id }}" 
-                 class="w-8 h-8 rounded-full border border-[#2A2F3D] bg-[#161925] flex items-center justify-center text-[#7A839E] hover:text-white hover:border-white smooth-hover shrink-0">
-                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-              </a>
-            </div>
-
-            {# ---- Court Toggle (Reloads page to fetch slots for this court) ---- #}
-            {% if courts %}
-            <div class="grid grid-cols-2 gap-3 mb-8">
-              {% for c in courts|slice:":2" %}
-                <a href="?from={{ strip_from }}&date={{ selected_date|date:'Y-m-d' }}&court={{ c.id }}"
-                   class="flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold smooth-hover"
-                   style="border: 1px solid {% if c.id == active_court.id %}#D4FF00{% else %}#2A2F3D{% endif %}; color: {% if c.id == active_court.id %}#D4FF00{% else %}#A0A8C0{% endif %}; background: {% if c.id == active_court.id %}rgba(212,255,0,0.05){% else %}#0F1219{% endif %};">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                  {{ c.name }}
-                </a>
-              {% endfor %}
-            </div>
-            {% endif %}
-
-            {# ---- Time Slots (NO RELOAD! Pure JavaScript updates) ---- #}
-            <div class="mb-8">
-              <h3 class="text-sm font-bold text-white mb-4">Select Time Slot</h3>
-              
-              <div class="grid grid-cols-4 gap-3">
-                {% for s in slots %}
-                  <label class="cursor-pointer {% if not s.available %}cursor-not-allowed opacity-40{% endif %}">
-                    <!-- NO ONCHANGE FORM SUBMIT -->
-                    <input type="checkbox" name="slot" value="{{ s.hour }}" class="hidden slot-checkbox" 
-                           data-price="{{ s.price }}" data-is-peak="{% if s.is_peak %}true{% else %}false{% endif %}"
-                           onchange="updatePricing()" {% if s.selected %}checked{% endif %} {% if not s.available %}disabled{% endif %}>
-                    
-                    <div class="flex items-center justify-center rounded-lg py-2.5 text-[11px] font-bold smooth-hover
-                                {% if s.selected %} bg-neon text-[#0F1219] border border-neon shadow-[0_0_15px_rgba(212,255,0,0.2)]
-                                {% elif s.available %} bg-[#0F1219] text-[#A0A8C0] border border-[#2A2F3D] hover:border-neon hover:text-white
-                                {% else %} bg-[#0F1219] text-[#3F4659] border border-[#1F2433] {% endif %}">
-                      {{ s.label }}
-                    </div>
-                  </label>
-                {% empty %}
-                  <div class="col-span-4 text-center py-5 text-xs font-bold text-[#3F4659] border border-dashed border-[#1F2433] bg-[#0F1219] rounded-xl">No slots scheduled.</div>
-                {% endfor %}
-              </div>
-              
-              <div class="mt-5 flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-wider text-[#7A839E]">
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] border border-[#3F4659] bg-[#0F1219] block"></span>Available</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-neon shadow-[0_0_8px_rgba(212,255,0,0.4)] block"></span>Selected</span>
-                <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-[3px] bg-[#1F2433] opacity-40 block"></span>Unavailable</span>
-              </div>
-            </div>
-
-            {# ---- Dynamic Price Breakdown ---- #}
-            <div class="pt-6 border-t border-[#1F2433]">
-              <h3 class="text-sm font-bold text-white mb-4">Price Breakdown</h3>
-              <dl class="space-y-3 text-xs font-medium text-[#A0A8C0]">
-                <div class="flex items-center justify-between">
-                  <dt>Base Price (<span id="display-base-count">0</span> Court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
-                  <dd id="display-base-price" class="font-bold text-white">₹0</dd>
-                </div>
-                
-                <div id="peak-charge-row" class="hidden items-center justify-between">
-                  <dt>Peak Hour Charge</dt>
-                  <dd id="display-peak-charge" class="font-bold text-white">₹0</dd>
-                </div>
-                
-                <div id="platform-fee-row" class="hidden items-center justify-between">
-                  <dt class="flex items-center gap-1.5">Platform Fee <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></dt>
-                  <dd id="display-platform-fee" class="font-bold text-white">₹0</dd>
-                </div>
-              </dl>
-
-              <div class="mt-5 pt-5 border-t border-dashed border-[#3F4659] flex items-center justify-between mb-8">
-                <span class="text-sm font-black text-white uppercase tracking-wider">Total Price</span>
-                <span id="display-total-price" class="text-3xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹0</span>
-              </div>
-
-              <!-- REAL FORM POST TO CHECKOUT -->
-              <form action="{% url 'venues:start_booking' venue.pk %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
-                <input type="hidden" name="court" value="{{ active_court.id }}">
-                <input type="hidden" id="hidden-slots-input" name="slots" value="{{ selected_hours_csv }}">
-                
-                <button type="submit" id="submit-payment-btn" disabled
-                        class="w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed smooth-hover">
-                  Continue to payment
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                </button>
-              </form>
-
-              <p class="mt-5 text-center flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-[#7A839E]">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                Secure payments. Easy cancellations.
-              </p>
-            </div>
-
+      {# ---- Price Breakdown ---- #}
+      <div class="pt-6 border-t border-[#1F2433]">
+        <h3 class="text-sm font-bold text-white mb-4">Price Breakdown</h3>
+        <dl class="space-y-3 text-xs font-medium text-[#A0A8C0]">
+          <div class="flex items-center justify-between">
+            <dt>Base Price (<span id="display-base-count">0</span> Court &times; {{ venue.duration_label|default:"1 hr" }})</dt>
+            <dd id="display-base-price" class="font-bold text-white">₹0</dd>
           </div>
-        </aside>
+          <div id="peak-charge-row" class="hidden items-center justify-between">
+            <dt>Peak Hour Charge</dt>
+            <dd id="display-peak-charge" class="font-bold text-white">₹0</dd>
+          </div>
+          <div id="platform-fee-row" class="hidden items-center justify-between">
+            <dt class="flex items-center gap-1.5">Platform Fee</dt>
+            <dd id="display-platform-fee" class="font-bold text-white">₹0</dd>
+          </div>
+        </dl>
+        <div class="mt-5 pt-5 border-t border-dashed border-[#3F4659] flex items-center justify-between mb-8">
+          <span class="text-sm font-black text-white uppercase tracking-wider">Total Price</span>
+          <span id="display-total-price" class="text-3xl font-black text-neon drop-shadow-[0_0_8px_rgba(212,255,0,0.2)]">₹0</span>
+        </div>
+
+        <button type="submit" id="submit-payment-btn" disabled
+                class="w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed smooth-hover">
+          Continue to payment
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <p class="mt-5 text-center flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-[#7A839E]">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          Secure payments. Easy cancellations.
+        </p>
+      </div>
+    </form>
+    {# ======= FORM ENDS HERE ======= #}
+
+  </div>
+</aside>
 
       </div>
     </div>
@@ -312,7 +307,7 @@
         {% csrf_token %}
         <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
         <input type="hidden" name="court" value="{{ active_court.id }}">
-        <input type="hidden" id="mobile-hidden-slots-input" name="slots" value="{{ selected_hours_csv }}">
+        <input type="hidden" id="mobile-hidden-slots-input" name="slot" value="{{ selected_hours_csv }}">
         <button type="submit" id="mobile-submit-payment-btn" disabled class="w-full bg-[#8A9A00] text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center cursor-not-allowed smooth-hover">
           Book Slots
         </button>
@@ -320,93 +315,50 @@
     </div>
   </div>
 </div>
-
 <script>
-  // DYNAMIC PRICING SCRIPT (Stops the page from reloading!)
   const baseCourtPrice = parseFloat("{{ active_court.base_price|default:0 }}");
-  const platformFee = parseFloat("{{ venue.platform_fee|default:100 }}"); 
-  const peakExtra = parseFloat("{{ active_court.peak_price_extra|default:0 }}");
+  const platformFee    = parseFloat("{{ venue.platform_fee|default:100 }}");
+  const peakExtra      = parseFloat("{{ active_court.peak_price_extra|default:0 }}");
 
   function updatePricing() {
-    const checkboxes = document.querySelectorAll('.slot-checkbox:checked');
-    let selectedHours = [];
-    let totalBase = 0;
-    let totalPeak = 0;
+    const checkboxes = Array.from(document.querySelectorAll('.slot-checkbox:checked'));
+    let totalBase = 0, totalPeak = 0;
 
     checkboxes.forEach(cb => {
-      selectedHours.push(cb.value);
       totalBase += baseCourtPrice;
-      if (cb.dataset.isPeak === 'true') {
-        totalPeak += peakExtra;
-      }
+      if (cb.dataset.isPeak === 'true') totalPeak += peakExtra;
     });
 
-    const count = checkboxes.length;
+    const count    = checkboxes.length;
     const hasSlots = count > 0;
-    const currentPlatformFee = hasSlots ? platformFee : 0;
-    const grandTotal = totalBase + totalPeak + currentPlatformFee;
+    const fee      = hasSlots ? platformFee : 0;
+    const grand    = totalBase + totalPeak + fee;
 
-    // Update Text Elements
-    if(document.getElementById('display-base-count')) document.getElementById('display-base-count').innerText = count;
-    if(document.getElementById('display-base-price')) document.getElementById('display-base-price').innerText = '₹' + totalBase;
+    document.getElementById('display-base-count').innerText = count;
+    document.getElementById('display-base-price').innerText = '₹' + totalBase;
 
     const peakRow = document.getElementById('peak-charge-row');
-    if (totalPeak > 0) {
-      if(peakRow) { peakRow.classList.remove('hidden'); peakRow.classList.add('flex'); }
-      if(document.getElementById('display-peak-charge')) document.getElementById('display-peak-charge').innerText = '₹' + totalPeak;
-    } else {
-      if(peakRow) { peakRow.classList.add('hidden'); peakRow.classList.remove('flex'); }
-    }
+    if (totalPeak > 0) { peakRow.classList.remove('hidden'); peakRow.classList.add('flex'); document.getElementById('display-peak-charge').innerText = '₹' + totalPeak; }
+    else               { peakRow.classList.add('hidden'); peakRow.classList.remove('flex'); }
 
     const platformRow = document.getElementById('platform-fee-row');
-    if (currentPlatformFee > 0) {
-      if(platformRow) { platformRow.classList.remove('hidden'); platformRow.classList.add('flex'); }
-      if(document.getElementById('display-platform-fee')) document.getElementById('display-platform-fee').innerText = '₹' + currentPlatformFee;
-    } else {
-      if(platformRow) { platformRow.classList.add('hidden'); platformRow.classList.remove('flex'); }
-    }
+    if (fee > 0) { platformRow.classList.remove('hidden'); platformRow.classList.add('flex'); document.getElementById('display-platform-fee').innerText = '₹' + fee; }
+    else         { platformRow.classList.add('hidden'); platformRow.classList.remove('flex'); }
 
-    if(document.getElementById('display-total-price')) document.getElementById('display-total-price').innerText = '₹' + grandTotal;
-
-    // Mobile Total
+    document.getElementById('display-total-price').innerText = '₹' + grand;
     const mobileTotal = document.getElementById('mobile-display-total-price');
-    if (mobileTotal) mobileTotal.innerText = '₹' + grandTotal;
+    if (mobileTotal) mobileTotal.innerText = '₹' + grand;
 
-    // Inject data into forms so Python backend catches it when clicking "Continue"
-    const csv = selectedHours.join(',');
-    
-    const hiddenSlots = document.getElementById('hidden-slots-input');
-    if (hiddenSlots) hiddenSlots.value = csv;
-    
-    const mobileHidden = document.getElementById('mobile-hidden-slots-input');
-    if (mobileHidden) mobileHidden.value = csv;
-
-    // Turn button Neon when active, Muddy-Green when disabled
     const btn = document.getElementById('submit-payment-btn');
-    const mobileBtn = document.getElementById('mobile-submit-payment-btn');
-
     if (hasSlots) {
-      if(btn) {
-        btn.disabled = false;
-        btn.className = "w-full bg-neon text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 smooth-hover hover:bg-white hover:shadow-[0_0_20px_rgba(212,255,0,0.4)] hover:-translate-y-0.5 cursor-pointer";
-      }
-      if (mobileBtn) {
-        mobileBtn.disabled = false;
-        mobileBtn.className = "w-full bg-neon text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center smooth-hover shadow-[0_0_15px_rgba(212,255,0,0.3)]";
-      }
+      btn.disabled = false;
+      btn.className = "w-full bg-neon text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 smooth-hover hover:bg-white cursor-pointer";
     } else {
-      if(btn) {
-        btn.disabled = true;
-        btn.className = "w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed transition-colors";
-      }
-      if (mobileBtn) {
-        mobileBtn.disabled = true;
-        mobileBtn.className = "w-full bg-[#8A9A00] text-[#0F1219] font-black text-sm py-3.5 rounded-xl text-center cursor-not-allowed transition-colors";
-      }
+      btn.disabled = true;
+      btn.className = "w-full bg-[#8A9A00] text-[#0F1219] font-black tracking-wide text-sm py-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed transition-colors";
     }
   }
 
-  // Run on page load to set correct initial state
   updatePricing();
 </script>
 {% endblock %}

@@ -372,7 +372,9 @@
     btn.style.pointerEvents = 'none';
     
     setTimeout(() => {
-      document.getElementById('successModal').style.display = 'flex';
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('hidden');   // ✅ fixes the bug
+      modal.classList.add('flex');
       btn.innerHTML = originalText;
       btn.style.opacity = '1';
       btn.style.pointerEvents = 'auto';

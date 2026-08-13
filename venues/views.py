@@ -275,26 +275,29 @@ def venue_detail(request, pk):
     }
     return render(request, 'venues/venue_detail.html', context)
 
-
 @login_required
 @require_POST
 def start_booking(request, pk):
-    """Creates pending CourtBookings for the selected slots, then sends the user to payment."""
     venue = get_object_or_404(Venue, pk=pk, is_active=True)
     court = get_object_or_404(Court, pk=request.POST.get('court'), venue=venue, is_active=True)
     day = _parse_date(request.POST.get('date'), timezone.localdate())
 
-    hours = sorted({int(h) for h in request.POST.get('slots', '').split(',') if h.strip().isdigit()})
-    
-    # If no slots were passed, reload the page with an error
+    slot_list = request.POST.getlist('slot') or request.POST.get('slots', '').split(',')
+    hours = sorted({int(h) for h in slot_list if str(h).strip().isdigit()})
+
+    print("DEBUG POST DATA:", request.POST)
+    print("DEBUG HOURS:", hours)
+
     if not hours:
+        print("DEBUG: hitting empty hours redirect")
         messages.error(request, "Please pick at least one time slot.")
-        return redirect(f"{reverse('venues:venue_detail', args=[venue.pk])}?date={day.isoformat()}&court={court.pk}")
+        return redirect(...)
 
     created = []
     try:
         with transaction.atomic():
             for hour in hours:
+                print(f"DEBUG: creating booking for hour {hour}")
                 base = court.base_price
                 peak = court.peak_price_extra if court.is_peak(hour) else Decimal("0.00")
                 fee = venue.platform_fee if hour == hours[0] else Decimal("0.00")
@@ -303,15 +306,22 @@ def start_booking(request, pk):
                     base_price=base, peak_charge=peak, platform_fee=fee,
                     total_price=base + peak + fee,
                 ))
-    except IntegrityError:
-        messages.error(request, "Sorry, one of those slots was just taken. Please pick another.")
+                print(f"DEBUG: booking created id={created[-1].pk}")
+
+    except IntegrityError as e:
+        print("DEBUG IntegrityError:", e)
+        messages.error(request, "That slot is already booked.")
         return redirect(f"{reverse('venues:venue_detail', args=[venue.pk])}?date={day.isoformat()}&court={court.pk}")
 
-    request.session['pending_court_bookings'] = [b.pk for b in created]
-    
-    # Send the user directly to the new payment page
-    return redirect('venues:checkout')
+    except Exception as e:
+        print("DEBUG OTHER ERROR:", type(e), e)  # ← catches ANY other error
+        messages.error(request, "Something went wrong.")
+        return redirect(f"{reverse('venues:venue_detail', args=[venue.pk])}?date={day.isoformat()}&court={court.pk}")
 
+    print("DEBUG: about to redirect to checkout")
+    request.session['pending_court_bookings'] = [b.pk for b in created]
+    request.session.modified = True
+    return redirect('venues:checkout')
 
 @login_required
 @require_POST
@@ -356,7 +366,7 @@ def add_review(request, pk):
         )
         messages.success(request, "Thanks for the review!")
     return redirect('venues:venue_detail', pk=venue.pk)
-
+ 
 
 @staff_member_required
 def resolve_map_link(request):
@@ -417,4 +427,4 @@ def checkout(request):
         'convenience_fee': convenience_fee,
         'total_price': total_price,
     }
-    return render(request, 'venues/checkout.html', context)
+    return render(request, 'bookings/checkout.html', context)
