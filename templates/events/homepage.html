@@ -1,431 +1,765 @@
+
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    margin: 0;
-    padding: 0;
+  /* ============ CORE VARIABLES ============ */
+  #fd-home {
+    --ink: #121212;
+    --charcoal: #1A1D23;
+    --coral: #FF5A3C;
+    --coral-soft: #FFB3A0;
+    --teal: #2A9D8F;
+    --amber: #FFB703;
+    --cream: #F8F6F1;
+    --sage: #D9E9DE;
+    --sage-deep: #3D8B6E;
+    --mist: #EEF2EB;
+    --surface: #FFFFFF;
+    --navbar-h: 64px;
 
-    background-image: url("/static/images/bg-map.png");
-    background-size: cover;        /* fills screen nicely */
-    background-repeat: no-repeat;  /* no repeating */
-    background-position: top center;
-    background-size: 100% auto; /* stretches width, keeps vertical flow */
-    background-size: cover;
-    background-attachment: scroll; /* IMPORTANT: scrolls with page */
-}
-.section {
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 20px;
-    padding: 40px;
-    margin: 40px auto;
-    max-width: 1200px;
-}
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast: 220ms;
+    --dur-med: 420ms;
+    --dur-slow: 900ms;
 
-    background: linear-gradient(
-        rgba(255,255,255,0.75),
-        rgba(255,255,255,0.85)
-    );
-
-    pointer-events: none;
-    z-index: -1;
-}
-  :root {
-    --ink: #14231f;
-    --teal: #1f6f5c;
-    --coral: #f2643b;
-    --cream: #f7f6f1;
-    --sage: #cfe3d3;
-    --sage-deep: #4a8f6e;
-    --amber: #f2c94c;
-    --mist: #eef1ea;
-    --coral-soft: #ffb59a;
-    --navbar-h: 64px; /* ← match your actual navbar height */
-  }
-  .font-display { font-family: 'Archivo Black', 'Bebas Neue', 'Impact', system-ui, sans-serif; letter-spacing: -0.01em; }
-
-  .bg-ink { background-color: var(--ink); } .text-ink { color: var(--ink); } .border-ink { border-color: var(--ink); }
-  .bg-cream { background-color: var(--cream); } .text-cream { color: var(--cream); } .border-cream { border-color: var(--cream); }
-  .bg-coral { background-color: var(--coral); } .text-coral { color: var(--coral); } .border-coral { border-color: var(--coral); }
-  .bg-teal { background-color: var(--teal); } .text-teal { color: var(--teal); }
-  .bg-sage { background-color: var(--sage); } .bg-sage-deep { background-color: var(--sage-deep); }
-  .bg-mist { background-color: var(--mist); } .bg-mist\/60 { background-color: rgba(238,241,234,0.6); }
-  .text-coral-soft { color: var(--coral-soft); }
-
-  .bg-ink\/70 { background-color: rgba(20,35,31,.7); }
-  .bg-ink\/30 { background-color: rgba(20,35,31,.3); }
-  .bg-ink\/80 { background-color: rgba(20,35,31,.8); }
-  .bg-ink\/95 { background-color: rgba(20,35,31,.95); }
-  .bg-ink\/10 { background-color: rgba(20,35,31,.10); }
-  .border-ink\/10 { border-color: rgba(20,35,31,.10); }
-  .border-ink\/20 { border-color: rgba(20,35,31,.20); }
-  .border-ink\/8 { border-color: rgba(20,35,31,.08); }
-  .text-ink\/50 { color: rgba(20,35,31,.5); }
-  .text-ink\/55 { color: rgba(20,35,31,.55); }
-  .text-ink\/60 { color: rgba(20,35,31,.6); }
-  .text-ink\/65 { color: rgba(20,35,31,.65); }
-  .text-ink\/40 { color: rgba(20,35,31,.4); }
-  .text-ink\/20 { color: rgba(20,35,31,.2); }
-  .text-cream\/60 { color: rgba(247,246,241,.6); }
-  .text-cream\/70 { color: rgba(247,246,241,.7); }
-  .text-cream\/80 { color: rgba(247,246,241,.8); }
-  .text-cream\/85 { color: rgba(247,246,241,.85); }
-  .bg-cream\/60 { background-color: rgba(247,246,241,.6); }
-  .bg-coral\/30 { background-color: rgba(242,100,59,.3); }
-  .hover\:bg-cream:hover { background-color: var(--cream); }
-
-  /* ── Animations ─────────────────────────────────────────────────── */
-  .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
-  @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.8);} }
-
-  /* Marquee */
-  .marquee-track { animation: marquee 30s linear infinite; }
-  @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
-
-  .hero-shadow { box-shadow: 0 30px 80px -30px rgba(0,0,0,0.6); }
-  .card-shadow-hover:hover { box-shadow: 0 25px 60px -30px rgba(28,61,51,0.4); }
-
-  /* ── Hero: exactly fills the viewport below the navbar ──────────── */
-  /* dvh = dynamic viewport height (handles mobile browser chrome)    */
-  /* Falls back to vh on older browsers                               */
-  .hero-outer {
-    height: calc(75vh - var(--navbar-h));
-    height: calc(75dvh - var(--navbar-h));
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* clips bg image to the section boundary */
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
     position: relative;
   }
 
-  /* ── Hero heading sizes ──────────────────────────────────────────── */
-  /* Slightly tighter on smaller viewports so everything fits at once  */
-  .hero-title-main {
-    font-size: clamp(1.6rem, 3.8vw, 3.75rem);
-    line-height: 0.92;
+  #fd-home, #fd-home * { box-sizing: border-box; }
+  #fd-home img { max-width: 100%; display: block; }
+  #fd-home a { text-decoration: none; color: inherit; }
+  #fd-home .font-display {
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    letter-spacing: -0.01em;
   }
-  .hero-title-sub {
-    font-size: clamp(0.85rem, 1.9vw, 1.75rem);
-    line-height: 1.0;
+  html { scroll-behavior: smooth; }
+
+  /* ============ SCROLL PROGRESS ============ */
+  #fd-scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--coral), var(--amber));
+    z-index: 9999;
+    transition: width 80ms linear;
   }
 
-  /* ── Content area: grows to fill space between status bar & marquee */
-  .hero-body {
-    flex: 1;
+  /* ============ UTILITIES ============ */
+  #fd-home .bg-ink { background-color: var(--ink); }
+  #fd-home .bg-charcoal { background-color: var(--charcoal); }
+  #fd-home .text-ink { color: var(--ink); }
+  #fd-home .bg-cream { background-color: var(--cream); }
+  #fd-home .text-cream { color: var(--cream); }
+  #fd-home .bg-coral { background-color: var(--coral); }
+  #fd-home .text-coral { color: var(--coral); }
+  #fd-home .bg-teal { background-color: var(--teal); }
+  #fd-home .text-teal { color: var(--teal); }
+  #fd-home .bg-sage { background-color: var(--sage); }
+  #fd-home .bg-sage-deep { background-color: var(--sage-deep); }
+  #fd-home .bg-amber { background-color: var(--amber); }
+  #fd-home .text-amber { color: var(--amber); }
+  #fd-home .bg-mist { background-color: var(--mist); }
+  #fd-home .text-coral-soft { color: var(--coral-soft); }
+
+  #fd-home .bg-ink-80 { background-color: rgba(18,18,18,.8); }
+  #fd-home .bg-ink-70 { background-color: rgba(18,18,18,.72); }
+  #fd-home .bg-ink-30 { background-color: rgba(18,18,18,.3); }
+  #fd-home .bg-ink-10 { background-color: rgba(18,18,18,.1); }
+  #fd-home .text-ink-40 { color: rgba(18,18,18,.4); }
+  #fd-home .text-ink-50 { color: rgba(18,18,18,.5); }
+  #fd-home .text-ink-55 { color: rgba(18,18,18,.55); }
+  #fd-home .text-ink-60 { color: rgba(18,18,18,.6); }
+  #fd-home .text-ink-65 { color: rgba(18,18,18,.65); }
+  #fd-home .text-cream-60 { color: rgba(248,246,241,.6); }
+  #fd-home .text-cream-70 { color: rgba(248,246,241,.7); }
+  #fd-home .text-cream-80 { color: rgba(248,246,241,.8); }
+  #fd-home .text-cream-85 { color: rgba(248,246,241,.85); }
+  #fd-home .bg-white-08 { background-color: rgba(255,255,255,.08); }
+  #fd-home .bg-white-10 { background-color: rgba(255,255,255,.1); }
+  #fd-home .bg-white-15 { background-color: rgba(255,255,255,.15); }
+  #fd-home .border-white-15 { border-color: rgba(255,255,255,.15); }
+  #fd-home .border-white-20 { border-color: rgba(255,255,255,.2); }
+  #fd-home .border-white-30 { border-color: rgba(255,255,255,.3); }
+  #fd-home .border-ink-10 { border-color: rgba(18,18,18,.1); }
+  #fd-home .border-ink-08 { border-color: rgba(18,18,18,.08); }
+  #fd-home .bg-mist-60 { background-color: rgba(238,242,235,.6); }
+  #fd-home .bg-coral-30 { background-color: rgba(255,90,60,.3); }
+
+  #fd-home .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+  @media (min-width: 768px) { #fd-home .wrap { padding: 0 32px; } }
+
+  /* ============ TYPOGRAPHY ============ */
+  #fd-home .h-hero-1 { font-size: clamp(2.8rem, 9vw, 7rem); line-height: 0.88; }
+  #fd-home .h-hero-2 { font-size: clamp(1.1rem, 3vw, 2rem); line-height: 1.05; }
+  #fd-home .h-section { font-size: clamp(2.4rem, 6.5vw, 4.6rem); line-height: 0.92; }
+  #fd-home .h-card { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+  #fd-home .num-huge { font-size: clamp(3rem, 7vw, 5.5rem); }
+
+  /* ============ ANIMATIONS ============ */
+  .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1);} 50%{ opacity:.35; transform:scale(.75);} }
+
+  .marquee-track { animation: marquee 30s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0);} to { transform: translateX(-50%);} }
+
+  @keyframes hero-scale-in { from { transform: scale(1.08); } to { transform: scale(1); } }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+  #fd-home .hero-bg-img { animation: hero-scale-in 1.6s var(--ease-out) both; }
+  #fd-home .hero-anim-1 { animation: fade-up 900ms var(--ease-out) 120ms both; }
+  #fd-home .hero-anim-2 { animation: fade-up 900ms var(--ease-out) 260ms both; }
+  #fd-home .hero-anim-3 { animation: fade-up 900ms var(--ease-out) 400ms both; }
+  #fd-home .hero-anim-4 { animation: fade-up 900ms var(--ease-out) 540ms both; }
+  #fd-home .hero-anim-5 { animation: fade-in 1200ms var(--ease-out) 700ms both; }
+
+  /* ============ SCROLL REVEAL ============ */
+  #fd-home .reveal,
+  #fd-home .reveal-up,
+  #fd-home .reveal-left,
+  #fd-home .reveal-right,
+  #fd-home .reveal-scale,
+  #fd-home .reveal-rotate {
+    opacity: 0;
+    will-change: transform, opacity, filter;
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out), filter var(--dur-slow) var(--ease-out);
+  }
+  #fd-home .reveal { filter: blur(6px); }
+  #fd-home .reveal-up { transform: translateY(46px); }
+  #fd-home .reveal-left { transform: translateX(-48px); }
+  #fd-home .reveal-right { transform: translateX(48px); }
+  #fd-home .reveal-scale { transform: scale(0.88); }
+  #fd-home .reveal-rotate { transform: rotate(-4deg) translateY(30px); }
+
+  #fd-home .reveal.is-visible,
+  #fd-home .reveal-up.is-visible,
+  #fd-home .reveal-left.is-visible,
+  #fd-home .reveal-right.is-visible,
+  #fd-home .reveal-scale.is-visible,
+  #fd-home .reveal-rotate.is-visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+
+  #fd-home .stagger > * {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  }
+  #fd-home .stagger.is-visible > * { opacity: 1; transform: none; }
+  #fd-home .stagger.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+  #fd-home .stagger.is-visible > *:nth-child(2) { transition-delay: 90ms; }
+  #fd-home .stagger.is-visible > *:nth-child(3) { transition-delay: 180ms; }
+  #fd-home .stagger.is-visible > *:nth-child(4) { transition-delay: 270ms; }
+  #fd-home .stagger.is-visible > *:nth-child(5) { transition-delay: 360ms; }
+  #fd-home .stagger.is-visible > *:nth-child(6) { transition-delay: 450ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #fd-home * { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
+    #fd-home .reveal, #fd-home .reveal-up, #fd-home .reveal-left, #fd-home .reveal-right,
+    #fd-home .reveal-scale, #fd-home .reveal-rotate, #fd-home .stagger > * {
+      opacity: 1 !important; transform: none !important; filter: none !important;
+    }
+  }
+
+  /* ============ HERO ============ */
+  #fd-home .hero-outer {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - var(--navbar-h));
+    min-height: calc(100dvh - var(--navbar-h));
     display: flex;
-    align-items: center; /* vertical center the grid */
-    min-height: 0;       /* allow shrinking so marquee is never pushed out */
+    flex-direction: column;
+    background: var(--charcoal);
   }
-
-  /* ── Marquee strip: always at bottom, never pushed off-screen ────── */
-  .hero-marquee {
+  #fd-home .hero-bg-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  #fd-home .hero-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, rgba(18,18,18,.82) 0%, rgba(18,18,18,.45) 45%, rgba(18,18,18,.96) 100%),
+                linear-gradient(90deg, rgba(18,18,18,.85) 0%, rgba(18,18,18,0) 60%);
+  }
+  #fd-home .hero-glow {
+    position: absolute;
+    top: -150px; right: -150px;
+    height: 500px; width: 500px;
+    border-radius: 999px;
+    background: var(--coral);
+    opacity: 0.25;
+    filter: blur(100px);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
+  }
+  #fd-home .hero-status {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 22px;
+    color: rgba(248,246,241,.85);
     flex-shrink: 0;
   }
+  #fd-home .status-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 7px 14px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .2em;
+  }
+  #fd-home .hero-body {
+    position: relative; z-index: 10;
+    flex: 1;
+    display: flex; align-items: center;
+    min-height: 0;
+    padding: 34px 0;
+  }
+  #fd-home .hero-grid {
+    display: grid;
+    gap: 34px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 1024px) {
+    #fd-home .hero-grid { grid-template-columns: 1.4fr 1fr; align-items: center; }
+  }
+  #fd-home .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 999px; padding: 15px 26px;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .16em;
+    transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast);
+  }
+  #fd-home .hero-cta-primary { background: var(--coral); color: #fff; }
+  #fd-home .hero-cta-primary:hover { background: #fff; color: var(--ink); transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(255,90,60,.55); }
+  #fd-home .hero-cta-primary span { transition: transform var(--dur-fast) var(--ease-out); display: inline-block; }
+  #fd-home .hero-cta-primary:hover span { transform: translateX(4px); }
+  #fd-home .hero-cta-secondary { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(10px); color: var(--cream); }
+  #fd-home .hero-cta-secondary:hover { background: #fff; color: var(--ink); transform: translateY(-2px); }
+
+  #fd-home .next-card {
+    width: 100%; max-width: 380px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.09);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 22px;
+    box-shadow: 0 30px 70px -32px rgba(0,0,0,.65);
+  }
+  #fd-home .avatar-stack span {
+    height: 32px; width: 32px; border-radius: 999px;
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700;
+    border: 2px solid rgba(18,18,18,.5);
+    margin-left: -8px;
+  }
+  #fd-home .avatar-stack span:first-child { margin-left: 0; }
+
+  #fd-home .hero-marquee { position: relative; z-index: 10; border-top: 1px solid rgba(255,255,255,.1); overflow: hidden; flex-shrink: 0; }
+  #fd-home .marquee-item { display: flex; align-items: center; gap: 12px; }
+
+  /* ============ KICKER ============ */
+  #fd-home .kicker {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .28em; color: var(--coral);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  #fd-home .kicker::before { content: ""; width: 22px; height: 2px; background: var(--coral); display: inline-block; }
+
+  /* ============ STATS STRIP ============ */
+  #fd-home .stats-strip {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 40px 0;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+  #fd-home .stat-item {
+    text-align: center;
+    padding: 10px;
+  }
+  #fd-home .stat-value {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    color: var(--coral);
+  }
+  #fd-home .stat-label {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    color: rgba(248,246,241,.7);
+  }
+
+  /* ============ ACTIVITY CARDS ============ */
+  #fd-home .activity-card {
+    position: relative; overflow: hidden; border-radius: 26px;
+    padding: 26px; aspect-ratio: 3 / 4;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
+    isolation: isolate;
+    background: var(--surface);
+    border: 1px solid rgba(18,18,18,.1);
+  }
+  #fd-home .activity-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -28px rgba(18,18,18,.45); }
+  #fd-home .activity-card .a-icon-img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    opacity: .15; transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-med);
+    z-index: -1;
+  }
+  #fd-home .activity-card:hover .a-icon-img { transform: scale(1.08); opacity: .3; }
+  #fd-home .activity-card::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 100%);
+    opacity: 0; transition: opacity var(--dur-med);
+  }
+  #fd-home .activity-card:hover::before { opacity: 1; }
+  #fd-home .activity-num {
+    font-size: 6rem; line-height: 1; opacity: .16; position: absolute; bottom: -12px; right: -4px; user-select: none;
+  }
+  #fd-home .a-arrow {
+    height: 34px; width: 34px; border-radius: 999px;
+    background: rgba(18,18,18,.1);
+    display: grid; place-items: center; font-size: 15px;
+    transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast);
+  }
+  #fd-home .activity-card:hover .a-arrow { transform: translateX(4px) rotate(-6deg); background: var(--coral); color: #fff; }
+
+  /* ============ EVENT CARDS ============ */
+  #fd-home .event-card {
+    position: relative; border-radius: 22px; background: #fff;
+    border: 1px solid rgba(18,18,18,.1);
+    overflow: hidden;
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out), border-color var(--dur-med);
+  }
+  #fd-home .event-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px -30px rgba(26,29,35,.42); border-color: rgba(255,90,60,.3); }
+  #fd-home .event-progress-track { height: 6px; border-radius: 999px; background: rgba(18,18,18,.1); overflow: hidden; }
+  #fd-home .event-progress-fill { height: 100%; border-radius: 999px; transition: width 900ms var(--ease-out); }
+  #fd-home .event-book-link { transition: color var(--dur-fast), gap var(--dur-fast); }
+  #fd-home .event-book-link span { display: inline-block; transition: transform var(--dur-fast) var(--ease-out); }
+  #fd-home .event-card:hover .event-book-link span { transform: translateX(5px); }
+
+  /* ============ FEATURES SECTION ============ */
+  #fd-home .feature-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(18,18,18,.08);
+    transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med);
+  }
+  #fd-home .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -20px rgba(18,18,18,.2); }
+  #fd-home .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--coral);
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* ============ HOW IT WORKS (dark) ============ */
+  #fd-home .how-section {
+    background: var(--charcoal);
+    color: var(--cream);
+    position: relative;
+    overflow: hidden;
+  }
+  #fd-home .how-section .kicker { color: var(--coral); }
+  #fd-home .how-section .kicker::before { background: var(--coral); }
+  #fd-home .how-section .h-section { color: var(--cream); }
+  #fd-home .how-line {
+    position: absolute; top: 46px; left: 8%; right: 8%;
+    height: 2px; background: rgba(248,246,241,.12); z-index: 0;
+    overflow: hidden; display: none;
+  }
+  @media (min-width: 768px) { #fd-home .how-line { display: block; } }
+  #fd-home .how-line-fill {
+    height: 100%; width: 0%; background: var(--coral);
+    transition: width 1.4s var(--ease-out);
+  }
+  #fd-home .how-step {
+    position: relative; z-index: 1; border-radius: 26px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.15);
+    backdrop-filter: blur(10px);
+    padding: 34px;
+    transition: transform var(--dur-med) var(--ease-out), border-color var(--dur-med), box-shadow var(--dur-med), background var(--dur-med);
+  }
+  #fd-home .how-step:hover { transform: translateY(-6px); border-color: var(--coral); box-shadow: 0 24px 50px -30px rgba(0,0,0,.5); background: rgba(255,255,255,.1); }
+  #fd-home .how-step .how-num { color: var(--coral); }
+  #fd-home .how-step h3 { color: var(--cream); }
+  #fd-home .how-step p { color: rgba(248,246,241,.7); }
+
+  /* ============ HOST BAND ============ */
+  #fd-home .host-panel {
+    position: relative; overflow: hidden; border-radius: 32px;
+    background: linear-gradient(135deg, var(--coral) 0%, #E84225 100%);
+    padding: 44px 24px;
+  }
+  #fd-home .host-bg-text {
+    position: absolute; right: 0; bottom: 0;
+    font-size: clamp(8rem, 22vw, 20rem); line-height: .8;
+    color: rgba(255,255,255,.08); user-select: none; pointer-events: none;
+    transform: translate(4%, 14%);
+  }
+  #fd-home .stat-block {
+    border-radius: 18px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25);
+    backdrop-filter: blur(12px);
+    padding: 20px; text-align: center;
+    transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast);
+  }
+  #fd-home .stat-block:hover { transform: translateY(-4px); background: rgba(255,255,255,.22); }
+
+  /* ============ FOCUS ============ */
+  #fd-home a:focus-visible, #fd-home button:focus-visible {
+    outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 6px;
+  }
+  #fd-home, #fd-home section { max-width: 100%; }
 </style>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<div id="fd-scroll-progress"></div>
 
-<div class="min-h-screen bg-cream text-ink">
+<div id="fd-home">
 
   <!-- ============ HERO ============ -->
-  <section class="hero-outer bg-ink">
-
-    <!-- Background image -->
+  <section class="hero-outer grain">
     {% if hero_image %}
-      <img src="{{ hero_image }}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
+      <img src="{{ hero_image }}" alt="Players competing on a floodlit turf at night" class="hero-bg-img">
     {% else %}
-      <img src="{% static 'images/hero1.png' %}" alt="Pickup sports in Gandhinagar" class="absolute inset-0 h-full w-full object-cover">
+      <img src="{% static 'images/hero1.png' %}" alt="Players competing on a floodlit turf at night" class="hero-bg-img">
     {% endif %}
-<!--back ground close -->
-    <!-- Overlays -->
-    <div class="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink/95"></div>
-    <div class="absolute inset-0 bg-gradient-to-r from-ink/80 via-transparent to-transparent"></div>
-    <div class="absolute -top-40 -right-40 h-[520px] w-[520px] rounded-full bg-coral/30 blur-3xl mix-blend-screen"></div>
 
-    <!-- Status bar -->
-    <div class="relative z-10 mx-auto max-w-7xl w-full px-5 md:px-8 pt-6 md:pt-8 flex items-center justify-between text-cream/80 flex-shrink-0">
-      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur border border-white/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em]">
-        <span class="h-2 w-2 rounded-full bg-coral pulse-dot"></span>
-        Live · {{ total_events|default:"24" }} games · Gandhinagar
+    <div class="hero-overlay"></div>
+    <div class="hero-glow"></div>
+
+    <div class="wrap hero-status hero-anim-1">
+      <div class="status-pill">
+        <span class="pulse-dot" style="height:8px;width:8px;border-radius:999px;background:var(--coral);display:inline-block;"></span>
+        Live &middot; {{ total_events|default:"24" }} games &middot; Gandhinagar
       </div>
-      <div class="hidden md:flex items-center gap-6 text-[11.5px] uppercase tracking-[0.22em] font-semibold">
-        <span>Tonight · Clear skies</span>
+      <div style="display:none;gap:24px;align-items:center;font-size:11.5px;text-transform:uppercase;letter-spacing:.2em;font-weight:700;" class="hero-status-right">
+        <span>Tonight &middot; Clear skies</span>
         {% now "D d M" as today_str %}
         <span class="text-coral-soft">{{ today_str|upper }}</span>
       </div>
     </div>
 
-    <!-- Main content grid — flex:1 + align-items:center keeps it vertically centred -->
-    <div class="hero-body relative z-10">
-      <div class="mx-auto max-w-7xl w-full px-5 md:px-8 grid lg:grid-cols-[1.4fr_1fr] gap-8 md:gap-10 items-center">
-
-        <!-- Left: heading + description + CTAs -->
+    <div class="hero-body">
+      <div class="wrap hero-grid">
         <div>
-          <h1 class="font-display leading-[0.9] tracking-tight">
-            <span class="hero-title-main block text-cream">PLAY</span>
-            <span class="hero-title-main block text-coral">TONIGHT<span class="text-cream">.</span></span>
-            <span class="hero-title-sub block text-cream/60 mt-1">MEET YOUR PEOPLE.</span>
+          <h1 class="font-display" style="line-height:.9;">
+            <span class="h-hero-1 hero-anim-1" style="display:block;color:var(--cream);">PLAY</span>
+            <span class="h-hero-1 hero-anim-2" style="display:block;color:var(--coral);">TONIGHT<span class="text-cream">.</span></span>
+            <span class="h-hero-2 hero-anim-3" style="display:block;color:rgba(248,246,241,.6);margin-top:6px;">MEET YOUR PEOPLE.</span>
           </h1>
-          <p class="mt-4 max-w-lg text-base md:text-lg text-cream/85">
+          <p class="hero-anim-3 text-cream-85" style="margin-top:18px;max-width:34rem;font-size:clamp(15px,1.6vw,18px);">
             Pickup cricket, 5-a-side football, pickleball and casual mixers — booked in 30 seconds. No group chats. No flakes. Just show up and play.
           </p>
-          <div class="mt-5 flex flex-wrap items-center gap-3">
-            <a href="#events" class="inline-flex items-center gap-2 rounded-full bg-coral text-white px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">Play tonight →</a>
-            <a href="#how" class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur px-6 py-3.5 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-ink transition-colors">How it works</a>
+          <div class="hero-anim-4" style="margin-top:22px;display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#events" class="hero-cta hero-cta-primary">Play tonight <span>&rarr;</span></a>
+            <a href="#how" class="hero-cta hero-cta-secondary">How it works</a>
           </div>
         </div>
 
-        <!-- Right: Next drop card -->
         {% with next=events.0 %}
-        <div class="hidden lg:flex flex-col gap-4 items-end">
-          <div class="w-full max-w-sm rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-5">
-            <div class="flex items-center justify-between text-[10px] uppercase tracking-[0.22em] font-bold text-cream/70">
-              <span class="inline-flex items-center gap-1.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-coral pulse-dot"></span> Next drop
+        <div class="hero-anim-5" style="display:flex;flex-direction:column;gap:16px;align-items:flex-end;">
+          <div class="next-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;text-transform:uppercase;letter-spacing:.2em;font-weight:700;color:rgba(248,246,241,.7);">
+              <span style="display:inline-flex;align-items:center;gap:6px;">
+                <span class="pulse-dot" style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span> Next drop
               </span>
               <span>{% if next %}{{ next.start_time|time:"g:i A" }}{% else %}8:00 PM{% endif %}</span>
             </div>
-            <div class="mt-3 font-display text-3xl leading-tight uppercase text-cream">
+            <div class="font-display" style="margin-top:12px;font-size:1.9rem;line-height:1.05;text-transform:uppercase;color:var(--cream);">
               {% if next %}{{ next.title }}{% else %}Wednesday Night Cricket{% endif %}
             </div>
-            <div class="mt-1 text-sm text-cream/70">
-              {% if next %}{{ next.venue.name }}{% else %}GIFT City Turf · Sector 11{% endif %}
+            <div style="margin-top:4px;font-size:14px;color:rgba(248,246,241,.7);">
+              {% if next %}{{ next.venue.name }}{% else %}GIFT City Turf &middot; Sector 11{% endif %}
             </div>
-            <div class="mt-4 h-1.5 rounded-full bg-white/15 overflow-hidden">
-              <div class="h-full bg-coral" style="width: {% if next %}{{ next.spots_left_percent }}{% else %}81{% endif %}%;"></div>
+            <div style="margin-top:16px;height:6px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;">
+              <div style="height:100%;background:var(--coral);width:{% if next %}{{ next.spots_left_percent }}{% else %}81{% endif %}%;"></div>
             </div>
-            <div class="mt-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-cream/80">
+            <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(248,246,241,.8);">
               <span>{% if next %}{{ next.spots_left }} of {{ next.total_slots }} spots{% else %}3 of 16 spots{% endif %}</span>
               <span class="text-coral-soft">{% if next %}{{ next.urgency_label }}{% else %}Filling fast{% endif %}</span>
             </div>
             {% if next %}
-              <a href="{% url 'events:event_detail' next.id %}" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
+              <a href="{% url 'events:event_detail' next.id %}" class="hero-cta hero-cta-primary" style="margin-top:16px;width:100%;justify-content:space-between;">Grab a slot <span>&rarr;</span></a>
             {% else %}
-              <a href="#events" class="mt-4 flex items-center justify-between rounded-xl bg-coral text-white px-4 py-2.5 text-sm font-bold">Grab a slot <span>→</span></a>
+              <a href="#events" class="hero-cta hero-cta-primary" style="margin-top:16px;width:100%;justify-content:space-between;">Grab a slot <span>&rarr;</span></a>
             {% endif %}
           </div>
 
-          <!-- Social proof pill -->
-          <div class="flex items-center gap-3 rounded-full bg-white/10 backdrop-blur border border-white/20 pl-1 pr-4 py-1">
-            <div class="flex -space-x-2">
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">j</span>
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">s</span>
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">D</span>
-              <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-sage text-ink">K</span>
-               <span class="h-8 w-8 rounded-full grid place-items-center text-[11px] font-bold border-2 border-ink/40 bg-coral text-white">+</span>
+          <div style="display:flex;align-items:center;gap:10px;border-radius:999px;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);padding:4px 16px 4px 4px;">
+            <div class="avatar-stack" style="display:flex;">
+              <span class="bg-sage text-ink">J</span>
+              <span class="bg-sage text-ink">S</span>
+              <span class="bg-sage text-ink">D</span>
+              <span class="bg-sage text-ink">K</span>
+              <span class="bg-coral" style="color:#fff;">+</span>
             </div>
-            <div class="text-[11px] uppercase tracking-[0.2em] font-bold">
-              <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream/60">this month</span>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;font-weight:700;">
+              <span class="text-cream">{{ total_players|default:"1,240" }}+ </span><span class="text-cream-60">this month</span>
             </div>
           </div>
         </div>
         {% endwith %}
-
       </div>
     </div>
 
-    <!-- Marquee strip — flex-shrink:0 means it NEVER gets pushed out of view -->
-    <div class="hero-marquee relative z-10 border-t border-white/10 bg-ink/80 backdrop-blur overflow-hidden">
-      <div class="marquee-track whitespace-nowrap py-2.5 flex gap-10 font-display text-sm md:text-base tracking-widest text-cream">
+    <div class="hero-marquee bg-ink-80">
+      <div class="marquee-track" style="white-space:nowrap;padding:11px 0;display:flex;gap:40px;">
         {% for i in "12" %}
-          <div class="flex gap-10 shrink-0">
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Mixed Doubles Pickleball · Sat 5pm</span>
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Sunday 5-a-side · 8 spots</span>
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>₹149 · Friday Funblast</span>
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Verified · GIFT City Turf</span>
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>3 spots left · Wed Cricket</span>
-            <span class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>New venue · Play Circle Kudasan</span>
+          <div class="marquee-item" style="display:flex;gap:40px;flex-shrink:0;">
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>Mixed Doubles Pickleball &middot; Sat 5pm</span>
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>Sunday 5-a-side &middot; 8 spots</span>
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>&#8377;149 &middot; Friday Funblast</span>
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>Verified &middot; GIFT City Turf</span>
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>3 spots left &middot; Wed Cricket</span>
+            <span class="marquee-item font-display text-cream" style="font-size:14px;letter-spacing:.1em;"><span style="height:6px;width:6px;border-radius:999px;background:var(--coral);display:inline-block;"></span>New venue &middot; Play Circle Kudasan</span>
           </div>
         {% endfor %}
       </div>
     </div>
-
   </section>
-  <!-- ============ END HERO ============ -->
 
+  <!-- ============ STATS STRIP ============ -->
+  <section class="stats-strip">
+    <div class="wrap">
+      <div class="stagger" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;">
+        <div class="stat-item">
+          <div class="stat-value">{{ total_players|default:"1,240" }}+</div>
+          <div class="stat-label">Active Players</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ total_events|default:"24" }}</div>
+          <div class="stat-label">Games This Week</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ total_venues|default:"12" }}+</div>
+          <div class="stat-label">Partner Venues</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ============ 01 BROWSE BY ACTIVITY ============ -->
-  <section id="activities" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
-    <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
+  <section id="activities" class="wrap" style="padding-top:88px;padding-bottom:88px;">
+    <div class="reveal-up" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;">
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">01 — Browse by activity</div>
-        <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">PICK YOUR GAME.</h2>
+        <span class="kicker">01 &mdash; Browse by activity</span>
+        <h2 class="font-display h-section text-ink" style="margin-top:12px;">PICK YOUR GAME.</h2>
       </div>
-      <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Every sport running in the city. One tap to find tonight's game.</p>
+      <p class="text-ink-60" style="font-size:15px;max-width:22rem;">Every sport running in the city. One tap to find tonight's game.</p>
     </div>
 
-    <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="stagger" style="margin-top:44px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
       {% for activity in activities %}
-       <a href="{% url 'venues:activity_venues' activity.slug %}"
-   class="group relative overflow-hidden rounded-3xl {% cycle 'bg-[#1c3d33] text-cream' 'bg-coral text-white' 'bg-amber text-ink' 'bg-sage text-ink' %} p-6 aspect-[3/4] flex flex-col justify-between transition-transform hover:-translate-y-1">
+        <a href="{% url 'venues:activity_venues' activity.slug %}" class="activity-card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1;">
+            <span style="font-size:10px;text-transform:uppercase;letter-spacing:.2em;font-weight:700;opacity:.75;">{{ activity.tagline|default:"This week" }}</span>
+            <span class="a-arrow">&rarr;</span>
+          </div>
 
-  <div class="flex items-start justify-between">
-    <span class="text-[10px] uppercase tracking-[0.22em] font-bold opacity-70">{{ activity.tagline|default:"This week" }}</span>
-    <span class="h-8 w-8 rounded-full bg-white/15 grid place-items-center text-sm">→</span>
-  </div>
+          {% if activity.icon_image %}
+            <img src="{{ activity.icon_image.url }}" alt="{{ activity.name }}" class="a-icon-img" loading="lazy">
+          {% else %}
+            <div class="activity-num font-display">{{ forloop.counter|stringformat:"02d" }}</div>
+          {% endif %}
 
-  <!-- ✅ Show uploaded icon if available -->
-  {% if activity.icon_image %}
-    <img src="{{ activity.icon_image.url }}"
-         alt="{{ activity.name }}"
-         class="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none">
-  {% else %}
-    <div class="font-display text-[6.5rem] leading-none opacity-15 absolute -bottom-4 -right-2 select-none">
-      {{ forloop.counter|stringformat:"02d" }}
-    </div>
-  {% endif %}
-
-  <div class="relative">
-    <div class="font-display text-4xl md:text-5xl tracking-wide uppercase">{{ activity.name }}</div>
-    <div class="mt-2 text-sm font-semibold opacity-80">{{ activity.event_count|default:0 }} game{{ activity.event_count|pluralize }} this week</div>
-  </div>
-</a>
+          <div style="position:relative;z-index:1;">
+            <div class="font-display h-card" style="text-transform:uppercase;letter-spacing:.01em;">{{ activity.name }}</div>
+            <div style="margin-top:8px;font-size:14px;font-weight:600;opacity:.85;">{{ activity.event_count|default:0 }} game{{ activity.event_count|pluralize }} this week</div>
+          </div>
+        </a>
       {% empty %}
-        <p class="text-ink/50 col-span-full">No activities yet — add them from the admin.</p>
+        <p class="text-ink-50" style="grid-column:1/-1;">No activities yet &mdash; add them from the admin.</p>
       {% endfor %}
     </div>
   </section>
 
-
   <!-- ============ 02 HAPPENING SOON ============ -->
-  <section id="events" class="bg-mist/60 border-y border-ink/10">
-    <div class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
-      <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
+  <section id="events" class="bg-mist-60" style="border-top:1px solid rgba(18,18,18,.1);border-bottom:1px solid rgba(18,18,18,.1);">
+    <div class="wrap" style="padding-top:88px;padding-bottom:88px;">
+      <div class="reveal-up" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;">
         <div>
-          <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">02 — This week</div>
-          <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">HAPPENING SOON.</h2>
+          <span class="kicker">02 &mdash; This week</span>
+          <h2 class="font-display h-section text-ink" style="margin-top:12px;">HAPPENING SOON.</h2>
         </div>
-        <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Live drops close as they fill. Grab a slot before the coral bar hits zero.</p>
+        <p class="text-ink-60" style="font-size:15px;max-width:22rem;">Live drops close as they fill. Grab a slot before the coral bar hits zero.</p>
       </div>
 
-      <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="stagger" style="margin-top:44px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">
         {% for event in events %}
-          <article class="group relative rounded-2xl bg-white border border-ink/10 overflow-hidden hover:-translate-y-1 card-shadow-hover transition-all">
-            <div class="p-4 flex items-start justify-between">
-              <span class="text-[10px] font-bold uppercase tracking-[0.2em] px-2 py-1 rounded-md bg-ink text-cream">{{ event.activity.name }}</span>
+          <article class="event-card">
+            <div style="padding:16px;display:flex;align-items:flex-start;justify-content:space-between;">
+              <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;padding:5px 9px;border-radius:8px;background:var(--ink);color:var(--cream);">{{ event.activity.name }}</span>
               {% if event.urgency_label and event.urgency_label != "Open" %}
-                <span class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] px-2 py-1 rounded-md bg-coral text-white">
-                  <span class="h-1.5 w-1.5 rounded-full bg-white pulse-dot"></span>{{ event.urgency_label }}
+                <span style="display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 9px;border-radius:8px;background:var(--coral);color:#fff;">
+                  <span class="pulse-dot" style="height:6px;width:6px;border-radius:999px;background:#fff;display:inline-block;"></span>{{ event.urgency_label }}
                 </span>
               {% endif %}
             </div>
-            <div class="px-5 pb-4 flex items-end justify-between border-b border-ink/8">
+            <div style="padding:0 20px 16px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid rgba(18,18,18,.08);">
               <div>
-                <div class="text-[10px] uppercase tracking-[0.2em] font-bold text-ink/50">{{ event.date|date:"D, M j"|upper }}</div>
-                <div class="font-display text-4xl leading-none mt-1 text-ink">{{ event.start_time|time:"g:i A" }}</div>
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:rgba(18,18,18,.5);">{{ event.date|date:"D, M j"|upper }}</div>
+                <div class="font-display" style="font-size:2rem;line-height:1;margin-top:4px;color:var(--ink);">{{ event.start_time|time:"g:i A" }}</div>
               </div>
-              <div class="text-right">
-                <div class="text-[10px] uppercase tracking-[0.2em] font-bold text-ink/50">Slot</div>
-                <div class="font-display text-3xl leading-none mt-1 text-coral">₹{{ event.price_per_slot|floatformat:0 }}</div>
+              <div style="text-align:right;">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:rgba(18,18,18,.5);">Slot</div>
+                <div class="font-display text-coral" style="font-size:1.7rem;line-height:1;margin-top:4px;">&#8377;{{ event.price_per_slot|floatformat:0 }}</div>
               </div>
             </div>
-            <div class="p-5 space-y-4">
+            <div style="padding:20px;display:flex;flex-direction:column;gap:16px;">
               <div>
-                <h3 class="font-semibold text-ink text-lg leading-tight">{{ event.title }}</h3>
-                <p class="text-sm text-ink/60 mt-0.5">{{ event.venue.name }}</p>
+                <h3 style="font-weight:600;color:var(--ink);font-size:18px;line-height:1.25;">{{ event.title }}</h3>
+                <p class="text-ink-60" style="font-size:14px;margin-top:2px;">{{ event.venue.name }}</p>
               </div>
               <div>
-                <div class="flex justify-between text-[11px] font-semibold uppercase tracking-wider text-ink/60 mb-1.5">
+                <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(18,18,18,.6);margin-bottom:6px;">
                   <span>{{ event.spots_left }} of {{ event.total_slots }} spots left</span>
-                  <span class="{% if event.spots_left_percent >= 70 %}text-coral{% endif %}">{{ event.spots_left_percent }}% filled</span>
+                  <span {% if event.spots_left_percent >= 70 %}class="text-coral"{% endif %}>{{ event.spots_left_percent }}% filled</span>
                 </div>
-                <div class="h-1.5 rounded-full bg-ink/10 overflow-hidden">
-                  <div class="h-full {% if event.spots_left_percent >= 70 %}bg-coral{% else %}bg-sage-deep{% endif %}" style="width: {{ event.spots_left_percent }}%;"></div>
+                <div class="event-progress-track">
+                  <div class="event-progress-fill {% if event.spots_left_percent >= 70 %}bg-coral{% else %}bg-sage-deep{% endif %}" style="width: {{ event.spots_left_percent }}%;"></div>
                 </div>
               </div>
-              <div class="flex items-center justify-between">
-                <div class="flex -space-x-2">
-                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">A</span>
-                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">R</span>
-                  <span class="h-7 w-7 rounded-full bg-sage text-ink border-2 border-white grid place-items-center text-[10px] font-bold">K</span>
-                  <span class="h-7 w-7 rounded-full bg-ink text-cream border-2 border-white grid place-items-center text-[10px] font-bold">+{{ event.total_slots|add:"-3" }}</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="avatar-stack" style="display:flex;">
+                  <span class="bg-sage text-ink" style="border-color:#fff;">A</span>
+                  <span class="bg-sage text-ink" style="border-color:#fff;">R</span>
+                  <span class="bg-sage text-ink" style="border-color:#fff;">K</span>
+                  <span class="bg-ink text-cream" style="border-color:#fff;">+{{ event.total_slots|add:"-3" }}</span>
                 </div>
-                <a href="{% url 'events:event_detail' event.id %}" class="text-sm font-bold uppercase tracking-wider text-ink group-hover:text-coral transition-colors">Book →</a>
+                <a href="{% url 'events:event_detail' event.id %}" class="event-book-link font-display" style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink);">Book <span>&rarr;</span></a>
               </div>
             </div>
           </article>
         {% empty %}
-          <div class="col-span-full text-center py-16 rounded-2xl bg-white border border-ink/10">
-            <p class="font-display text-3xl text-ink">NO GAMES YET.</p>
-            <p class="text-ink/60 text-sm mt-2">New drops added weekly.</p>
+          <div style="grid-column:1/-1;text-align:center;padding:64px 20px;border-radius:22px;background:#fff;border:1px solid rgba(18,18,18,.1);">
+            <p class="font-display" style="font-size:2rem;color:var(--ink);">NO GAMES YET.</p>
+            <p class="text-ink-60" style="font-size:14px;margin-top:8px;">New drops added weekly.</p>
           </div>
         {% endfor %}
       </div>
 
-      <div class="mt-10 text-center">
-        <a href="#" class="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-white px-6 py-3 text-sm font-semibold hover:bg-ink hover:text-cream transition-colors">See all games →</a>
+      <div class="reveal-up" style="margin-top:40px;text-align:center;">
+        <a href="#" style="display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid rgba(18,18,18,.2);background:#fff;padding:12px 24px;font-size:14px;font-weight:600;transition:background var(--dur-fast),color var(--dur-fast);" onmouseover="this.style.background='var(--ink)';this.style.color='var(--cream)';" onmouseout="this.style.background='#fff';this.style.color='var(--ink)';">See all games &rarr;</a>
       </div>
     </div>
   </section>
 
-
-  <!-- ============ 03 HOW IT WORKS ============ -->
-  <section id="how" class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
-    <div class="grid md:grid-cols-[1.4fr_1fr] gap-6 md:gap-10 items-end">
+  <!-- ============ FEATURES SECTION ============ -->
+  <section id="features" class="wrap" style="padding-top:88px;padding-bottom:88px;">
+    <div class="reveal-up" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;">
       <div>
-        <div class="text-[11px] font-bold uppercase tracking-[0.3em] text-coral">03 — The flow</div>
-        <h2 class="mt-3 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight text-ink">HOW IT WORKS.</h2>
+        <span class="kicker">Why FieldDay</span>
+        <h2 class="font-display h-section text-ink" style="margin-top:12px;">BUILT FOR PLAYERS.</h2>
       </div>
-      <p class="text-ink/60 md:text-right text-[15px] max-w-sm md:ml-auto">Three steps. Zero group chats. One good game.</p>
+      <p class="text-ink-60" style="font-size:15px;max-width:22rem;">No more chasing groups, negotiating costs, or wasting evenings. We handle it all.</p>
     </div>
-    <div class="mt-12 grid md:grid-cols-3 gap-6">
-      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
-        <div class="font-display text-6xl text-coral leading-none">01</div>
-        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">PICK A GAME</h3>
-        <p class="text-ink/65 mt-3 text-[15px]">Filter by sport, sector or time. See who's already in.</p>
-        <div class="hidden md:block absolute top-12 -right-3 text-ink/20 text-2xl">→</div>
+    <div class="stagger" style="margin-top:44px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="font-display" style="font-size:1.4rem;color:var(--ink);">Instant Booking</h3>
+        <p class="text-ink-60" style="margin-top:8px;">Reserve a spot in under 30 seconds. No phone calls, no waiting for replies.</p>
       </div>
-      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
-        <div class="font-display text-6xl text-coral leading-none">02</div>
-        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">BOOK A SLOT</h3>
-        <p class="text-ink/65 mt-3 text-[15px]">Pay for one spot, not the whole turf. Refund if it doesn't fill.</p>
-        <div class="hidden md:block absolute top-12 -right-3 text-ink/20 text-2xl">→</div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3 class="font-display" style="font-size:1.4rem;color:var(--ink);">No‑Show Protection</h3>
+        <p class="text-ink-60" style="margin-top:8px;">If a game doesn’t fill, you get a full refund. Play with confidence.</p>
       </div>
-      <div class="relative rounded-3xl bg-white border border-ink/10 p-8 hover:border-coral transition-colors">
-        <div class="font-display text-6xl text-coral leading-none">03</div>
-        <h3 class="font-display tracking-wide text-2xl mt-4 text-ink">SHOW UP &amp; PLAY</h3>
-        <p class="text-ink/65 mt-3 text-[15px]">Get the venue on WhatsApp. Meet 9 new players. Repeat next week.</p>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3 class="font-display" style="font-size:1.4rem;color:var(--ink);">Meet Your People</h3>
+        <p class="text-ink-60" style="margin-top:8px;">Join a community of regulars. Make friends, find rivals, build your crew.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3 class="font-display" style="font-size:1.4rem;color:var(--ink);">Verified Venues</h3>
+        <p class="text-ink-60" style="margin-top:8px;">Every turf, court, and pitch is checked for quality and safety.</p>
       </div>
     </div>
   </section>
 
+  <!-- ============ 03 HOW IT WORKS (dark) ============ -->
+  <section id="how" class="how-section">
+    <div class="wrap" style="padding-top:88px;padding-bottom:88px;">
+      <div class="reveal-up" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;">
+        <div>
+          <span class="kicker">03 &mdash; The flow</span>
+          <h2 class="font-display h-section" style="margin-top:12px;">HOW IT WORKS.</h2>
+        </div>
+        <p class="text-cream-70" style="font-size:15px;max-width:22rem;">Three steps. Zero group chats. One good game.</p>
+      </div>
+
+      <div style="position:relative;margin-top:56px;">
+        <div class="how-line" id="fd-how-line"><div class="how-line-fill" id="fd-how-line-fill"></div></div>
+        <div class="stagger" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;">
+          <div class="how-step">
+            <div class="font-display how-num" style="font-size:3.4rem;line-height:1;">01</div>
+            <h3 class="font-display" style="letter-spacing:.02em;font-size:1.5rem;margin-top:16px;">PICK A GAME</h3>
+            <p style="margin-top:12px;font-size:15px;">Filter by sport, sector or time. See who's already in.</p>
+          </div>
+          <div class="how-step">
+            <div class="font-display how-num" style="font-size:3.4rem;line-height:1;">02</div>
+            <h3 class="font-display" style="letter-spacing:.02em;font-size:1.5rem;margin-top:16px;">BOOK A SLOT</h3>
+            <p style="margin-top:12px;font-size:15px;">Pay for one spot, not the whole turf. Refund if it doesn't fill.</p>
+          </div>
+          <div class="how-step">
+            <div class="font-display how-num" style="font-size:3.4rem;line-height:1;">03</div>
+            <h3 class="font-display" style="letter-spacing:.02em;font-size:1.5rem;margin-top:16px;">SHOW UP &amp; PLAY</h3>
+            <p style="margin-top:12px;font-size:15px;">Get the venue on WhatsApp. Meet 9 new players. Repeat next week.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ============ HOST BAND ============ -->
-  <section id="host" class="relative overflow-hidden">
-    <div class="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
-      <div class="relative rounded-[32px] bg-coral text-white p-8 md:p-14 overflow-hidden">
-        <div class="absolute right-0 bottom-0 font-display text-[22rem] leading-none text-white/10 select-none pointer-events-none translate-y-12 translate-x-6">HOST</div>
-        <div class="relative grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/80">For turfs &amp; organisers</div>
-            <h2 class="mt-4 font-display text-5xl md:text-7xl leading-[0.9] tracking-tight">RUN A GROUND?<br>FILL IT UP<span class="text-ink">.</span></h2>
-            <p class="mt-5 max-w-md text-white/90 text-[15px]">List your turf, court or league on FieldDay. We bring the players, handle the payments, and cover no-shows. Zero setup fee.</p>
-            <div class="mt-7 flex flex-wrap gap-3">
-              <a href="#" class="inline-flex items-center gap-2 rounded-full bg-ink text-cream px-6 py-3 text-sm font-semibold hover:bg-cream hover:text-ink transition-colors">Become a host →</a>
-              <a href="#" class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/25">See host pricing</a>
-            </div>
+  <section id="host" class="wrap" style="padding-top:20px;padding-bottom:96px;">
+    <div class="host-panel text-cream reveal-scale">
+      <div class="host-bg-text font-display">HOST</div>
+      <div style="position:relative;display:grid;gap:40px;grid-template-columns:1fr;align-items:center;">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.22em;" class="text-cream-80">For turfs &amp; organisers</div>
+          <h2 class="font-display h-section" style="margin-top:16px;">RUN A GROUND?<br>FILL IT UP<span class="text-ink">.</span></h2>
+          <p class="text-cream-85" style="margin-top:18px;max-width:30rem;font-size:15px;">List your turf, court or league on FieldDay. We bring the players, handle the payments, and cover no-shows. Zero setup fee.</p>
+          <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:12px;">
+            <a href="#" class="hero-cta" style="background:var(--ink);color:var(--cream);" onmouseover="this.style.background='var(--cream)';this.style.color='var(--ink)';" onmouseout="this.style.background='var(--ink)';this.style.color='var(--cream)';">Become a host &rarr;</a>
+            <a href="#" class="hero-cta" style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(10px);">See host pricing</a>
           </div>
-          <div class="grid grid-cols-3 gap-3">
-            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
-              <div class="font-display text-4xl md:text-5xl leading-none">₹0</div>
-              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Setup fee</div>
-            </div>
-            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
-              <div class="font-display text-4xl md:text-5xl leading-none">48h</div>
-              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Go live</div>
-            </div>
-            <div class="rounded-2xl bg-white/15 backdrop-blur border border-white/25 p-5 text-center">
-              <div class="font-display text-4xl md:text-5xl leading-none">{{ total_venues|default:"12" }}+</div>
-              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 mt-2">Venues onboard</div>
-            </div>
+        </div>
+        <div class="stagger" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div class="stat-block">
+            <div class="font-display num-huge">&#8377;0</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;margin-top:8px;" class="text-cream-85">Setup fee</div>
+          </div>
+          <div class="stat-block">
+            <div class="font-display num-huge">48h</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;margin-top:8px;" class="text-cream-85">Go live</div>
+          </div>
+          <div class="stat-block">
+            <div class="font-display num-huge">{{ total_venues|default:"12" }}+</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;margin-top:8px;" class="text-cream-85">Venues onboard</div>
           </div>
         </div>
       </div>
@@ -433,4 +767,81 @@ body::before {
   </section>
 
 </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Scroll progress bar ---- */
+  var progressBar = document.getElementById('fd-scroll-progress');
+  function updateProgress() {
+    var doc = document.documentElement;
+    var scrollTop = window.scrollY || doc.scrollTop;
+    var height = (doc.scrollHeight - doc.clientHeight);
+    var pct = height > 0 ? (scrollTop / height) * 100 : 0;
+    if (progressBar) progressBar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ---- Scroll reveal via IntersectionObserver ---- */
+  var revealTargets = document.querySelectorAll('#fd-home .reveal, #fd-home .reveal-up, #fd-home .reveal-left, #fd-home .reveal-right, #fd-home .reveal-scale, #fd-home .reveal-rotate, #fd-home .stagger');
+
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+    revealTargets.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---- How-it-works connecting line ---- */
+  var howLine = document.getElementById('fd-how-line');
+  var howLineFill = document.getElementById('fd-how-line-fill');
+  if (howLine && howLineFill && !prefersReduced && 'IntersectionObserver' in window) {
+    var lineIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          howLineFill.style.width = '100%';
+          lineIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    lineIo.observe(howLine);
+  } else if (howLineFill) {
+    howLineFill.style.width = '100%';
+  }
+
+  /* ---- Subtle parallax on hero background (rAF-throttled, disabled on reduced motion) ---- */
+  var heroSection = document.querySelector('#fd-home .hero-outer');
+  var heroBgImgs = heroSection ? heroSection.querySelectorAll('img.hero-bg-img') : [];
+  if (heroSection && heroBgImgs.length && !prefersReduced) {
+    var ticking = false;
+    function onScrollParallax() {
+      if (!ticking) {
+        window.requestAnimationFrame(function () {
+          var rect = heroSection.getBoundingClientRect();
+          var offset = Math.max(-1, Math.min(1, -rect.top / (rect.height || 1)));
+          var translate = offset * 40;
+          heroBgImgs[0].style.transform = 'translateY(' + translate + 'px)';
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+    window.addEventListener('scroll', onScrollParallax, { passive: true });
+  }
+})();
+</script>
+
 {% endblock %}
+```
