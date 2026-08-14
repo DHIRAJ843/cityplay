@@ -1,3 +1,4 @@
+import secrets
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -6,7 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.contrib import messages as dj_messages
 from events.models import Event
-from .models import Booking, BookingAddOn, AddOn
+from .models import Booking, BookingAddOn, AddOn, Team
 
 PLATFORM_FEE = Decimal('5.00')
 
@@ -65,9 +66,8 @@ def solo_booking_confirm(request, event_id):
                     booking=booking, addon=addon, price_at_booking=addon.price
                 )
 
-        return redirect('bookings:checkout', booking_id=booking.id)  # ✅ inside if POST
+        return redirect('bookings:checkout', booking_id=booking.id)
 
-    # GET — show the confirm form
     return render(request, 'bookings/solo_confirm.html', {
         'event': event,
         'addons': addons,
@@ -77,11 +77,146 @@ def solo_booking_confirm(request, event_id):
 
 
 @login_required
+def create_team(request, event_id):
+    """Step 1 of group booking: captain names the team and sets its size."""
+    event = get_object_or_404(Event, pk=event_id)
+
+    if request.method == 'POST':
+        name = (request.POST.get('team_name') or '').strip()
+        try:
+            team_size = int(request.POST.get('team_size', 0))
+        except (TypeError, ValueError):
+            team_size = 0
+
+        if not name:
+            messages.error(request, "Please give your team a name.")
+            return render(request, 'bookings/create_team.html', {'event': event})
+
+        if team_size < 2 or team_size > 50:
+            messages.error(request, "Team size must be between 2 and 50.")
+            return render(request, 'bookings/create_team.html', {'event': event})
+
+        with transaction.atomic():
+            locked_event = Event.objects.select_for_update().get(pk=event.pk)
+
+            if locked_event.spots_left < 1:
+                messages.error(request, "Sorry, this event is sold out.")
+                return redirect('events:event_detail', pk=event.pk)
+
+            team = Team.objects.create(
+                event=locked_event,
+                name=name,
+                captain=request.user,
+                team_size=team_size,
+            )
+
+            entry_fee = locked_event.price_per_slot
+            total_amount = entry_fee + PLATFORM_FEE
+
+            booking = Booking.objects.create(
+                event=locked_event,
+                user=request.user,
+                booking_type='group',
+                num_slots=1,
+                team=team,
+                entry_fee=entry_fee,
+                platform_fee=PLATFORM_FEE,
+                total_amount=total_amount,
+                payment_status='pending',
+                booking_status='confirmed',
+            )
+
+        messages.success(
+            request,
+            f"Team '{team.name}' created! Share this code with your squad: {team.invite_code}"
+        )
+        return redirect('bookings:checkout', booking_id=booking.id)
+
+    return render(request, 'bookings/create_team.html', {'event': event})
+
+
+@login_required
+def open_slots_list(request, event_id):
+    """Browse all teams for this event that still need players."""
+    event = get_object_or_404(Event, pk=event_id)
+
+    all_teams = Team.objects.filter(event=event).select_related('captain')
+    already_joined_ids = set(
+        Booking.objects.filter(
+            event=event, user=request.user, booking_status='confirmed', team__isnull=False
+        ).values_list('team_id', flat=True)
+    )
+
+    open_teams = [
+        t for t in all_teams
+        if not t.is_full and t.id not in already_joined_ids
+    ]
+
+    return render(request, 'bookings/open_slots.html', {
+        'event': event,
+        'open_teams': open_teams,
+    })
+
+
+@login_required
+def join_team(request, event_id, invite_code):
+    """Step where a solo player joins an existing team via its invite code."""
+    event = get_object_or_404(Event, pk=event_id)
+    team = get_object_or_404(Team, event=event, invite_code=invite_code)
+
+    already_in = Booking.objects.filter(
+        event=event, user=request.user, team=team, booking_status='confirmed'
+    ).exists()
+
+    if request.method == 'POST':
+        if already_in:
+            messages.info(request, "You're already part of this team.")
+            return redirect('bookings:my_bookings')
+
+        with transaction.atomic():
+            locked_event = Event.objects.select_for_update().get(pk=event.pk)
+            locked_team = Team.objects.select_for_update().get(pk=team.pk)
+
+            if locked_event.spots_left < 1:
+                messages.error(request, "Sorry, this event is sold out.")
+                return redirect('events:event_detail', pk=event.pk)
+
+            if locked_team.is_full:
+                messages.error(request, "This team just filled up. Try another one.")
+                return redirect('bookings:open_slots', event_id=event.id)
+
+            entry_fee = locked_event.price_per_slot
+            total_amount = entry_fee + PLATFORM_FEE
+
+            booking = Booking.objects.create(
+                event=locked_event,
+                user=request.user,
+                booking_type='open_slot',
+                num_slots=1,
+                team=locked_team,
+                entry_fee=entry_fee,
+                platform_fee=PLATFORM_FEE,
+                total_amount=total_amount,
+                payment_status='pending',
+                booking_status='confirmed',
+            )
+
+        messages.success(request, f"You joined '{team.name}'! Complete payment to confirm your spot.")
+        return redirect('bookings:checkout', booking_id=booking.id)
+
+    return render(request, 'bookings/join_team.html', {
+        'event': event,
+        'team': team,
+        'already_in': already_in,
+    })
+
+
+@login_required
 def checkout_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    venue = booking.event.venue                      # ✅ correct path
-    base_total = booking.entry_fee                   # ✅ correct field name
-    platform_fee = booking.platform_fee              # ✅ already stored in DB
+    venue = booking.event.venue
+    base_total = booking.entry_fee
+    platform_fee = booking.platform_fee
     convenience_fee = round(float(base_total) * 0.02, 2)
     total_price = base_total + platform_fee + Decimal(str(convenience_fee))
 
@@ -110,7 +245,7 @@ def my_bookings_view(request):
     bookings_qs = (
         Booking.objects
         .filter(user=request.user)
-        .select_related('event', 'event__activity', 'event__venue')
+        .select_related('event', 'event__activity', 'event__venue', 'team')
         .order_by('-event__date', '-event__start_time')
     )
 

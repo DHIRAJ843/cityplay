@@ -1,7 +1,7 @@
-import uuid
 from django.db import models
 from django.conf import settings
 from events.models import Event
+import secrets
 
 
 class AddOn(models.Model):
@@ -11,6 +11,37 @@ class AddOn(models.Model):
 
     def __str__(self):
         return f"{self.name} (+₹{self.price})"
+
+
+class Team(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='teams')
+    name = models.CharField(max_length=100)
+    captain = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='captained_teams'
+    )
+    team_size = models.PositiveIntegerField()
+    invite_code = models.CharField(max_length=10, unique=True, editable=False, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.invite_code:
+            self.invite_code = secrets.token_hex(4)
+        super().save(*args, **kwargs)
+
+    @property
+    def members_count(self):
+        return self.bookings.filter(booking_status='confirmed').count()
+
+    @property
+    def open_slots(self):
+        return max(0, self.team_size - self.members_count)
+
+    @property
+    def is_full(self):
+        return self.open_slots <= 0
+
+    def __str__(self):
+        return f"{self.name} ({self.members_count}/{self.team_size})"
 
 
 class Booking(models.Model):
@@ -38,7 +69,9 @@ class Booking(models.Model):
     booking_type = models.CharField(max_length=20, choices=BOOKING_TYPE_CHOICES, default='solo')
     num_slots = models.PositiveIntegerField(default=1)
 
-    group_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    team = models.ForeignKey(
+        Team, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings'
+    )
 
     add_ons = models.ManyToManyField(AddOn, through='BookingAddOn', blank=True)
 
