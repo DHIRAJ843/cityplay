@@ -1,47 +1,174 @@
 {% load static %}
-<footer class="bg-ink text-white/70 mt-16">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
-    <div class="col-span-2 md:col-span-1">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="w-7 h-7 rounded-lg bg-teal flex items-center justify-center">
-          <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><img src="{% static 'images/logo.png' %}" 
-           alt="CityPlay Logo"
-           class="w-13 h-15 object-contain rounded-lg transition-transform duration-300 hover:scale-110"></svg>
-        </span>
-        <span class="font-bold text-white">City Play</span>
+<style>
+/* ============================================================
+   FIELDDAY FOOTER — MINIMAL DARK
+   ============================================================ */
+.fd-footer {
+  background: #1C1C24;               /* deep charcoal */
+  color: #fff;
+  padding: 60px 0 30px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+.fd-footer .wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.fd-footer .footer-top {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+
+.fd-footer .footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.fd-footer .logo-ball {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 20px -6px rgba(0,0,0,0.3);
+}
+
+.fd-footer .logo-ball img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.fd-footer .brand-name {
+  font-family: 'Anton', Impact, sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.fd-footer .footer-desc {
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  font-size: 14px;
+  max-width: 34ch;
+}
+
+.fd-footer h4 {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.fd-footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fd-footer ul li {
+  margin-bottom: 10px;
+}
+
+.fd-footer ul li a {
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.fd-footer ul li a:hover {
+  color: #E4D5CC;  /* light terracotta */
+}
+
+.fd-footer .footer-bottom {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+
+.fd-footer .footer-bottom span {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .fd-footer .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .fd-footer .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .fd-footer .footer-top {
+    grid-template-columns: 1fr;
+  }
+  .fd-footer .footer-brand {
+    grid-column: auto;
+  }
+}
+</style>
+
+<footer class="fd-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo-ball">
+          <img src="{% static 'images/logo.png' %}" alt="FieldDay Logo">
+        </div>
+        <span class="brand-name">FIELDDAY</span>
       </div>
-      <p class="text-sm text-white/50 leading-relaxed">Your local sports &amp; community platform, built for Gandhinagar.</p>
+      <div class="footer-desc">
+        Your local sports &amp; community platform, built for Gandhinagar.
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="{% url 'home' %}#happening-soon">Browse Events</a></li>
+          <li><a href="#">Host with Us</a></li>
+          <li><a href="#">Join Open Slot</a></li>
+          <li><a href="#">Group Booking</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="{% url 'about' %}">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Cancellation Policy</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <h4 class="text-white text-sm font-semibold mb-4">Platform</h4>
-      <ul class="space-y-2.5 text-sm">
-        <li><a href="{% url 'home' %}#happening-soon" class="hover:text-white transition-colors">Browse Events</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Host with Us</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Join Open Slot</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Group Booking</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="text-white text-sm font-semibold mb-4">Company</h4>
-      <ul class="space-y-2.5 text-sm">
-        <li><a href="{% url 'about' %}" class="hover:text-white transition-colors">About Us</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="text-white text-sm font-semibold mb-4">Legal</h4>
-      <ul class="space-y-2.5 text-sm">
-        <li><a href="#" class="hover:text-white transition-colors">Terms of Use</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Cancellation Policy</a></li>
-        <li><a href="#" class="hover:text-white transition-colors">Refund Policy</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/40">
+    <div class="footer-bottom">
       <span>&copy; {% now "Y" %} FieldDay GNR. Made for Gandhinagar.</span>
       <span>All payments secured by Razorpay</span>
     </div>
