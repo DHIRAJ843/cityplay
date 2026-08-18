@@ -1,10 +1,10 @@
 {% load static %}
 <style>
 /* ============================================================
-   FIELDDAY FOOTER — MINIMAL DARK
+   FIELDDAY FOOTER — MINIMAL DARK (FIXED STRUCTURE)
    ============================================================ */
 .fd-footer {
-  background: #1C1C24;               /* deep charcoal */
+  background: #1C1C24;
   color: #fff;
   padding: 60px 0 30px;
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
@@ -18,15 +18,21 @@
 
 .fd-footer .footer-top {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
   gap: 40px;
+}
+
+/* Brand column */
+.fd-footer .brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .fd-footer .footer-brand {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 20px;
 }
 
 .fd-footer .logo-ball {
@@ -61,6 +67,7 @@
   max-width: 34ch;
 }
 
+/* Link columns */
 .fd-footer h4 {
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -88,9 +95,10 @@
 }
 
 .fd-footer ul li a:hover {
-  color: #E4D5CC;  /* light terracotta */
+  color: #E4D5CC;
 }
 
+/* Bottom bar */
 .fd-footer .footer-bottom {
   margin-top: 40px;
   padding-top: 20px;
@@ -108,12 +116,12 @@
 }
 
 /* Responsive */
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .fd-footer .footer-top {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
   }
-  .fd-footer .footer-brand {
+  .fd-footer .brand-col {
     grid-column: 1 / -1;
   }
 }
@@ -122,7 +130,7 @@
   .fd-footer .footer-top {
     grid-template-columns: 1fr;
   }
-  .fd-footer .footer-brand {
+  .fd-footer .brand-col {
     grid-column: auto;
   }
 }
@@ -131,15 +139,20 @@
 <footer class="fd-footer">
   <div class="wrap">
     <div class="footer-top">
-      <div class="footer-brand">
-        <div class="logo-ball">
-          <img src="{% static 'images/logo.png' %}" alt="FieldDay Logo">
+      <!-- First column: brand + description -->
+      <div class="brand-col">
+        <div class="footer-brand">
+          <div class="logo-ball">
+            <img src="{% static 'images/logo.png' %}" alt="FieldDay Logo">
+          </div>
+          <span class="brand-name">FIELDDAY</span>
         </div>
-        <span class="brand-name">FIELDDAY</span>
+        <p class="footer-desc">
+          Your local sports &amp; community platform, built for Gandhinagar.
+        </p>
       </div>
-      <div class="footer-desc">
-        Your local sports &amp; community platform, built for Gandhinagar.
-      </div>
+
+      <!-- Platform links -->
       <div>
         <h4>Platform</h4>
         <ul>
@@ -149,6 +162,8 @@
           <li><a href="#">Group Booking</a></li>
         </ul>
       </div>
+
+      <!-- Company links -->
       <div>
         <h4>Company</h4>
         <ul>
@@ -158,6 +173,8 @@
           <li><a href="#">Careers</a></li>
         </ul>
       </div>
+
+      <!-- Legal links -->
       <div>
         <h4>Legal</h4>
         <ul>
@@ -168,6 +185,7 @@
         </ul>
       </div>
     </div>
+
     <div class="footer-bottom">
       <span>&copy; {% now "Y" %} FieldDay GNR. Made for Gandhinagar.</span>
       <span>All payments secured by Razorpay</span>
